@@ -115,13 +115,22 @@ namespace FileCabinetApp
         {
             string firstName, lastName;
             DateTime dateOfBirth;
+            short age;
+            decimal salary;
+            char gender;
             Console.Write("First name: ");
             firstName = Console.ReadLine();
             Console.Write("Last  name: ");
             lastName = Console.ReadLine();
             Console.Write("Date of birth: ");
             dateOfBirth = DateTime.ParseExact(Console.ReadLine(), "d", CultureInfo.InvariantCulture);
-            Program.fileCabinetService.CreateRecord(firstName, lastName, dateOfBirth);
+            Console.Write("Age: ");
+            age = short.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
+            Console.Write("Salary: ");
+            salary = decimal.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
+            Console.Write("Gender (M/W): ");
+            gender = char.ToUpper(Console.ReadLine()[0], CultureInfo.InvariantCulture);
+            Program.fileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, age, salary, gender);
             Console.WriteLine($"Record #{Program.fileCabinetService.GetStat()} is created.");
         }
 
@@ -131,6 +140,7 @@ namespace FileCabinetApp
             foreach (var item in Program.fileCabinetService.GetRecords())
             {
                 Console.WriteLine($"#{i}, {item.FirstName}, {item.LastName}, " +
+                    $"{item.Age}, {item.Salary}, {item.Gender}, " +
                     $"{item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}");
                 i++;
             }
