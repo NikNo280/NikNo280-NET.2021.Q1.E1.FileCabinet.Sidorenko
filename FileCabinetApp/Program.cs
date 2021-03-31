@@ -20,6 +20,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("stat", Stat),
             new Tuple<string, Action<string>>("create", Create),
             new Tuple<string, Action<string>>("list", List),
+            new Tuple<string, Action<string>>("edit", Edit),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -29,6 +30,7 @@ namespace FileCabinetApp
             new string[] { "stat", "displays quality statistics", "The 'stat' command displays quality statistics." },
             new string[] { "create", "create new record", "The 'stat' command create new record." },
             new string[] { "list", "gets a list of records", "The 'stat' command gets a list of records." },
+            new string[] { "edit", "modify a data of an existing record.", "The 'stat' command modify a data of an existing record.." },
         };
 
         public static void Main(string[] args)
@@ -113,7 +115,6 @@ namespace FileCabinetApp
 
         private static void Create(string parameters)
         {
-
             string firstName = string.Empty, lastName = string.Empty;
             DateTime dateOfBirth = default(DateTime);
             short age = -1;
@@ -170,6 +171,73 @@ namespace FileCabinetApp
                 Console.WriteLine($"#{item.Id}, {item.FirstName}, {item.LastName}, " +
                     $"{item.Age}, {item.Salary}, {item.Gender}, " +
                     $"{item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}");
+            }
+        }
+
+        private static void Edit(string parameters)
+        {
+            string firstName = string.Empty, lastName = string.Empty;
+            DateTime dateOfBirth = default(DateTime);
+            short age = -1;
+            decimal salary = -1;
+            char gender = default(char);
+            bool result = false;
+            int id;
+            result = int.TryParse(parameters, out id);
+            if (!result)
+            {
+                Console.WriteLine("id is not a number");
+                return;
+            }
+
+            result = false;
+            while (firstName.Length <= 2 || firstName.Length > 60)
+            {
+                Console.Write("First name: ");
+                firstName = Console.ReadLine();
+            }
+
+            while (lastName.Length <= 2 || lastName.Length > 60)
+            {
+                Console.Write("Last  name: ");
+                lastName = Console.ReadLine();
+            }
+
+            while ((dateOfBirth >= DateTime.Now || dateOfBirth <= new DateTime(1950, 1, 1)) || !result)
+            {
+                Console.Write("Date of birth: ");
+                result = DateTime.TryParseExact(Console.ReadLine(), "d", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateOfBirth);
+            }
+
+            result = false;
+
+            while ((age < 0 || age > 110) || !result)
+            {
+                Console.Write("Age: ");
+                result = short.TryParse(Console.ReadLine(), out age);
+            }
+
+            result = false;
+            while ((salary < 0) || !result)
+            {
+                Console.Write("Salary: ");
+                result = decimal.TryParse(Console.ReadLine(), out salary);
+            }
+
+            while (gender != 'M' && gender != 'W')
+            {
+                Console.Write("Gender (M/W): ");
+                gender = char.ToUpper(Console.ReadLine()[0], CultureInfo.InvariantCulture);
+            }
+
+            try
+            {
+                Program.fileCabinetService.EditRecord(1, firstName, lastName, dateOfBirth, age, salary, gender);
+                Console.WriteLine($"Record #{id} is updated.");
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.Message);
             }
         }
     }
