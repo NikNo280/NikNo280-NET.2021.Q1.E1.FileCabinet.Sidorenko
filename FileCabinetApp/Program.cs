@@ -113,36 +113,62 @@ namespace FileCabinetApp
 
         private static void Create(string parameters)
         {
-            string firstName, lastName;
-            DateTime dateOfBirth;
-            short age;
-            decimal salary;
-            char gender;
-            Console.Write("First name: ");
-            firstName = Console.ReadLine();
-            Console.Write("Last  name: ");
-            lastName = Console.ReadLine();
-            Console.Write("Date of birth: ");
-            dateOfBirth = DateTime.ParseExact(Console.ReadLine(), "d", CultureInfo.InvariantCulture);
-            Console.Write("Age: ");
-            age = short.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
-            Console.Write("Salary: ");
-            salary = decimal.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
-            Console.Write("Gender (M/W): ");
-            gender = char.ToUpper(Console.ReadLine()[0], CultureInfo.InvariantCulture);
+            string firstName = string.Empty, lastName = string.Empty;
+            DateTime dateOfBirth = default(DateTime);
+            short age = -1;
+            decimal salary = -1;
+            char gender = default(char);
+            bool result = false;
+            while (firstName.Length <= 2 || firstName.Length > 60)
+            {
+                Console.Write("First name: ");
+                firstName = Console.ReadLine();
+            }
+
+            while (lastName.Length <= 2 || lastName.Length > 60)
+            {
+                Console.Write("Last  name: ");
+                lastName = Console.ReadLine();
+            }
+
+            while ((dateOfBirth >= DateTime.Now || dateOfBirth <= new DateTime(1950, 1, 1)) || !result)
+            {
+                Console.Write("Date of birth: ");
+                result = DateTime.TryParseExact(Console.ReadLine(), "d", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateOfBirth);
+            }
+
+            result = false;
+
+            while ((age < 0 || age > 110) || !result)
+            {
+                Console.Write("Age: ");
+                result = short.TryParse(Console.ReadLine(), out age);
+            }
+
+            result = false;
+            while ((salary < 0) || !result)
+            {
+                Console.Write("Salary: ");
+                result = decimal.TryParse(Console.ReadLine(), out salary);
+            }
+
+            while (gender != 'M' && gender != 'W')
+            {
+                Console.Write("Gender (M/W): ");
+                gender = char.ToUpper(Console.ReadLine()[0], CultureInfo.InvariantCulture);
+            }
+
             Program.fileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, age, salary, gender);
             Console.WriteLine($"Record #{Program.fileCabinetService.GetStat()} is created.");
         }
 
         private static void List(string parameters)
         {
-            uint i = 1;
             foreach (var item in Program.fileCabinetService.GetRecords())
             {
-                Console.WriteLine($"#{i}, {item.FirstName}, {item.LastName}, " +
+                Console.WriteLine($"#{item.Id}, {item.FirstName}, {item.LastName}, " +
                     $"{item.Age}, {item.Salary}, {item.Gender}, " +
                     $"{item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}");
-                i++;
             }
         }
     }
