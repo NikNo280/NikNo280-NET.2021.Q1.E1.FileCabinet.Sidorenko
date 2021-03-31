@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace FileCabinetApp
 {
@@ -9,19 +10,25 @@ namespace FileCabinetApp
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
-
+        private static FileCabinetService fileCabinetService;
         private static bool isRunning = true;
 
         private static Tuple<string, Action<string>>[] commands = new Tuple<string, Action<string>>[]
         {
             new Tuple<string, Action<string>>("help", PrintHelp),
             new Tuple<string, Action<string>>("exit", Exit),
+            new Tuple<string, Action<string>>("stat", Stat),
+            new Tuple<string, Action<string>>("create", Create),
+            new Tuple<string, Action<string>>("list", List),
         };
 
         private static string[][] helpMessages = new string[][]
         {
             new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
+            new string[] { "stat", "displays quality statistics", "The 'stat' command displays quality statistics." },
+            new string[] { "create", "create new record", "The 'stat' command create new record." },
+            new string[] { "list", "gets a list of records", "The 'stat' command gets a list of records." },
         };
 
         public static void Main(string[] args)
@@ -29,6 +36,7 @@ namespace FileCabinetApp
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
             Console.WriteLine(Program.HintMessage);
             Console.WriteLine();
+            fileCabinetService = new FileCabinetService();
 
             do
             {
@@ -95,6 +103,47 @@ namespace FileCabinetApp
         {
             Console.WriteLine("Exiting an application...");
             isRunning = false;
+        }
+
+        private static void Stat(string parameters)
+        {
+            var recordsCount = Program.fileCabinetService.GetStat();
+            Console.WriteLine($"{recordsCount} record(s).");
+        }
+
+        private static void Create(string parameters)
+        {
+            string firstName, lastName;
+            DateTime dateOfBirth;
+            short age;
+            decimal salary;
+            char gender;
+            Console.Write("First name: ");
+            firstName = Console.ReadLine();
+            Console.Write("Last  name: ");
+            lastName = Console.ReadLine();
+            Console.Write("Date of birth: ");
+            dateOfBirth = DateTime.ParseExact(Console.ReadLine(), "d", CultureInfo.InvariantCulture);
+            Console.Write("Age: ");
+            age = short.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
+            Console.Write("Salary: ");
+            salary = decimal.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
+            Console.Write("Gender (M/W): ");
+            gender = char.ToUpper(Console.ReadLine()[0], CultureInfo.InvariantCulture);
+            Program.fileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, age, salary, gender);
+            Console.WriteLine($"Record #{Program.fileCabinetService.GetStat()} is created.");
+        }
+
+        private static void List(string parameters)
+        {
+            uint i = 1;
+            foreach (var item in Program.fileCabinetService.GetRecords())
+            {
+                Console.WriteLine($"#{i}, {item.FirstName}, {item.LastName}, " +
+                    $"{item.Age}, {item.Salary}, {item.Gender}, " +
+                    $"{item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}");
+                i++;
+            }
         }
     }
 }
