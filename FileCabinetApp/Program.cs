@@ -10,6 +10,11 @@ namespace FileCabinetApp
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
+        private const int MaxNameLength = 60;
+        private const int MinNmaeLength = 2;
+        private const int MaxAge = 110;
+        private const int MinAge = 0;
+        private const int MinSalary = 0;
         private static FileCabinetService fileCabinetService;
         private static bool isRunning = true;
 
@@ -123,13 +128,13 @@ namespace FileCabinetApp
             decimal salary = -1;
             char gender = default(char);
             bool result = false;
-            while (firstName.Length <= 2 || firstName.Length > 60)
+            while (firstName.Length <= MinNmaeLength || firstName.Length > MaxNameLength)
             {
                 Console.Write("First name: ");
                 firstName = Console.ReadLine();
             }
 
-            while (lastName.Length <= 2 || lastName.Length > 60)
+            while (lastName.Length <= MinNmaeLength || lastName.Length > MaxNameLength)
             {
                 Console.Write("Last  name: ");
                 lastName = Console.ReadLine();
@@ -143,14 +148,14 @@ namespace FileCabinetApp
 
             result = false;
 
-            while ((age < 0 || age > 110) || !result)
+            while ((age < MinAge || age > MaxAge) || !result)
             {
                 Console.Write("Age: ");
                 result = short.TryParse(Console.ReadLine(), out age);
             }
 
             result = false;
-            while ((salary < 0) || !result)
+            while ((salary < MinSalary) || !result)
             {
                 Console.Write("Salary: ");
                 result = decimal.TryParse(Console.ReadLine(), out salary);
@@ -193,13 +198,13 @@ namespace FileCabinetApp
             }
 
             result = false;
-            while (firstName.Length <= 2 || firstName.Length > 60)
+            while (firstName.Length <= MinNmaeLength || firstName.Length > MaxNameLength)
             {
                 Console.Write("First name: ");
                 firstName = Console.ReadLine();
             }
 
-            while (lastName.Length <= 2 || lastName.Length > 60)
+            while (lastName.Length <= MinNmaeLength || lastName.Length > MaxNameLength)
             {
                 Console.Write("Last  name: ");
                 lastName = Console.ReadLine();
@@ -213,14 +218,14 @@ namespace FileCabinetApp
 
             result = false;
 
-            while ((age < 0 || age > 110) || !result)
+            while ((age < MinAge || age > MaxAge) || !result)
             {
                 Console.Write("Age: ");
                 result = short.TryParse(Console.ReadLine(), out age);
             }
 
             result = false;
-            while ((salary < 0) || !result)
+            while ((salary < MinSalary) || !result)
             {
                 Console.Write("Salary: ");
                 result = decimal.TryParse(Console.ReadLine(), out salary);
@@ -234,7 +239,7 @@ namespace FileCabinetApp
 
             try
             {
-                Program.fileCabinetService.EditRecord(1, firstName, lastName, dateOfBirth, age, salary, gender);
+                Program.fileCabinetService.EditRecord(id, firstName, lastName, dateOfBirth, age, salary, gender);
                 Console.WriteLine($"Record #{id} is updated.");
             }
             catch (ArgumentException e)

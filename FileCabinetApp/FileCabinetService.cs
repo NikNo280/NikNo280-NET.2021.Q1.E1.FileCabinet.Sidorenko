@@ -78,32 +78,9 @@ namespace FileCabinetApp
             };
 
             this.list.Add(record);
-            if (this.firstNameDictionary.ContainsKey(firstName.ToUpperInvariant()))
-            {
-                this.firstNameDictionary[firstName.ToUpperInvariant()].Add(record);
-            }
-            else
-            {
-                this.firstNameDictionary.Add(firstName.ToUpperInvariant(), new List<FileCabinetRecord>() { record });
-            }
-
-            if (this.lastNameDictionary.ContainsKey(lastName.ToUpperInvariant()))
-            {
-                this.lastNameDictionary[lastName.ToUpperInvariant()].Add(record);
-            }
-            else
-            {
-                this.lastNameDictionary.Add(lastName.ToUpperInvariant(), new List<FileCabinetRecord>() { record });
-            }
-
-            if (this.dateOfBirthDictionary.ContainsKey(dateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).ToUpperInvariant()))
-            {
-                this.dateOfBirthDictionary[dateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).ToUpperInvariant()].Add(record);
-            }
-            else
-            {
-                this.dateOfBirthDictionary.Add(dateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).ToUpperInvariant(), new List<FileCabinetRecord>() { record });
-            }
+            AddToDict(firstName, this.firstNameDictionary, record);
+            AddToDict(lastName, this.lastNameDictionary, record);
+            AddToDict(dateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), this.dateOfBirthDictionary, record);
 
             return record.Id;
         }
@@ -170,59 +147,27 @@ namespace FileCabinetApp
                 throw new ArgumentException($"{nameof(gender)} gender != 'M' && gender != 'W'");
             }
 
-            foreach (var item in this.firstNameDictionary[firstName.ToUpperInvariant()])
-            {
-                if (item.Id == id)
-                {
-                    item.FirstName = firstName;
-                    item.LastName = lastName;
-                    item.DateOfBirth = dateOfBirth;
-                    item.Age = age;
-                    item.Salary = salary;
-                    item.Gender = gender;
-                    break;
-                }
-            }
-
-            foreach (var item in this.lastNameDictionary[lastName.ToUpperInvariant()])
-            {
-                if (item.Id == id)
-                {
-                    item.FirstName = firstName;
-                    item.LastName = lastName;
-                    item.DateOfBirth = dateOfBirth;
-                    item.Age = age;
-                    item.Salary = salary;
-                    item.Gender = gender;
-                    break;
-                }
-            }
-
-            foreach (var item in this.dateOfBirthDictionary[dateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).ToUpperInvariant()])
-            {
-                if (item.Id == id)
-                {
-                    item.FirstName = firstName;
-                    item.LastName = lastName;
-                    item.DateOfBirth = dateOfBirth;
-                    item.Age = age;
-                    item.Salary = salary;
-                    item.Gender = gender;
-                    break;
-                }
-            }
-
             foreach (var item in this.list)
             {
                 if (item.Id == id)
                 {
-                    item.FirstName = firstName;
-                    item.LastName = lastName;
-                    item.DateOfBirth = dateOfBirth;
-                    item.Age = age;
-                    item.Salary = salary;
-                    item.Gender = gender;
-                    break;
+                    var editRecord = new FileCabinetRecord
+                    {
+                        Id = id,
+                        FirstName = firstName,
+                        LastName = lastName,
+                        DateOfBirth = dateOfBirth,
+                        Age = age,
+                        Salary = salary,
+                        Gender = gender,
+                    };
+
+                    UpdateDict(this.firstNameDictionary, item.FirstName, firstName, editRecord);
+                    UpdateDict(this.lastNameDictionary, item.LastName, lastName, editRecord);
+                    UpdateDict(this.dateOfBirthDictionary, item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), editRecord);
+                    this.list.Remove(item);
+                    this.list.Add(editRecord);
+                    return;
                 }
             }
 
@@ -231,31 +176,29 @@ namespace FileCabinetApp
 
         public FileCabinetRecord[] FindByFirstName(string firstName)
         {
-            if (string.IsNullOrEmpty(firstName))
-            {
-                throw new ArgumentNullException($"{nameof(firstName)} is null or empty");
-            }
-
-            if (this.firstNameDictionary.ContainsKey(firstName.ToUpperInvariant()))
-            {
-                return this.firstNameDictionary[firstName.ToUpperInvariant()].ToArray();
-            }
-            else
-            {
-                return Array.Empty<FileCabinetRecord>();
-            }
+            return GetArrayFromDict(firstName, this.firstNameDictionary);
         }
 
         public FileCabinetRecord[] FindByLastName(string lastName)
         {
-            if (string.IsNullOrEmpty(lastName))
+            return GetArrayFromDict(lastName, this.lastNameDictionary);
+        }
+
+        public FileCabinetRecord[] FindByDateOfBirth(string dateofbirth)
+        {
+            return GetArrayFromDict(dateofbirth, this.dateOfBirthDictionary);
+        }
+
+        private static FileCabinetRecord[] GetArrayFromDict(string source, Dictionary<string, List<FileCabinetRecord>> dictionary)
+        {
+            if (string.IsNullOrEmpty(source))
             {
-                throw new ArgumentNullException($"{nameof(lastName)} is null or empty");
+                throw new ArgumentNullException($"{nameof(source)} is null or empty");
             }
 
-            if (this.lastNameDictionary.ContainsKey(lastName.ToUpperInvariant()))
+            if (dictionary.ContainsKey(source.ToUpperInvariant()))
             {
-                return this.lastNameDictionary[lastName.ToUpperInvariant()].ToArray();
+                return dictionary[source.ToUpperInvariant()].ToArray();
             }
             else
             {
@@ -263,21 +206,22 @@ namespace FileCabinetApp
             }
         }
 
-        public FileCabinetRecord[] FindByDateOfBirth(string dateofbirth)
+        private static void AddToDict(string key, Dictionary<string, List<FileCabinetRecord>> dictionary, FileCabinetRecord record)
         {
-            if (string.IsNullOrEmpty(dateofbirth))
+            if (dictionary.ContainsKey(key.ToUpperInvariant()))
             {
-                throw new ArgumentNullException($"{nameof(dateofbirth)} is null or empty");
-            }
-
-            if (this.dateOfBirthDictionary.ContainsKey(dateofbirth.ToUpperInvariant()))
-            {
-                return this.dateOfBirthDictionary[dateofbirth.ToUpperInvariant()].ToArray();
+                dictionary[key.ToUpperInvariant()].Add(record);
             }
             else
             {
-                return Array.Empty<FileCabinetRecord>();
+                dictionary.Add(key.ToUpperInvariant(), new List<FileCabinetRecord>() { record });
             }
+        }
+
+        private static void UpdateDict(Dictionary<string, List<FileCabinetRecord>> dictionary, string oldKey, string newKey, FileCabinetRecord record)
+        {
+            dictionary[oldKey.ToUpperInvariant()].Remove(dictionary[oldKey.ToUpperInvariant()].Where(item => item.Id == record.Id).First());
+            AddToDict(newKey, dictionary, record);
         }
     }
 }
