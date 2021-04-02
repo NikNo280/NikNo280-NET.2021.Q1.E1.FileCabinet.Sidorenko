@@ -11,13 +11,8 @@ namespace FileCabinetApp
     /// </summary>
     public class FileCabinetDefaultService : FileCabinetService
     {
-        /// <summary>
-        /// Сhecks the validity of the data.
-        /// </summary>
-        /// <param name="record">The record that is checked for correctness.</param>
-        protected override void IsValid(FileCabinetRecord record)
+        public FileCabinetDefaultService(IRecordValidator recordValidator) : base(recordValidator)
         {
-            base.IsValid(record);
         }
     }
 }

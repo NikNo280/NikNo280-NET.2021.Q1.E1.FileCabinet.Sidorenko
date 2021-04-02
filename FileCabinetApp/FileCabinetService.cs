@@ -10,12 +10,22 @@ namespace FileCabinetApp
     /// <summary>
     /// The class representing functions for interacting with the record model.
     /// </summary>
-    public class FileCabinetService : IRecordValidator
+    public class FileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<string, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<string, List<FileCabinetRecord>>();
+        private readonly IRecordValidator recordValidator;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileCabinetService"/> class.
+        /// </summary>
+        /// <param name="recordValidator">Validator.</param>
+        public FileCabinetService(IRecordValidator recordValidator)
+        {
+            this.recordValidator = recordValidator;
+        }
 
         /// <summary>
         /// Create new record.
@@ -29,7 +39,7 @@ namespace FileCabinetApp
                 throw new ArgumentNullException($"{nameof(record)} is null");
             }
 
-            this.IsValid(record);
+            this.recordValidator.IsValid(record);
 
             this.list.Add(record);
             AddToDict(record.FirstName, this.firstNameDictionary, record);
@@ -68,7 +78,7 @@ namespace FileCabinetApp
                 throw new ArgumentNullException($"{nameof(record)} is null");
             }
 
-            this.IsValid(record);
+            this.recordValidator.IsValid(record);
 
             foreach (var item in this.list)
             {
@@ -222,11 +232,6 @@ namespace FileCabinetApp
         {
             dictionary[oldKey.ToUpperInvariant()].Remove(dictionary[oldKey.ToUpperInvariant()].Where(item => item.Id == record.Id).First());
             AddToDict(newKey, dictionary, record);
-        }
-
-        void IRecordValidator.IsValid(FileCabinetRecord record)
-        {
-            throw new NotImplementedException();
         }
     }
 }
