@@ -4,6 +4,98 @@
         <name>FileCabinetApp</name>
     </assembly>
     <members>
+        <member name="T:FileCabinetApp.CustomValidator">
+            <summary>
+            The class provides custom validation rules.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.CustomValidator.IsValid(FileCabinetApp.FileCabinetRecord)">
+            <summary>
+            Сhecks the validity of the data.
+            </summary>
+            <param name="record">The record that is checked for correctness.</param>
+        </member>
+        <member name="M:FileCabinetApp.CustomValidator.NameValidator(System.String)">
+            <summary>
+             Сhecks a validity of a name.
+            </summary>
+            <param name="name">Input name.</param>
+            <returns>Tuple with result validation and error message.</returns>
+        </member>
+        <member name="M:FileCabinetApp.CustomValidator.AgeValidator(System.Int16)">
+            <summary>
+             Сhecks a validity of a name.
+            </summary>
+            <param name="age">Input age.</param>
+            <returns>Tuple with result validation and error message.</returns>
+        </member>
+        <member name="M:FileCabinetApp.CustomValidator.SalaryValidator(System.Decimal)">
+            <summary>
+             Сhecks a validity of a name.
+            </summary>
+            <param name="salary">Input salary.</param>
+            <returns>Tuple with result validation and error message.</returns>
+        </member>
+        <member name="M:FileCabinetApp.CustomValidator.GenderValidator(System.Char)">
+            <summary>
+             Сhecks a validity of a name.
+            </summary>
+            <param name="gender">Input gender.</param>
+            <returns>Tuple with result validation and error message.</returns>
+        </member>
+        <member name="M:FileCabinetApp.CustomValidator.DateOfBirthValidator(System.DateTime)">
+            <summary>
+             Сhecks a validity of a name.
+            </summary>
+            <param name="dateOfBirth">Input dateOfBirth.</param>
+            <returns>Tuple with result validation and error message.</returns>
+        </member>
+        <member name="T:FileCabinetApp.DefaultValidator">
+            <summary>
+            The class provides default validation rules.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.DefaultValidator.IsValid(FileCabinetApp.FileCabinetRecord)">
+            <summary>
+            Сhecks the validity of the data.
+            </summary>
+            <param name="record">The record that is checked for correctness.</param>
+        </member>
+        <member name="M:FileCabinetApp.DefaultValidator.NameValidator(System.String)">
+            <summary>
+             Сhecks a validity of a name.
+            </summary>
+            <param name="name">Input name.</param>
+            <returns>Tuple with result validation and error message.</returns>
+        </member>
+        <member name="M:FileCabinetApp.DefaultValidator.AgeValidator(System.Int16)">
+            <summary>
+             Сhecks a validity of a name.
+            </summary>
+            <param name="age">Input age.</param>
+            <returns>Tuple with result validation and error message.</returns>
+        </member>
+        <member name="M:FileCabinetApp.DefaultValidator.SalaryValidator(System.Decimal)">
+            <summary>
+             Сhecks a validity of a name.
+            </summary>
+            <param name="salary">Input salary.</param>
+            <returns>Tuple with result validation and error message.</returns>
+        </member>
+        <member name="M:FileCabinetApp.DefaultValidator.GenderValidator(System.Char)">
+            <summary>
+             Сhecks a validity of a name.
+            </summary>
+            <param name="gender">Input gender.</param>
+            <returns>Tuple with result validation and error message.</returns>
+        </member>
+        <member name="M:FileCabinetApp.DefaultValidator.DateOfBirthValidator(System.DateTime)">
+            <summary>
+             Сhecks a validity of a name.
+            </summary>
+            <param name="dateOfBirth">Input dateOfBirth.</param>
+            <returns>Tuple with result validation and error message.</returns>
+        </member>
         <member name="T:FileCabinetApp.FileCabinetRecord">
             <summary>
             Class representing the model record.
@@ -70,6 +162,12 @@
             The class representing functions for interacting with the record model.
             </summary>
         </member>
+        <member name="M:FileCabinetApp.FileCabinetService.#ctor(FileCabinetApp.IRecordValidator)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetService"/> class.
+            </summary>
+            <param name="recordValidator">Validator.</param>
+        </member>
         <member name="M:FileCabinetApp.FileCabinetService.CreateRecord(FileCabinetApp.FileCabinetRecord)">
             <summary>
             Create new record.
@@ -116,15 +214,118 @@
             <param name="dateofbirth">Users date of birth.</param>
             <returns>Array of records.</returns>
         </member>
+        <member name="T:FileCabinetApp.IRecordValidator">
+            <summary>
+            Interface that provides valid function.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.IRecordValidator.IsValid(FileCabinetApp.FileCabinetRecord)">
+            <summary>
+            Сhecks the validity of the data.
+            </summary>
+            <param name="record">The record that is checked for correctness.</param>
+        </member>
+        <member name="M:FileCabinetApp.IRecordValidator.NameValidator(System.String)">
+            <summary>
+             Сhecks a validity of a name.
+            </summary>
+            <param name="name">Input name.</param>
+            <returns>Tuple with result validation and error message.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IRecordValidator.AgeValidator(System.Int16)">
+            <summary>
+             Сhecks a validity of a name.
+            </summary>
+            <param name="age">Input age.</param>
+            <returns>Tuple with result validation and error message.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IRecordValidator.SalaryValidator(System.Decimal)">
+            <summary>
+             Сhecks a validity of a name.
+            </summary>
+            <param name="salary">Input salary.</param>
+            <returns>Tuple with result validation and error message.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IRecordValidator.GenderValidator(System.Char)">
+            <summary>
+             Сhecks a validity of a name.
+            </summary>
+            <param name="gender">Input gender.</param>
+            <returns>Tuple with result validation and error message.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IRecordValidator.DateOfBirthValidator(System.DateTime)">
+            <summary>
+             Сhecks a validity of a name.
+            </summary>
+            <param name="dateOfBirth">Input dateOfBirth.</param>
+            <returns>Tuple with result validation and error message.</returns>
+        </member>
         <member name="T:FileCabinetApp.Program">
             <summary>
             The main class that provides the user with functions for interacting with the system.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.Program.Main">
+        <member name="M:FileCabinetApp.Program.Main(System.String[])">
             <summary>
             Main function.
             </summary>
+            <param name="args">Programs arguments.</param>
+        </member>
+        <member name="T:FileCabinetApp.TypeConverter">
+            <summary>
+            The class provides static methods for conversion.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.TypeConverter.StringConverter(System.String)">
+            <summary>
+            Converts string to string.
+            </summary>
+            <param name="source">Input string.</param>
+            <returns>Conversion result, error message, and string.</returns>
+        </member>
+        <member name="M:FileCabinetApp.TypeConverter.IntConverter(System.String)">
+            <summary>
+            Converts string to int.
+            </summary>
+            <param name="source">Input string.</param>
+            <returns>Conversion result, error message, and int number.</returns>
+        </member>
+        <member name="M:FileCabinetApp.TypeConverter.DecimalConverter(System.String)">
+            <summary>
+            Converts string to decimal.
+            </summary>
+            <param name="source">Input string.</param>
+            <returns>Conversion result, error message, and decimal number.</returns>
+        </member>
+        <member name="M:FileCabinetApp.TypeConverter.ShortConverter(System.String)">
+            <summary>
+            Converts string to short.
+            </summary>
+            <param name="source">Input string.</param>
+            <returns>Conversion result, error message, and short number.</returns>
+        </member>
+        <member name="M:FileCabinetApp.TypeConverter.DateTimeConverter(System.String)">
+            <summary>
+            Converts string to DateTime.
+            </summary>
+            <param name="source">Input string.</param>
+            <returns>Conversion result, error message, and DateTime.</returns>
+        </member>
+        <member name="M:FileCabinetApp.TypeConverter.CharConverter(System.String)">
+            <summary>
+            Converts string to char.
+            </summary>
+            <param name="source">Input string.</param>
+            <returns>Conversion result, error message, and char.</returns>
+        </member>
+        <member name="M:FileCabinetApp.TypeConverter.ReadInput``1(System.Func{System.String,System.Tuple{System.Boolean,System.String,``0}},System.Func{``0,System.Tuple{System.Boolean,System.String}})">
+            <summary>
+            Converts string to T type.
+            </summary>
+            <typeparam name="T">Conversion type.</typeparam>
+            <param name="converter">Conversion method.</param>
+            <param name="validator">Validation method.</param>
+            <returns>Conversion result from string from T.</returns>
         </member>
     </members>
 </doc>

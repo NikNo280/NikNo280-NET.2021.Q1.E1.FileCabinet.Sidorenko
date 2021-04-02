@@ -15,13 +15,9 @@ namespace FileCabinetApp
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
-        private const int MaxNameLength = 60;
-        private const int MinNmaeLength = 2;
-        private const int MaxAge = 110;
-        private const int MinAge = 0;
-        private const int MinSalary = 0;
         private static FileCabinetService fileCabinetService;
         private static bool isRunning = true;
+        private static IRecordValidator recordValidator;
 
         private static Tuple<string, Action<string>>[] commands = new Tuple<string, Action<string>>[]
         {
@@ -60,53 +56,52 @@ namespace FileCabinetApp
             Console.WriteLine(Program.HintMessage);
             if (args.Length == 0)
             {
-                fileCabinetService = new FileCabinetService(new DefaultValidator());
+                recordValidator = new DefaultValidator();
                 Console.WriteLine("Using default validation rules.");
+            }
+            else if (args[0].Contains("--validation-rules"))
+            {
+                switch (args[0].Split("=")[1].ToUpperInvariant())
+                {
+                    case "CUSTOM":
+                        recordValidator = new CustomValidator();
+                        Console.WriteLine("Using custom validation rules.");
+                        break;
+                    case "DEFAULT":
+                        recordValidator = new DefaultValidator();
+                        Console.WriteLine("Using default validation rules.");
+                        break;
+                    default:
+                        recordValidator = new DefaultValidator();
+                        Console.WriteLine("Using default validation rules.");
+                        break;
+                }
+            }
+            else if (args[0].Equals("-v"))
+            {
+                switch (args[1].ToUpperInvariant())
+                {
+                    case "CUSTOM":
+                        recordValidator = new CustomValidator();
+                        Console.WriteLine("Using custom validation rules.");
+                        break;
+                    case "DEFAULT":
+                        recordValidator = new DefaultValidator();
+                        Console.WriteLine("Using default validation rules.");
+                        break;
+                    default:
+                        recordValidator = new DefaultValidator();
+                        Console.WriteLine("Using default validation rules.");
+                        break;
+                }
             }
             else
             {
-                if (args[0].Contains("--validation-rules"))
-                {
-                    switch (args[0].Split("=")[1].ToUpperInvariant())
-                    {
-                        case "CUSTOM":
-                            fileCabinetService = new FileCabinetService(new CustomValidator());
-                            Console.WriteLine("Using custom validation rules.");
-                            break;
-                        case "DEFAULT":
-                            fileCabinetService = new FileCabinetService(new DefaultValidator());
-                            Console.WriteLine("Using default validation rules.");
-                            break;
-                        default:
-                            fileCabinetService = new FileCabinetService(new DefaultValidator());
-                            Console.WriteLine("Using default validation rules.");
-                            break;
-                    }
-                }
-                else if (args[0].Equals("-v"))
-                {
-                    switch (args[1].ToUpperInvariant())
-                    {
-                        case "CUSTOM":
-                            fileCabinetService = new FileCabinetService(new CustomValidator());
-                            Console.WriteLine("Using custom validation rules.");
-                            break;
-                        case "DEFAULT":
-                            fileCabinetService = new FileCabinetService(new DefaultValidator());
-                            Console.WriteLine("Using default validation rules.");
-                            break;
-                        default:
-                            fileCabinetService = new FileCabinetService(new DefaultValidator());
-                            Console.WriteLine("Using default validation rules.");
-                            break;
-                    }
-                }
-                else
-                {
-                    fileCabinetService = new FileCabinetService(new DefaultValidator());
-                    Console.WriteLine("Using default validation rules.");
-                }
+                recordValidator = new DefaultValidator();
+                Console.WriteLine("Using default validation rules.");
             }
+
+            fileCabinetService = new FileCabinetService(recordValidator);
 
             Console.WriteLine();
 
@@ -185,51 +180,18 @@ namespace FileCabinetApp
 
         private static void Create(string parameters)
         {
-            string firstName = string.Empty, lastName = string.Empty;
-            DateTime dateOfBirth = default(DateTime);
-            short age = -1;
-            decimal salary = -1;
-            char gender = default(char);
-            bool result = false;
-            while (firstName.Length <= MinNmaeLength || firstName.Length > MaxNameLength)
-            {
-                Console.Write("First name: ");
-                firstName = Console.ReadLine();
-            }
-
-            while (lastName.Length <= MinNmaeLength || lastName.Length > MaxNameLength)
-            {
-                Console.Write("Last  name: ");
-                lastName = Console.ReadLine();
-            }
-
-            while ((dateOfBirth >= DateTime.Now || dateOfBirth <= new DateTime(1950, 1, 1)) || !result)
-            {
-                Console.Write("Date of birth: ");
-                result = DateTime.TryParseExact(Console.ReadLine(), "d", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateOfBirth);
-            }
-
-            result = false;
-
-            while ((age < MinAge || age > MaxAge) || !result)
-            {
-                Console.Write("Age: ");
-                result = short.TryParse(Console.ReadLine(), out age);
-            }
-
-            result = false;
-            while ((salary < MinSalary) || !result)
-            {
-                Console.Write("Salary: ");
-                result = decimal.TryParse(Console.ReadLine(), out salary);
-            }
-
-            while (gender != 'M' && gender != 'W')
-            {
-                Console.Write("Gender (M/W): ");
-                gender = char.ToUpper(Console.ReadLine()[0], CultureInfo.InvariantCulture);
-            }
-
+            Console.Write("First name: ");
+            var firstName = TypeConverter.ReadInput(TypeConverter.StringConverter, recordValidator.NameValidator);
+            Console.Write("Last  name: ");
+            var lastName = TypeConverter.ReadInput(TypeConverter.StringConverter, recordValidator.NameValidator);
+            Console.Write("Date of birth: ");
+            var dateOfBirth = TypeConverter.ReadInput(TypeConverter.DateTimeConverter, recordValidator.DateOfBirthValidator);
+            Console.Write("Age: ");
+            var age = TypeConverter.ReadInput(TypeConverter.ShortConverter, recordValidator.AgeValidator);
+            Console.Write("Salary: ");
+            var salary = TypeConverter.ReadInput(TypeConverter.DecimalConverter, recordValidator.SalaryValidator);
+            Console.Write("Gender (M/W): ");
+            var gender = TypeConverter.ReadInput(TypeConverter.CharConverter, recordValidator.GenderValidator);
             var record = new FileCabinetRecord
             {
                 Id = Program.fileCabinetService.GetStat() + 1,
@@ -256,12 +218,7 @@ namespace FileCabinetApp
 
         private static void Edit(string parameters)
         {
-            string firstName = string.Empty, lastName = string.Empty;
-            DateTime dateOfBirth = default(DateTime);
-            short age = -1;
-            decimal salary = -1;
-            char gender = default(char);
-            bool result = false;
+            bool result;
             int id;
             result = int.TryParse(parameters, out id);
             if (!result)
@@ -270,46 +227,18 @@ namespace FileCabinetApp
                 return;
             }
 
-            result = false;
-            while (firstName.Length <= MinNmaeLength || firstName.Length > MaxNameLength)
-            {
-                Console.Write("First name: ");
-                firstName = Console.ReadLine();
-            }
-
-            while (lastName.Length <= MinNmaeLength || lastName.Length > MaxNameLength)
-            {
-                Console.Write("Last  name: ");
-                lastName = Console.ReadLine();
-            }
-
-            while ((dateOfBirth >= DateTime.Now || dateOfBirth <= new DateTime(1950, 1, 1)) || !result)
-            {
-                Console.Write("Date of birth: ");
-                result = DateTime.TryParseExact(Console.ReadLine(), "d", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateOfBirth);
-            }
-
-            result = false;
-
-            while ((age < MinAge || age > MaxAge) || !result)
-            {
-                Console.Write("Age: ");
-                result = short.TryParse(Console.ReadLine(), out age);
-            }
-
-            result = false;
-            while ((salary < MinSalary) || !result)
-            {
-                Console.Write("Salary: ");
-                result = decimal.TryParse(Console.ReadLine(), out salary);
-            }
-
-            while (gender != 'M' && gender != 'W')
-            {
-                Console.Write("Gender (M/W): ");
-                gender = char.ToUpper(Console.ReadLine()[0], CultureInfo.InvariantCulture);
-            }
-
+            Console.Write("First name: ");
+            var firstName = TypeConverter.ReadInput(TypeConverter.StringConverter, recordValidator.NameValidator);
+            Console.Write("Last  name: ");
+            var lastName = TypeConverter.ReadInput(TypeConverter.StringConverter, recordValidator.NameValidator);
+            Console.Write("Date of birth: ");
+            var dateOfBirth = TypeConverter.ReadInput(TypeConverter.DateTimeConverter, recordValidator.DateOfBirthValidator);
+            Console.Write("Age: ");
+            var age = TypeConverter.ReadInput(TypeConverter.ShortConverter, recordValidator.AgeValidator);
+            Console.Write("Salary: ");
+            var salary = TypeConverter.ReadInput(TypeConverter.DecimalConverter, recordValidator.SalaryValidator);
+            Console.Write("Gender (M/W): ");
+            var gender = TypeConverter.ReadInput(TypeConverter.CharConverter, recordValidator.GenderValidator);
             try
             {
                 var editRecord = new FileCabinetRecord
