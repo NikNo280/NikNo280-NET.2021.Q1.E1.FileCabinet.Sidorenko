@@ -156,5 +156,10 @@ namespace FileCabinetApp
 
             throw new ArgumentException($"#{id} record is not found.");
         }
+
+        public FileCabinetRecord[] FindByFirstName(string firstName)
+        {
+            return this.list.Where(item => string.Compare(item.FirstName, firstName, StringComparison.InvariantCultureIgnoreCase) == 0).ToArray();
+        }
     }
 }
