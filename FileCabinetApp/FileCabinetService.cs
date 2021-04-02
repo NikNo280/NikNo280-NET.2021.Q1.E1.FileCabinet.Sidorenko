@@ -161,5 +161,10 @@ namespace FileCabinetApp
         {
             return this.list.Where(item => string.Compare(item.FirstName, firstName, StringComparison.InvariantCultureIgnoreCase) == 0).ToArray();
         }
+
+        public FileCabinetRecord[] FindByLastName(string lastName)
+        {
+            return this.list.Where(item => string.Compare(item.LastName, lastName, StringComparison.InvariantCultureIgnoreCase) == 0).ToArray();
+        }
     }
 }

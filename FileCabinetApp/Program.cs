@@ -249,6 +249,7 @@ namespace FileCabinetApp
             FileCabinetRecord[] records = parametersSplit[0] switch
             {
                 "FirstName" => Program.fileCabinetService.FindByFirstName(parametersSplit[1]),
+                "LastName" => Program.fileCabinetService.FindByLastName(parametersSplit[1]),
                 _ => Array.Empty<FileCabinetRecord>()
             };
             if (records.Length == 0)
