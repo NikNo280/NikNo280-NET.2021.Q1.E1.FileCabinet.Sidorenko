@@ -12,6 +12,8 @@ namespace FileCabinetApp
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
+        private readonly Dictionary<string, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<string, List<FileCabinetRecord>>();
+
         public int CreateRecord(string firstName, string lastName, DateTime dateOfBirth, short age, decimal salary, char gender)
         {
             if (firstName is null)
@@ -94,6 +96,15 @@ namespace FileCabinetApp
                 this.lastNameDictionary.Add(lastName.ToUpperInvariant(), new List<FileCabinetRecord>() { record });
             }
 
+            if (this.dateOfBirthDictionary.ContainsKey(dateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).ToUpperInvariant()))
+            {
+                this.dateOfBirthDictionary[dateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).ToUpperInvariant()].Add(record);
+            }
+            else
+            {
+                this.dateOfBirthDictionary.Add(dateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).ToUpperInvariant(), new List<FileCabinetRecord>() { record });
+            }
+
             return record.Id;
         }
 
@@ -159,6 +170,48 @@ namespace FileCabinetApp
                 throw new ArgumentException($"{nameof(gender)} gender != 'M' && gender != 'W'");
             }
 
+            foreach (var item in this.firstNameDictionary[firstName.ToUpperInvariant()])
+            {
+                if (item.Id == id)
+                {
+                    item.FirstName = firstName;
+                    item.LastName = lastName;
+                    item.DateOfBirth = dateOfBirth;
+                    item.Age = age;
+                    item.Salary = salary;
+                    item.Gender = gender;
+                    break;
+                }
+            }
+
+            foreach (var item in this.lastNameDictionary[lastName.ToUpperInvariant()])
+            {
+                if (item.Id == id)
+                {
+                    item.FirstName = firstName;
+                    item.LastName = lastName;
+                    item.DateOfBirth = dateOfBirth;
+                    item.Age = age;
+                    item.Salary = salary;
+                    item.Gender = gender;
+                    break;
+                }
+            }
+
+            foreach (var item in this.dateOfBirthDictionary[dateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).ToUpperInvariant()])
+            {
+                if (item.Id == id)
+                {
+                    item.FirstName = firstName;
+                    item.LastName = lastName;
+                    item.DateOfBirth = dateOfBirth;
+                    item.Age = age;
+                    item.Salary = salary;
+                    item.Gender = gender;
+                    break;
+                }
+            }
+
             foreach (var item in this.list)
             {
                 if (item.Id == id)
@@ -169,35 +222,7 @@ namespace FileCabinetApp
                     item.Age = age;
                     item.Salary = salary;
                     item.Gender = gender;
-                    return;
-                }
-            }
-
-            foreach (var item in this.firstNameDictionary[firstName.ToUpperInvariant()])
-            {
-                if (item.Id == id)
-                {
-                    item.FirstName = firstName.ToUpperInvariant();
-                    item.LastName = lastName;
-                    item.DateOfBirth = dateOfBirth;
-                    item.Age = age;
-                    item.Salary = salary;
-                    item.Gender = gender;
-                    return;
-                }
-            }
-
-            foreach (var item in this.lastNameDictionary[lastName.ToUpperInvariant()])
-            {
-                if (item.Id == id)
-                {
-                    item.FirstName = firstName;
-                    item.LastName = lastName.ToUpperInvariant();
-                    item.DateOfBirth = dateOfBirth;
-                    item.Age = age;
-                    item.Salary = salary;
-                    item.Gender = gender;
-                    return;
+                    break;
                 }
             }
 
@@ -240,9 +265,19 @@ namespace FileCabinetApp
 
         public FileCabinetRecord[] FindByDateOfBirth(string dateofbirth)
         {
-            return this.list.Where(item =>
-            string.Compare(item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), dateofbirth, StringComparison.InvariantCultureIgnoreCase) == 0)
-                .ToArray();
+            if (string.IsNullOrEmpty(dateofbirth))
+            {
+                throw new ArgumentNullException($"{nameof(dateofbirth)} is null or empty");
+            }
+
+            if (this.dateOfBirthDictionary.ContainsKey(dateofbirth.ToUpperInvariant()))
+            {
+                return this.dateOfBirthDictionary[dateofbirth.ToUpperInvariant()].ToArray();
+            }
+            else
+            {
+                return Array.Empty<FileCabinetRecord>();
+            }
         }
     }
 }
