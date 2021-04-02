@@ -46,12 +46,67 @@ namespace FileCabinetApp
         /// <summary>
         /// Main function.
         /// </summary>
-        public static void Main()
+        /// <param name="args">Programs arguments.</param>
+        public static void Main(string[] args)
         {
+            if (args is null)
+            {
+                throw new ArgumentNullException(nameof(args));
+            }
+
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
             Console.WriteLine(Program.HintMessage);
+            if (args.Length == 0)
+            {
+                fileCabinetService = new FileCabinetDefaultService();
+                Console.WriteLine("Using default validation rules.");
+            }
+            else
+            {
+                if (args[0].Contains("--validation-rules"))
+                {
+                    switch (args[0].Split("=")[1].ToUpperInvariant())
+                    {
+                        case "CUSTOM":
+                            fileCabinetService = new FileCabinetCustomService();
+                            Console.WriteLine("Using custom validation rules.");
+                            break;
+                        case "DEFAULT":
+                            fileCabinetService = new FileCabinetDefaultService();
+                            Console.WriteLine("Using default validation rules.");
+                            break;
+                        default:
+                            fileCabinetService = new FileCabinetDefaultService();
+                            Console.WriteLine("Using default validation rules.");
+                            break;
+                    }
+                }
+                else if (args[0].Equals("-v"))
+                {
+                    switch (args[1].ToUpperInvariant())
+                    {
+                        case "CUSTOM":
+                            fileCabinetService = new FileCabinetCustomService();
+                            Console.WriteLine("Using custom validation rules.");
+                            break;
+                        case "DEFAULT":
+                            fileCabinetService = new FileCabinetDefaultService();
+                            Console.WriteLine("Using default validation rules.");
+                            break;
+                        default:
+                            fileCabinetService = new FileCabinetDefaultService();
+                            Console.WriteLine("Using default validation rules.");
+                            break;
+                    }
+                }
+                else
+                {
+                    fileCabinetService = new FileCabinetDefaultService();
+                    Console.WriteLine("Using default validation rules.");
+                }
+            }
+
             Console.WriteLine();
-            fileCabinetService = new FileCabinetService();
 
             do
             {
