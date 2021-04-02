@@ -40,7 +40,7 @@ namespace FileCabinetApp
             new string[] { "find", "finds records by firstName.", "The 'stat' command finds records by firstName." },
         };
 
-        public static void Main(string[] args)
+        public static void Main()
         {
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
             Console.WriteLine(Program.HintMessage);

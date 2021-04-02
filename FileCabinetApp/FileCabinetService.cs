@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
+    /// <summary>
+    /// The class representing functions for interacting with the record model.
+    /// </summary>
     public class FileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
@@ -14,6 +17,16 @@ namespace FileCabinetApp
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<string, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<string, List<FileCabinetRecord>>();
 
+        /// <summary>
+        /// Create new record.
+        /// </summary>
+        /// <param name="firstName">User first name.</param>
+        /// <param name="lastName">User last name.</param>
+        /// <param name="dateOfBirth">User date of birth.</param>
+        /// <param name="age">User age.</param>
+        /// <param name="salary">User salary.</param>
+        /// <param name="gender">User gender.</param>
+        /// <returns>Returns new record id.</returns>
         public int CreateRecord(string firstName, string lastName, DateTime dateOfBirth, short age, decimal salary, char gender)
         {
             if (firstName is null)
@@ -85,16 +98,34 @@ namespace FileCabinetApp
             return record.Id;
         }
 
+        /// <summary>
+        /// Gets all records.
+        /// </summary>
+        /// <returns>Array of records.</returns>
         public FileCabinetRecord[] GetRecords()
         {
             return this.list.ToArray();
         }
 
+        /// <summary>
+        /// Gets count of records.
+        /// </summary>
+        /// <returns>Return count of records.</returns>
         public int GetStat()
         {
             return this.list.Count;
         }
 
+        /// <summary>
+        /// Modify an existing record by id.
+        /// </summary>
+        /// <param name="id">Record id.</param>
+        /// <param name="firstName">User first name.</param>
+        /// <param name="lastName">User last name.</param>
+        /// <param name="dateOfBirth">User date of birth.</param>
+        /// <param name="age">User age.</param>
+        /// <param name="salary">User salary.</param>
+        /// <param name="gender">User gender.</param>
         public void EditRecord(int id, string firstName, string lastName, DateTime dateOfBirth, short age, decimal salary, char gender)
         {
             if (firstName is null)
@@ -174,16 +205,31 @@ namespace FileCabinetApp
             throw new ArgumentException($"#{id} record is not found.");
         }
 
+        /// <summary>
+        /// Find records by first name.
+        /// </summary>
+        /// <param name="firstName">Users first name.</param>
+        /// <returns>Array of records.</returns>
         public FileCabinetRecord[] FindByFirstName(string firstName)
         {
             return GetArrayFromDict(firstName, this.firstNameDictionary);
         }
 
+        /// <summary>
+        /// Find records by last name.
+        /// </summary>
+        /// <param name="lastName">Users last name.</param>
+        /// <returns>Array of records.</returns>
         public FileCabinetRecord[] FindByLastName(string lastName)
         {
             return GetArrayFromDict(lastName, this.lastNameDictionary);
         }
 
+        /// <summary>
+        /// Find records by date of birth.
+        /// </summary>
+        /// <param name="dateofbirth">Users date of birth.</param>
+        /// <returns>Array of records.</returns>
         public FileCabinetRecord[] FindByDateOfBirth(string dateofbirth)
         {
             return GetArrayFromDict(dateofbirth, this.dateOfBirthDictionary);
