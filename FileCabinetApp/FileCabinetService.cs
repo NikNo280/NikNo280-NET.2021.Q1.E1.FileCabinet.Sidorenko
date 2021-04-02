@@ -10,6 +10,7 @@ namespace FileCabinetApp
     public class FileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
+        private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
 
         public int CreateRecord(string firstName, string lastName, DateTime dateOfBirth, short age, decimal salary, char gender)
         {
@@ -75,6 +76,14 @@ namespace FileCabinetApp
             };
 
             this.list.Add(record);
+            if (this.firstNameDictionary.ContainsKey(firstName))
+            {
+                this.firstNameDictionary[firstName.ToUpperInvariant()].Add(record);
+            }
+            else
+            {
+                this.firstNameDictionary.Add(firstName.ToUpperInvariant(), new List<FileCabinetRecord>() { record });
+            }
 
             return record.Id;
         }
@@ -155,14 +164,33 @@ namespace FileCabinetApp
                 }
             }
 
+            foreach (var item in this.firstNameDictionary[firstName.ToUpperInvariant()])
+            {
+                if (item.Id == id)
+                {
+                    item.FirstName = firstName.ToUpperInvariant();
+                    item.LastName = lastName;
+                    item.DateOfBirth = dateOfBirth;
+                    item.Age = age;
+                    item.Salary = salary;
+                    item.Gender = gender;
+                    return;
+                }
+            }
+
             throw new ArgumentException($"#{id} record is not found.");
         }
 
         public FileCabinetRecord[] FindByFirstName(string firstName)
         {
-            return this.list.Where(item =>
-            string.Compare(item.FirstName, firstName, StringComparison.InvariantCultureIgnoreCase) == 0)
-                .ToArray();
+            if (this.firstNameDictionary.ContainsKey(firstName.ToUpperInvariant()))
+            {
+                return this.firstNameDictionary[firstName.ToUpperInvariant()].ToArray();
+            }
+            else
+            {
+                return Array.Empty<FileCabinetRecord>();
+            }
         }
 
         public FileCabinetRecord[] FindByLastName(string lastName)
