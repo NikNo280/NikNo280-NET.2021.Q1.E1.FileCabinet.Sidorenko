@@ -3,6 +3,9 @@ using System.Globalization;
 
 namespace FileCabinetApp
 {
+    /// <summary>
+    /// The main class that provides the user with functions for interacting with the system.
+    /// </summary>
     public static class Program
     {
         private const string DeveloperName = "Nikita Sidorenko";
@@ -40,6 +43,9 @@ namespace FileCabinetApp
             new string[] { "find", "finds records by firstName.", "The 'stat' command finds records by firstName." },
         };
 
+        /// <summary>
+        /// Main function.
+        /// </summary>
         public static void Main()
         {
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
@@ -167,7 +173,17 @@ namespace FileCabinetApp
                 gender = char.ToUpper(Console.ReadLine()[0], CultureInfo.InvariantCulture);
             }
 
-            Program.fileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, age, salary, gender);
+            var record = new FileCabinetRecord
+            {
+                Id = Program.fileCabinetService.GetStat() + 1,
+                FirstName = firstName,
+                LastName = lastName,
+                DateOfBirth = dateOfBirth,
+                Age = age,
+                Salary = salary,
+                Gender = gender,
+            };
+            Program.fileCabinetService.CreateRecord(record);
             Console.WriteLine($"Record #{Program.fileCabinetService.GetStat()} is created.");
         }
 
@@ -239,7 +255,17 @@ namespace FileCabinetApp
 
             try
             {
-                Program.fileCabinetService.EditRecord(id, firstName, lastName, dateOfBirth, age, salary, gender);
+                var editRecord = new FileCabinetRecord
+                {
+                    Id = id,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    DateOfBirth = dateOfBirth,
+                    Age = age,
+                    Salary = salary,
+                    Gender = gender,
+                };
+                Program.fileCabinetService.EditRecord(editRecord);
                 Console.WriteLine($"Record #{id} is updated.");
             }
             catch (ArgumentException e)

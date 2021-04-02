@@ -20,80 +20,69 @@ namespace FileCabinetApp
         /// <summary>
         /// Create new record.
         /// </summary>
-        /// <param name="firstName">User first name.</param>
-        /// <param name="lastName">User last name.</param>
-        /// <param name="dateOfBirth">User date of birth.</param>
-        /// <param name="age">User age.</param>
-        /// <param name="salary">User salary.</param>
-        /// <param name="gender">User gender.</param>
+        /// <param name="record">New record.</param>
         /// <returns>Returns new record id.</returns>
-        public int CreateRecord(string firstName, string lastName, DateTime dateOfBirth, short age, decimal salary, char gender)
+        public int CreateRecord(FileCabinetRecord record)
         {
-            if (firstName is null)
+            if (record is null)
             {
-                throw new ArgumentNullException($"{nameof(firstName)} is null");
+                throw new ArgumentNullException($"{nameof(record)} is null");
             }
 
-            if (lastName is null)
+            if (record.FirstName is null)
             {
-                throw new ArgumentNullException($"{nameof(lastName)} is null");
+                throw new ArgumentNullException($"{nameof(record.FirstName)} is null");
             }
 
-            if (firstName.Length <= 2 || firstName.Length > 60)
+            if (record.LastName is null)
             {
-                throw new ArgumentException($"{nameof(firstName)} is less than 2 or bigger than 60");
+                throw new ArgumentNullException($"{nameof(record.LastName)} is null");
             }
 
-            if (lastName.Length <= 2 || lastName.Length > 60)
+            if (record.FirstName.Length <= 2 || record.FirstName.Length > 60)
             {
-                throw new ArgumentException($"{nameof(lastName)} is less than 2 or bigger than 60");
+                throw new ArgumentException($"{nameof(record.FirstName.Length)} is less than 2 or bigger than 60");
             }
 
-            if (firstName.Equals(new string(' ', firstName.Length)))
+            if (record.LastName.Length <= 2 || record.LastName.Length > 60)
             {
-                throw new ArgumentException($"{nameof(lastName)} consists only of spaces");
+                throw new ArgumentException($"{nameof(record.LastName.Length)} is less than 2 or bigger than 60");
             }
 
-            if (lastName.Equals(new string(' ', lastName.Length)))
+            if (record.FirstName.Equals(new string(' ', record.FirstName.Length)))
             {
-                throw new ArgumentException($"{nameof(lastName)} consists only of spaces");
+                throw new ArgumentException($"{nameof(record.FirstName)} consists only of spaces");
             }
 
-            if (age < 0 || age > 110)
+            if (record.LastName.Equals(new string(' ', record.LastName.Length)))
             {
-                throw new ArgumentException($"{nameof(age)} is less than zero or bigger than 110");
+                throw new ArgumentException($"{nameof(record.LastName)} consists only of spaces");
             }
 
-            if (salary < 0)
+            if (record.Age < 0 || record.Age > 110)
             {
-                throw new ArgumentException($"{nameof(salary)} is less than zero");
+                throw new ArgumentException($"{nameof(record.Age)} is less than zero or bigger than 110");
             }
 
-            if (dateOfBirth >= DateTime.Now || dateOfBirth <= new DateTime(1950, 1, 1))
+            if (record.Salary < 0)
             {
-                throw new ArgumentException($"{nameof(dateOfBirth)} is less than 01-Jan-1950 or greater than current date");
+                throw new ArgumentException($"{nameof(record.Salary)} is less than zero");
             }
 
-            if (gender != 'M' && gender != 'W')
+            if (record.DateOfBirth >= DateTime.Now || record.DateOfBirth <= new DateTime(1950, 1, 1))
             {
-                throw new ArgumentException($"{nameof(gender)} gender != 'M' && gender != 'W'");
+                throw new ArgumentException($"{nameof(record.DateOfBirth)} is less than 01-Jan-1950 or greater than current date");
             }
 
-            var record = new FileCabinetRecord
+            if (record.Gender != 'M' && record.Gender != 'W')
             {
-                Id = this.list.Count + 1,
-                FirstName = firstName,
-                LastName = lastName,
-                DateOfBirth = dateOfBirth,
-                Age = age,
-                Salary = salary,
-                Gender = gender,
-            };
+                throw new ArgumentException($"{nameof(record.Gender)} gender != 'M' && gender != 'W'");
+            }
 
             this.list.Add(record);
-            AddToDict(firstName, this.firstNameDictionary, record);
-            AddToDict(lastName, this.lastNameDictionary, record);
-            AddToDict(dateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), this.dateOfBirthDictionary, record);
+            AddToDict(record.FirstName, this.firstNameDictionary, record);
+            AddToDict(record.LastName, this.lastNameDictionary, record);
+            AddToDict(record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), this.dateOfBirthDictionary, record);
 
             return record.Id;
         }
@@ -119,90 +108,89 @@ namespace FileCabinetApp
         /// <summary>
         /// Modify an existing record by id.
         /// </summary>
-        /// <param name="id">Record id.</param>
-        /// <param name="firstName">User first name.</param>
-        /// <param name="lastName">User last name.</param>
-        /// <param name="dateOfBirth">User date of birth.</param>
-        /// <param name="age">User age.</param>
-        /// <param name="salary">User salary.</param>
-        /// <param name="gender">User gender.</param>
-        public void EditRecord(int id, string firstName, string lastName, DateTime dateOfBirth, short age, decimal salary, char gender)
+        /// <param name="record">New record.</param>
+        public void EditRecord(FileCabinetRecord record)
         {
-            if (firstName is null)
+            if (record is null)
             {
-                throw new ArgumentNullException($"{nameof(firstName)} is null");
+                throw new ArgumentNullException($"{nameof(record)} is null");
             }
 
-            if (lastName is null)
+            if (record.FirstName is null)
             {
-                throw new ArgumentNullException($"{nameof(lastName)} is null");
+                throw new ArgumentNullException($"{nameof(record.FirstName)} is null");
             }
 
-            if (firstName.Length <= 2 || firstName.Length > 60)
+            if (record.LastName is null)
             {
-                throw new ArgumentException($"{nameof(firstName)} is less than 2 or bigger than 60");
+                throw new ArgumentNullException($"{nameof(record.LastName)} is null");
             }
 
-            if (lastName.Length <= 2 || lastName.Length > 60)
+            if (record.FirstName.Length <= 2 || record.FirstName.Length > 60)
             {
-                throw new ArgumentException($"{nameof(lastName)} is less than 2 or bigger than 60");
+                throw new ArgumentException($"{nameof(record.FirstName.Length)} is less than 2 or bigger than 60");
             }
 
-            if (firstName.Equals(new string(' ', firstName.Length)))
+            if (record.LastName.Length <= 2 || record.LastName.Length > 60)
             {
-                throw new ArgumentException($"{nameof(lastName)} consists only of spaces");
+                throw new ArgumentException($"{nameof(record.LastName.Length)} is less than 2 or bigger than 60");
             }
 
-            if (lastName.Equals(new string(' ', lastName.Length)))
+            if (record.FirstName.Equals(new string(' ', record.FirstName.Length)))
             {
-                throw new ArgumentException($"{nameof(lastName)} consists only of spaces");
+                throw new ArgumentException($"{nameof(record.FirstName)} consists only of spaces");
             }
 
-            if (age < 0 || age > 110)
+            if (record.LastName.Equals(new string(' ', record.LastName.Length)))
             {
-                throw new ArgumentException($"{nameof(age)} is less than zero or bigger than 110");
+                throw new ArgumentException($"{nameof(record.LastName)} consists only of spaces");
             }
 
-            if (salary < 0)
+            if (record.Age < 0 || record.Age > 110)
             {
-                throw new ArgumentException($"{nameof(salary)} is less than zero");
+                throw new ArgumentException($"{nameof(record.Age)} is less than zero or bigger than 110");
             }
 
-            if (dateOfBirth >= DateTime.Now || dateOfBirth <= new DateTime(1950, 1, 1))
+            if (record.Salary < 0)
             {
-                throw new ArgumentException($"{nameof(dateOfBirth)} is less than 01-Jan-1950 or greater than current date");
+                throw new ArgumentException($"{nameof(record.Salary)} is less than zero");
             }
 
-            if (gender != 'M' && gender != 'W')
+            if (record.DateOfBirth >= DateTime.Now || record.DateOfBirth <= new DateTime(1950, 1, 1))
             {
-                throw new ArgumentException($"{nameof(gender)} gender != 'M' && gender != 'W'");
+                throw new ArgumentException($"{nameof(record.DateOfBirth)} is less than 01-Jan-1950 or greater than current date");
+            }
+
+            if (record.Gender != 'M' && record.Gender != 'W')
+            {
+                throw new ArgumentException($"{nameof(record.Gender)} gender != 'M' && gender != 'W'");
             }
 
             foreach (var item in this.list)
             {
-                if (item.Id == id)
+                if (item.Id == record.Id)
                 {
                     var editRecord = new FileCabinetRecord
                     {
-                        Id = id,
-                        FirstName = firstName,
-                        LastName = lastName,
-                        DateOfBirth = dateOfBirth,
-                        Age = age,
-                        Salary = salary,
-                        Gender = gender,
+                        Id = record.Id,
+                        FirstName = record.FirstName,
+                        LastName = record.LastName,
+                        DateOfBirth = record.DateOfBirth,
+                        Age = record.Age,
+                        Salary = record.Salary,
+                        Gender = record.Gender,
                     };
 
-                    UpdateDict(this.firstNameDictionary, item.FirstName, firstName, editRecord);
-                    UpdateDict(this.lastNameDictionary, item.LastName, lastName, editRecord);
-                    UpdateDict(this.dateOfBirthDictionary, item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), editRecord);
+                    UpdateDict(this.firstNameDictionary, item.FirstName, record.FirstName, editRecord);
+                    UpdateDict(this.lastNameDictionary, item.LastName, record.LastName, editRecord);
+                    UpdateDict(this.dateOfBirthDictionary, item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), editRecord);
                     this.list.Remove(item);
                     this.list.Add(editRecord);
                     return;
                 }
             }
 
-            throw new ArgumentException($"#{id} record is not found.");
+            throw new ArgumentException($"#{record.Id} record is not found.");
         }
 
         /// <summary>

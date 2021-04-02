@@ -4,5 +4,127 @@
         <name>FileCabinetApp</name>
     </assembly>
     <members>
+        <member name="T:FileCabinetApp.FileCabinetRecord">
+            <summary>
+            Class representing the model record.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.Id">
+            <summary>
+            Gets or sets user id.
+            </summary>
+            <value>
+            User id.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.FirstName">
+            <summary>
+            Gets or sets user first name.
+            </summary>
+            <value>
+            User first name.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.LastName">
+            <summary>
+            Gets or sets user last name.
+            </summary>
+            <value>
+            User last name.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.DateOfBirth">
+            <summary>
+            Gets or sets user date of birth.
+            </summary>
+            <value>
+            User date of birth.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.Age">
+            <summary>
+            Gets or sets user age.
+            </summary>
+            <value>
+            User age.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.Salary">
+            <summary>
+            Gets or sets user salary.
+            </summary>
+            <value>
+            User salary.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.Gender">
+            <summary>
+            Gets or sets user gender.
+            </summary>
+            <value>
+            User gender.
+            </value>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetService">
+            <summary>
+            The class representing functions for interacting with the record model.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.CreateRecord(FileCabinetApp.FileCabinetRecord)">
+            <summary>
+            Create new record.
+            </summary>
+            <param name="record">New record.</param>
+            <returns>Returns new record id.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.GetRecords">
+            <summary>
+            Gets all records.
+            </summary>
+            <returns>Array of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.GetStat">
+            <summary>
+            Gets count of records.
+            </summary>
+            <returns>Return count of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.EditRecord(FileCabinetApp.FileCabinetRecord)">
+            <summary>
+            Modify an existing record by id.
+            </summary>
+            <param name="record">New record.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.FindByFirstName(System.String)">
+            <summary>
+            Find records by first name.
+            </summary>
+            <param name="firstName">Users first name.</param>
+            <returns>Array of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.FindByLastName(System.String)">
+            <summary>
+            Find records by last name.
+            </summary>
+            <param name="lastName">Users last name.</param>
+            <returns>Array of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.FindByDateOfBirth(System.String)">
+            <summary>
+            Find records by date of birth.
+            </summary>
+            <param name="dateofbirth">Users date of birth.</param>
+            <returns>Array of records.</returns>
+        </member>
+        <member name="T:FileCabinetApp.Program">
+            <summary>
+            The main class that provides the user with functions for interacting with the system.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Program.Main">
+            <summary>
+            Main function.
+            </summary>
+        </member>
     </members>
 </doc>
