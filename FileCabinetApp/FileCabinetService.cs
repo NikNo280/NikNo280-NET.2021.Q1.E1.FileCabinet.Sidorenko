@@ -10,7 +10,7 @@ namespace FileCabinetApp
     /// <summary>
     /// The class representing functions for interacting with the record model.
     /// </summary>
-    public class FileCabinetService
+    public class FileCabinetService : IRecordValidator
     {
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
@@ -222,6 +222,11 @@ namespace FileCabinetApp
         {
             dictionary[oldKey.ToUpperInvariant()].Remove(dictionary[oldKey.ToUpperInvariant()].Where(item => item.Id == record.Id).First());
             AddToDict(newKey, dictionary, record);
+        }
+
+        void IRecordValidator.IsValid(FileCabinetRecord record)
+        {
+            throw new NotImplementedException();
         }
     }
 }
