@@ -21,6 +21,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("create", Create),
             new Tuple<string, Action<string>>("list", List),
             new Tuple<string, Action<string>>("edit", Edit),
+            new Tuple<string, Action<string>>("find", Find),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -31,6 +32,7 @@ namespace FileCabinetApp
             new string[] { "create", "create new record", "The 'stat' command create new record." },
             new string[] { "list", "gets a list of records", "The 'stat' command gets a list of records." },
             new string[] { "edit", "modify a data of an existing record.", "The 'stat' command modify a data of an existing record.." },
+            new string[] { "find", "finds records by firstName.", "The 'stat' command finds records by firstName." },
         };
 
         public static void Main(string[] args)
@@ -238,6 +240,31 @@ namespace FileCabinetApp
             catch (ArgumentException e)
             {
                 Console.WriteLine(e.Message);
+            }
+        }
+
+        private static void Find(string parameters)
+        {
+            var parametersSplit = parameters.Split(" ");
+            FileCabinetRecord[] records = parametersSplit[0].ToUpperInvariant() switch
+            {
+                "FIRSTNAME" => Program.fileCabinetService.FindByFirstName(parametersSplit[1]),
+                "LASTNAME" => Program.fileCabinetService.FindByLastName(parametersSplit[1]),
+                "DATEOFBIRTH" => Program.fileCabinetService.FindByDateOfBirth(parametersSplit[1]),
+                _ => Array.Empty<FileCabinetRecord>()
+            };
+            if (records.Length == 0)
+            {
+                Console.WriteLine("no records found");
+            }
+            else
+            {
+                foreach (var item in records)
+                {
+                    Console.WriteLine($"#{item.Id}, {item.FirstName}, {item.LastName}, " +
+                        $"{item.Age}, {item.Salary}, {item.Gender}, " +
+                        $"{item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}");
+                }
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,9 @@ namespace FileCabinetApp
     public class FileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
+        private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
+        private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
+        private readonly Dictionary<string, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<string, List<FileCabinetRecord>>();
 
         public int CreateRecord(string firstName, string lastName, DateTime dateOfBirth, short age, decimal salary, char gender)
         {
@@ -74,6 +78,32 @@ namespace FileCabinetApp
             };
 
             this.list.Add(record);
+            if (this.firstNameDictionary.ContainsKey(firstName.ToUpperInvariant()))
+            {
+                this.firstNameDictionary[firstName.ToUpperInvariant()].Add(record);
+            }
+            else
+            {
+                this.firstNameDictionary.Add(firstName.ToUpperInvariant(), new List<FileCabinetRecord>() { record });
+            }
+
+            if (this.lastNameDictionary.ContainsKey(lastName.ToUpperInvariant()))
+            {
+                this.lastNameDictionary[lastName.ToUpperInvariant()].Add(record);
+            }
+            else
+            {
+                this.lastNameDictionary.Add(lastName.ToUpperInvariant(), new List<FileCabinetRecord>() { record });
+            }
+
+            if (this.dateOfBirthDictionary.ContainsKey(dateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).ToUpperInvariant()))
+            {
+                this.dateOfBirthDictionary[dateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).ToUpperInvariant()].Add(record);
+            }
+            else
+            {
+                this.dateOfBirthDictionary.Add(dateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).ToUpperInvariant(), new List<FileCabinetRecord>() { record });
+            }
 
             return record.Id;
         }
@@ -140,6 +170,48 @@ namespace FileCabinetApp
                 throw new ArgumentException($"{nameof(gender)} gender != 'M' && gender != 'W'");
             }
 
+            foreach (var item in this.firstNameDictionary[firstName.ToUpperInvariant()])
+            {
+                if (item.Id == id)
+                {
+                    item.FirstName = firstName;
+                    item.LastName = lastName;
+                    item.DateOfBirth = dateOfBirth;
+                    item.Age = age;
+                    item.Salary = salary;
+                    item.Gender = gender;
+                    break;
+                }
+            }
+
+            foreach (var item in this.lastNameDictionary[lastName.ToUpperInvariant()])
+            {
+                if (item.Id == id)
+                {
+                    item.FirstName = firstName;
+                    item.LastName = lastName;
+                    item.DateOfBirth = dateOfBirth;
+                    item.Age = age;
+                    item.Salary = salary;
+                    item.Gender = gender;
+                    break;
+                }
+            }
+
+            foreach (var item in this.dateOfBirthDictionary[dateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).ToUpperInvariant()])
+            {
+                if (item.Id == id)
+                {
+                    item.FirstName = firstName;
+                    item.LastName = lastName;
+                    item.DateOfBirth = dateOfBirth;
+                    item.Age = age;
+                    item.Salary = salary;
+                    item.Gender = gender;
+                    break;
+                }
+            }
+
             foreach (var item in this.list)
             {
                 if (item.Id == id)
@@ -150,11 +222,62 @@ namespace FileCabinetApp
                     item.Age = age;
                     item.Salary = salary;
                     item.Gender = gender;
-                    return;
+                    break;
                 }
             }
 
             throw new ArgumentException($"#{id} record is not found.");
+        }
+
+        public FileCabinetRecord[] FindByFirstName(string firstName)
+        {
+            if (string.IsNullOrEmpty(firstName))
+            {
+                throw new ArgumentNullException($"{nameof(firstName)} is null or empty");
+            }
+
+            if (this.firstNameDictionary.ContainsKey(firstName.ToUpperInvariant()))
+            {
+                return this.firstNameDictionary[firstName.ToUpperInvariant()].ToArray();
+            }
+            else
+            {
+                return Array.Empty<FileCabinetRecord>();
+            }
+        }
+
+        public FileCabinetRecord[] FindByLastName(string lastName)
+        {
+            if (string.IsNullOrEmpty(lastName))
+            {
+                throw new ArgumentNullException($"{nameof(lastName)} is null or empty");
+            }
+
+            if (this.lastNameDictionary.ContainsKey(lastName.ToUpperInvariant()))
+            {
+                return this.lastNameDictionary[lastName.ToUpperInvariant()].ToArray();
+            }
+            else
+            {
+                return Array.Empty<FileCabinetRecord>();
+            }
+        }
+
+        public FileCabinetRecord[] FindByDateOfBirth(string dateofbirth)
+        {
+            if (string.IsNullOrEmpty(dateofbirth))
+            {
+                throw new ArgumentNullException($"{nameof(dateofbirth)} is null or empty");
+            }
+
+            if (this.dateOfBirthDictionary.ContainsKey(dateofbirth.ToUpperInvariant()))
+            {
+                return this.dateOfBirthDictionary[dateofbirth.ToUpperInvariant()].ToArray();
+            }
+            else
+            {
+                return Array.Empty<FileCabinetRecord>();
+            }
         }
     }
 }
