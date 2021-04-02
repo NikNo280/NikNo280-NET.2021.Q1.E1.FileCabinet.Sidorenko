@@ -58,7 +58,7 @@ namespace FileCabinetApp
             Console.WriteLine(Program.HintMessage);
             if (args.Length == 0)
             {
-                fileCabinetService = new FileCabinetDefaultService();
+                fileCabinetService = new FileCabinetService(new DefaultValidator());
                 Console.WriteLine("Using default validation rules.");
             }
             else
@@ -68,15 +68,15 @@ namespace FileCabinetApp
                     switch (args[0].Split("=")[1].ToUpperInvariant())
                     {
                         case "CUSTOM":
-                            fileCabinetService = new FileCabinetCustomService();
+                            fileCabinetService = new FileCabinetService(new CustomValidator());
                             Console.WriteLine("Using custom validation rules.");
                             break;
                         case "DEFAULT":
-                            fileCabinetService = new FileCabinetDefaultService();
+                            fileCabinetService = new FileCabinetService(new DefaultValidator());
                             Console.WriteLine("Using default validation rules.");
                             break;
                         default:
-                            fileCabinetService = new FileCabinetDefaultService();
+                            fileCabinetService = new FileCabinetService(new DefaultValidator());
                             Console.WriteLine("Using default validation rules.");
                             break;
                     }
@@ -86,22 +86,22 @@ namespace FileCabinetApp
                     switch (args[1].ToUpperInvariant())
                     {
                         case "CUSTOM":
-                            fileCabinetService = new FileCabinetCustomService();
+                            fileCabinetService = new FileCabinetService(new CustomValidator());
                             Console.WriteLine("Using custom validation rules.");
                             break;
                         case "DEFAULT":
-                            fileCabinetService = new FileCabinetDefaultService();
+                            fileCabinetService = new FileCabinetService(new DefaultValidator());
                             Console.WriteLine("Using default validation rules.");
                             break;
                         default:
-                            fileCabinetService = new FileCabinetDefaultService();
+                            fileCabinetService = new FileCabinetService(new DefaultValidator());
                             Console.WriteLine("Using default validation rules.");
                             break;
                     }
                 }
                 else
                 {
-                    fileCabinetService = new FileCabinetDefaultService();
+                    fileCabinetService = new FileCabinetService(new DefaultValidator());
                     Console.WriteLine("Using default validation rules.");
                 }
             }
