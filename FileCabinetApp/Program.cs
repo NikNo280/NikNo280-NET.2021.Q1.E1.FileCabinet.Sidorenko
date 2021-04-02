@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 
 namespace FileCabinetApp
@@ -332,14 +334,14 @@ namespace FileCabinetApp
         private static void Find(string parameters)
         {
             var parametersSplit = parameters.Split(" ");
-            FileCabinetRecord[] records = parametersSplit[0].ToUpperInvariant() switch
+            ReadOnlyCollection<FileCabinetRecord> records = parametersSplit[0].ToUpperInvariant() switch
             {
                 "FIRSTNAME" => Program.fileCabinetService.FindByFirstName(parametersSplit[1]),
                 "LASTNAME" => Program.fileCabinetService.FindByLastName(parametersSplit[1]),
                 "DATEOFBIRTH" => Program.fileCabinetService.FindByDateOfBirth(parametersSplit[1]),
-                _ => Array.Empty<FileCabinetRecord>()
+                _ => new ReadOnlyCollection<FileCabinetRecord>(new List<FileCabinetRecord>())
             };
-            if (records.Length == 0)
+            if (records.Count == 0)
             {
                 Console.WriteLine("no records found");
             }

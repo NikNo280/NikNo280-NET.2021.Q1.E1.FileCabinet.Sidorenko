@@ -6,7 +6,15 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
-    interface IRecordValidator
+    /// <summary>
+    /// Interface that provides valid function.
+    /// </summary>
+    public interface IRecordValidator
     {
+        /// <summary>
+        /// Сhecks the validity of the data.
+        /// </summary>
+        /// <param name="record">The record that is checked for correctness.</param>
+        public void IsValid(FileCabinetRecord record);
     }
 }
