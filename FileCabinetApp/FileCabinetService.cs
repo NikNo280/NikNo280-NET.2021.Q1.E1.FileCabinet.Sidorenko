@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -159,12 +160,23 @@ namespace FileCabinetApp
 
         public FileCabinetRecord[] FindByFirstName(string firstName)
         {
-            return this.list.Where(item => string.Compare(item.FirstName, firstName, StringComparison.InvariantCultureIgnoreCase) == 0).ToArray();
+            return this.list.Where(item =>
+            string.Compare(item.FirstName, firstName, StringComparison.InvariantCultureIgnoreCase) == 0)
+                .ToArray();
         }
 
         public FileCabinetRecord[] FindByLastName(string lastName)
         {
-            return this.list.Where(item => string.Compare(item.LastName, lastName, StringComparison.InvariantCultureIgnoreCase) == 0).ToArray();
+            return this.list.Where(item =>
+            string.Compare(item.LastName, lastName, StringComparison.InvariantCultureIgnoreCase) == 0)
+                .ToArray();
+        }
+
+        public FileCabinetRecord[] FindByDateOfBirth(string dateofbirth)
+        {
+            return this.list.Where(item =>
+            string.Compare(item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), dateofbirth, StringComparison.InvariantCultureIgnoreCase) == 0)
+                .ToArray();
         }
     }
 }

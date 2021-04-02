@@ -246,10 +246,11 @@ namespace FileCabinetApp
         private static void Find(string parameters)
         {
             var parametersSplit = parameters.Split(" ");
-            FileCabinetRecord[] records = parametersSplit[0] switch
+            FileCabinetRecord[] records = parametersSplit[0].ToUpperInvariant() switch
             {
-                "FirstName" => Program.fileCabinetService.FindByFirstName(parametersSplit[1]),
-                "LastName" => Program.fileCabinetService.FindByLastName(parametersSplit[1]),
+                "FIRSTNAME" => Program.fileCabinetService.FindByFirstName(parametersSplit[1]),
+                "LASTNAME" => Program.fileCabinetService.FindByLastName(parametersSplit[1]),
+                "DATEOFBIRTH" => Program.fileCabinetService.FindByDateOfBirth(parametersSplit[1]),
                 _ => Array.Empty<FileCabinetRecord>()
             };
             if (records.Length == 0)
