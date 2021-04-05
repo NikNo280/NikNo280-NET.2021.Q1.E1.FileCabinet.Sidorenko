@@ -37,7 +37,7 @@ namespace FileCabinetApp
             }
 
             var line = $"{fileCabinetRecord.Id},{fileCabinetRecord.FirstName},{fileCabinetRecord.LastName}," +
-                $"{fileCabinetRecord.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}," +
+                $"{fileCabinetRecord.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)}," +
                 $"{fileCabinetRecord.Age},{fileCabinetRecord.Salary},{fileCabinetRecord.Gender}";
             this.textWriter.WriteLine(line);
             this.textWriter.Flush();

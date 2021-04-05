@@ -1,9 +1,11 @@
-﻿using System;
+﻿using FileCabinetApp.Export;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace FileCabinetApp
 {
@@ -24,7 +26,7 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Save FileCabinetRecord snapshot to file.
+        /// Save FileCabinetRecord snapshot to csv file.
         /// </summary>
         /// <param name="streamWriter">StreamWriter.</param>
         public void SaveToCsv(StreamWriter streamWriter)
@@ -42,6 +44,32 @@ namespace FileCabinetApp
             {
                 cabinetRecordCsvWriter.Writer(item);
             }
+        }
+
+        /// <summary>
+        /// Save FileCabinetRecord snapshot xml to file.
+        /// </summary>
+        /// <param name="streamWriter">StreamWriter.</param>
+        public void SaveToXml(StreamWriter streamWriter)
+        {
+            if (streamWriter is null)
+            {
+                throw new ArgumentNullException($"{nameof(streamWriter)} is null");
+            }
+
+            XmlWriter xmlWriter = XmlWriter.Create(streamWriter);
+            xmlWriter.WriteStartDocument();
+            xmlWriter.WriteStartElement("records");
+
+            var cabinetRecordXmlWriter = new FileCabinetRecordXmlWriter(xmlWriter);
+
+            foreach (var item in this.records)
+            {
+                cabinetRecordXmlWriter.Writer(item);
+            }
+
+            xmlWriter.WriteEndDocument();
+            xmlWriter.Flush();
         }
     }
 }

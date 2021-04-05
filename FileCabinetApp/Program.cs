@@ -312,10 +312,14 @@ namespace FileCabinetApp
 
                 using (var streamW = new StreamWriter(data[1]))
                 {
-                    switch (data[0])
+                    switch (data[0].ToUpperInvariant())
                     {
-                        case "csv":
+                        case "CSV":
                             snapshot.SaveToCsv(streamW);
+                            Console.WriteLine($"All records are exported to file {data[1]}.");
+                            break;
+                        case "XML":
+                            snapshot.SaveToXml(streamW);
                             Console.WriteLine($"All records are exported to file {data[1]}.");
                             break;
                     }
