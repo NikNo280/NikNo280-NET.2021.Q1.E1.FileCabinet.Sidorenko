@@ -32,12 +32,12 @@ namespace FileCabinetApp
                 throw new ArgumentNullException($"{nameof(record.LastName)} is null");
             }
 
-            if (record.FirstName.Length <= 1 || record.FirstName.Length > 120)
+            if (record.FirstName.Length < 1 || record.FirstName.Length > 120)
             {
                 throw new ArgumentException($"{nameof(record.FirstName.Length)} is less than 1 or bigger than 120");
             }
 
-            if (record.LastName.Length <= 1 || record.LastName.Length > 120)
+            if (record.LastName.Length < 1 || record.LastName.Length > 120)
             {
                 throw new ArgumentException($"{nameof(record.LastName.Length)} is less than 1 or bigger than 120");
             }
@@ -52,7 +52,7 @@ namespace FileCabinetApp
                 throw new ArgumentException($"{nameof(record.LastName)} consists only of spaces");
             }
 
-            if (record.Age < 18 || record.Age > 110)
+            if (record.Age <= 18 || record.Age > 110)
             {
                 throw new ArgumentException($"{nameof(record.Age)} is less than 18 or bigger than 110");
             }
@@ -100,7 +100,7 @@ namespace FileCabinetApp
         /// <returns>Tuple with result validation and error message.</returns>
         public Tuple<bool, string> AgeValidator(short age)
         {
-            if (age < 18 || age > 110)
+            if (age <= 18 || age > 110)
             {
                 return new Tuple<bool, string>(false, $"{age} is less than 18 or bigger than 110");
             }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO;
 
 namespace FileCabinetApp
 {
@@ -28,6 +29,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("list", List),
             new Tuple<string, Action<string>>("edit", Edit),
             new Tuple<string, Action<string>>("find", Find),
+            new Tuple<string, Action<string>>("export", Export),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -38,7 +40,8 @@ namespace FileCabinetApp
             new string[] { "create", "create new record", "The 'stat' command create new record." },
             new string[] { "list", "gets a list of records", "The 'stat' command gets a list of records." },
             new string[] { "edit", "modify a data of an existing record.", "The 'stat' command modify a data of an existing record.." },
-            new string[] { "find", "finds records by firstName.", "The 'stat' command finds records by firstName." },
+            new string[] { "find", "finds records.", "The 'stat' command finds records." },
+            new string[] { "export", "exports service data to file", "The 'stat' command export exports service data to file" },
         };
 
         /// <summary>
@@ -282,6 +285,53 @@ namespace FileCabinetApp
                         $"{item.Age}, {item.Salary}, {item.Gender}, " +
                         $"{item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}");
                 }
+            }
+        }
+
+        private static void Export(string parameters)
+        {
+            string[] data = parameters.Split(' ');
+            if (data.Length != 2)
+            {
+                Console.WriteLine("Incorrect parameters");
+                return;
+            }
+
+            try
+            {
+                var snapshot = Program.fileCabinetService.MakeSnapshot();
+                if (File.Exists(data[1]))
+                {
+                    Console.Write($"File is exist - rewrite {data[1]}? [Y/n] ");
+                    string rewriting = Console.ReadLine();
+                    if (rewriting.ToUpperInvariant() != "Y")
+                    {
+                        return;
+                    }
+                }
+
+                using (var streamW = new StreamWriter(data[1]))
+                {
+                    switch (data[0].ToUpperInvariant())
+                    {
+                        case "CSV":
+                            snapshot.SaveToCsv(streamW);
+                            Console.WriteLine($"All records are exported to file {data[1]}.");
+                            break;
+                        case "XML":
+                            snapshot.SaveToXml(streamW);
+                            Console.WriteLine($"All records are exported to file {data[1]}.");
+                            break;
+                    }
+                }
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                Console.WriteLine(e.Message);
             }
         }
     }

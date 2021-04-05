@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -136,6 +137,15 @@ namespace FileCabinetApp
         public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateofbirth)
         {
             return GetArrayFromDict(dateofbirth, this.dateOfBirthDictionary);
+        }
+
+        /// <summary>
+        /// Generate new FileCabinetRecord snapshot.
+        /// </summary>
+        /// <returns>new FileCabinetRecord snapshot.</returns>
+        public FileCabinetServiceSnapshot MakeSnapshot()
+        {
+            return new FileCabinetServiceSnapshot(this.list.ToArray());
         }
 
         private static ReadOnlyCollection<FileCabinetRecord> GetArrayFromDict(string source, Dictionary<string, List<FileCabinetRecord>> dictionary)
