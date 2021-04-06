@@ -9,10 +9,11 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
+
     /// <summary>
     /// The class representing functions for interacting with the record model.
     /// </summary>
-    public class FileCabinetService
+    public class FileCabinetMemoryService
     {
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
@@ -21,10 +22,10 @@ namespace FileCabinetApp
         private readonly IRecordValidator recordValidator;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileCabinetService"/> class.
+        /// Initializes a new instance of the <see cref="FileCabinetMemoryService"/> class.
         /// </summary>
         /// <param name="recordValidator">Validator.</param>
-        public FileCabinetService(IRecordValidator recordValidator)
+        public FileCabinetMemoryService(IRecordValidator recordValidator)
         {
             this.recordValidator = recordValidator;
         }

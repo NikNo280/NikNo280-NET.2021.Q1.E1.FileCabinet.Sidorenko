@@ -4,6 +4,254 @@
         <name>FileCabinetApp</name>
     </assembly>
     <members>
+        <member name="T:FileCabinetApp.FileCabinetRecordCsvWriter">
+            <summary>
+            Class used for writing records to files of the csv format.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordCsvWriter.#ctor(System.IO.TextWriter)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetRecordCsvWriter"/> class.
+            </summary>
+            <param name="textWriter">TextWriter.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordCsvWriter.Writer(FileCabinetApp.FileCabinetRecord)">
+            <summary>
+            Writes records to the file.
+            </summary>
+            <param name="fileCabinetRecord">The record to be written to the file.</param>
+        </member>
+        <member name="T:FileCabinetApp.Export.FileCabinetRecordXmlWriter">
+            <summary>
+            Class used for writing records to files of the xml format.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Export.FileCabinetRecordXmlWriter.#ctor(System.Xml.XmlWriter)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Export.FileCabinetRecordXmlWriter"/> class.
+            </summary>
+            <param name="xmlWriter">XmlWriter.</param>
+        </member>
+        <member name="M:FileCabinetApp.Export.FileCabinetRecordXmlWriter.Writer(FileCabinetApp.FileCabinetRecord)">
+            <summary>
+            Writes records to the file.
+            </summary>
+            <param name="fileCabinetRecord">The record to be written to the file.</param>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetServiceSnapshot">
+            <summary>
+            FileCabinetRecord snapshot.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.#ctor(FileCabinetApp.FileCabinetRecord[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetServiceSnapshot"/> class.
+            </summary>
+            <param name="records">Array of records.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.SaveToCsv(System.IO.StreamWriter)">
+            <summary>
+            Save FileCabinetRecord snapshot to csv file.
+            </summary>
+            <param name="streamWriter">StreamWriter.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.SaveToXml(System.IO.StreamWriter)">
+            <summary>
+            Save FileCabinetRecord snapshot xml to file.
+            </summary>
+            <param name="streamWriter">StreamWriter.</param>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetMemoryService">
+            <summary>
+            The class representing functions for interacting with the record model.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.#ctor(FileCabinetApp.IRecordValidator)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetMemoryService"/> class.
+            </summary>
+            <param name="recordValidator">Validator.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.CreateRecord(FileCabinetApp.FileCabinetRecord)">
+            <summary>
+            Create new record.
+            </summary>
+            <param name="record">New record.</param>
+            <returns>Returns new record id.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.GetRecords">
+            <summary>
+            Gets all records.
+            </summary>
+            <returns>Array of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.GetStat">
+            <summary>
+            Gets count of records.
+            </summary>
+            <returns>Return count of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.EditRecord(FileCabinetApp.FileCabinetRecord)">
+            <summary>
+            Modify an existing record by id.
+            </summary>
+            <param name="record">New record.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.FindByFirstName(System.String)">
+            <summary>
+            Find records by first name.
+            </summary>
+            <param name="firstName">Users first name.</param>
+            <returns>Array of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.FindByLastName(System.String)">
+            <summary>
+            Find records by last name.
+            </summary>
+            <param name="lastName">Users last name.</param>
+            <returns>Array of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.FindByDateOfBirth(System.String)">
+            <summary>
+            Find records by date of birth.
+            </summary>
+            <param name="dateofbirth">Users date of birth.</param>
+            <returns>Array of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.MakeSnapshot">
+            <summary>
+            Generate new FileCabinetRecord snapshot.
+            </summary>
+            <returns>new FileCabinetRecord snapshot.</returns>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetRecord">
+            <summary>
+            Class representing the model record.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.Id">
+            <summary>
+            Gets or sets user id.
+            </summary>
+            <value>
+            User id.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.FirstName">
+            <summary>
+            Gets or sets user first name.
+            </summary>
+            <value>
+            User first name.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.LastName">
+            <summary>
+            Gets or sets user last name.
+            </summary>
+            <value>
+            User last name.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.DateOfBirth">
+            <summary>
+            Gets or sets user date of birth.
+            </summary>
+            <value>
+            User date of birth.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.Age">
+            <summary>
+            Gets or sets user age.
+            </summary>
+            <value>
+            User age.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.Salary">
+            <summary>
+            Gets or sets user salary.
+            </summary>
+            <value>
+            User salary.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.Gender">
+            <summary>
+            Gets or sets user gender.
+            </summary>
+            <value>
+            User gender.
+            </value>
+        </member>
+        <member name="T:FileCabinetApp.Program">
+            <summary>
+            The main class that provides the user with functions for interacting with the system.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Program.Main(System.String[])">
+            <summary>
+            Main function.
+            </summary>
+            <param name="args">Programs arguments.</param>
+        </member>
+        <member name="T:FileCabinetApp.TypeConverter">
+            <summary>
+            The class provides static methods for conversion.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.TypeConverter.StringConverter(System.String)">
+            <summary>
+            Converts string to string.
+            </summary>
+            <param name="source">Input string.</param>
+            <returns>Conversion result, error message, and string.</returns>
+        </member>
+        <member name="M:FileCabinetApp.TypeConverter.IntConverter(System.String)">
+            <summary>
+            Converts string to int.
+            </summary>
+            <param name="source">Input string.</param>
+            <returns>Conversion result, error message, and int number.</returns>
+        </member>
+        <member name="M:FileCabinetApp.TypeConverter.DecimalConverter(System.String)">
+            <summary>
+            Converts string to decimal.
+            </summary>
+            <param name="source">Input string.</param>
+            <returns>Conversion result, error message, and decimal number.</returns>
+        </member>
+        <member name="M:FileCabinetApp.TypeConverter.ShortConverter(System.String)">
+            <summary>
+            Converts string to short.
+            </summary>
+            <param name="source">Input string.</param>
+            <returns>Conversion result, error message, and short number.</returns>
+        </member>
+        <member name="M:FileCabinetApp.TypeConverter.DateTimeConverter(System.String)">
+            <summary>
+            Converts string to DateTime.
+            </summary>
+            <param name="source">Input string.</param>
+            <returns>Conversion result, error message, and DateTime.</returns>
+        </member>
+        <member name="M:FileCabinetApp.TypeConverter.CharConverter(System.String)">
+            <summary>
+            Converts string to char.
+            </summary>
+            <param name="source">Input string.</param>
+            <returns>Conversion result, error message, and char.</returns>
+        </member>
+        <member name="M:FileCabinetApp.TypeConverter.ReadInput``1(System.Func{System.String,System.Tuple{System.Boolean,System.String,``0}},System.Func{``0,System.Tuple{System.Boolean,System.String}})">
+            <summary>
+            Converts string to T type.
+            </summary>
+            <typeparam name="T">Conversion type.</typeparam>
+            <param name="converter">Conversion method.</param>
+            <param name="validator">Validation method.</param>
+            <returns>Conversion result from string from T.</returns>
+        </member>
         <member name="T:FileCabinetApp.CustomValidator">
             <summary>
             The class provides custom validation rules.
@@ -96,124 +344,6 @@
             <param name="dateOfBirth">Input dateOfBirth.</param>
             <returns>Tuple with result validation and error message.</returns>
         </member>
-        <member name="T:FileCabinetApp.FileCabinetRecord">
-            <summary>
-            Class representing the model record.
-            </summary>
-        </member>
-        <member name="P:FileCabinetApp.FileCabinetRecord.Id">
-            <summary>
-            Gets or sets user id.
-            </summary>
-            <value>
-            User id.
-            </value>
-        </member>
-        <member name="P:FileCabinetApp.FileCabinetRecord.FirstName">
-            <summary>
-            Gets or sets user first name.
-            </summary>
-            <value>
-            User first name.
-            </value>
-        </member>
-        <member name="P:FileCabinetApp.FileCabinetRecord.LastName">
-            <summary>
-            Gets or sets user last name.
-            </summary>
-            <value>
-            User last name.
-            </value>
-        </member>
-        <member name="P:FileCabinetApp.FileCabinetRecord.DateOfBirth">
-            <summary>
-            Gets or sets user date of birth.
-            </summary>
-            <value>
-            User date of birth.
-            </value>
-        </member>
-        <member name="P:FileCabinetApp.FileCabinetRecord.Age">
-            <summary>
-            Gets or sets user age.
-            </summary>
-            <value>
-            User age.
-            </value>
-        </member>
-        <member name="P:FileCabinetApp.FileCabinetRecord.Salary">
-            <summary>
-            Gets or sets user salary.
-            </summary>
-            <value>
-            User salary.
-            </value>
-        </member>
-        <member name="P:FileCabinetApp.FileCabinetRecord.Gender">
-            <summary>
-            Gets or sets user gender.
-            </summary>
-            <value>
-            User gender.
-            </value>
-        </member>
-        <member name="T:FileCabinetApp.FileCabinetService">
-            <summary>
-            The class representing functions for interacting with the record model.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.#ctor(FileCabinetApp.IRecordValidator)">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetService"/> class.
-            </summary>
-            <param name="recordValidator">Validator.</param>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.CreateRecord(FileCabinetApp.FileCabinetRecord)">
-            <summary>
-            Create new record.
-            </summary>
-            <param name="record">New record.</param>
-            <returns>Returns new record id.</returns>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.GetRecords">
-            <summary>
-            Gets all records.
-            </summary>
-            <returns>Array of records.</returns>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.GetStat">
-            <summary>
-            Gets count of records.
-            </summary>
-            <returns>Return count of records.</returns>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.EditRecord(FileCabinetApp.FileCabinetRecord)">
-            <summary>
-            Modify an existing record by id.
-            </summary>
-            <param name="record">New record.</param>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.FindByFirstName(System.String)">
-            <summary>
-            Find records by first name.
-            </summary>
-            <param name="firstName">Users first name.</param>
-            <returns>Array of records.</returns>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.FindByLastName(System.String)">
-            <summary>
-            Find records by last name.
-            </summary>
-            <param name="lastName">Users last name.</param>
-            <returns>Array of records.</returns>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.FindByDateOfBirth(System.String)">
-            <summary>
-            Find records by date of birth.
-            </summary>
-            <param name="dateofbirth">Users date of birth.</param>
-            <returns>Array of records.</returns>
-        </member>
         <member name="T:FileCabinetApp.IRecordValidator">
             <summary>
             Interface that provides valid function.
@@ -259,73 +389,6 @@
             </summary>
             <param name="dateOfBirth">Input dateOfBirth.</param>
             <returns>Tuple with result validation and error message.</returns>
-        </member>
-        <member name="T:FileCabinetApp.Program">
-            <summary>
-            The main class that provides the user with functions for interacting with the system.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.Program.Main(System.String[])">
-            <summary>
-            Main function.
-            </summary>
-            <param name="args">Programs arguments.</param>
-        </member>
-        <member name="T:FileCabinetApp.TypeConverter">
-            <summary>
-            The class provides static methods for conversion.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.TypeConverter.StringConverter(System.String)">
-            <summary>
-            Converts string to string.
-            </summary>
-            <param name="source">Input string.</param>
-            <returns>Conversion result, error message, and string.</returns>
-        </member>
-        <member name="M:FileCabinetApp.TypeConverter.IntConverter(System.String)">
-            <summary>
-            Converts string to int.
-            </summary>
-            <param name="source">Input string.</param>
-            <returns>Conversion result, error message, and int number.</returns>
-        </member>
-        <member name="M:FileCabinetApp.TypeConverter.DecimalConverter(System.String)">
-            <summary>
-            Converts string to decimal.
-            </summary>
-            <param name="source">Input string.</param>
-            <returns>Conversion result, error message, and decimal number.</returns>
-        </member>
-        <member name="M:FileCabinetApp.TypeConverter.ShortConverter(System.String)">
-            <summary>
-            Converts string to short.
-            </summary>
-            <param name="source">Input string.</param>
-            <returns>Conversion result, error message, and short number.</returns>
-        </member>
-        <member name="M:FileCabinetApp.TypeConverter.DateTimeConverter(System.String)">
-            <summary>
-            Converts string to DateTime.
-            </summary>
-            <param name="source">Input string.</param>
-            <returns>Conversion result, error message, and DateTime.</returns>
-        </member>
-        <member name="M:FileCabinetApp.TypeConverter.CharConverter(System.String)">
-            <summary>
-            Converts string to char.
-            </summary>
-            <param name="source">Input string.</param>
-            <returns>Conversion result, error message, and char.</returns>
-        </member>
-        <member name="M:FileCabinetApp.TypeConverter.ReadInput``1(System.Func{System.String,System.Tuple{System.Boolean,System.String,``0}},System.Func{``0,System.Tuple{System.Boolean,System.String}})">
-            <summary>
-            Converts string to T type.
-            </summary>
-            <typeparam name="T">Conversion type.</typeparam>
-            <param name="converter">Conversion method.</param>
-            <param name="validator">Validation method.</param>
-            <returns>Conversion result from string from T.</returns>
         </member>
     </members>
 </doc>

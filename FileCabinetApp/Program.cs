@@ -16,7 +16,7 @@ namespace FileCabinetApp
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
-        private static FileCabinetService fileCabinetService;
+        private static FileCabinetMemoryService fileCabinetService;
         private static bool isRunning = true;
         private static IRecordValidator recordValidator;
 
@@ -104,7 +104,7 @@ namespace FileCabinetApp
                 Console.WriteLine("Using default validation rules.");
             }
 
-            fileCabinetService = new FileCabinetService(recordValidator);
+            fileCabinetService = new FileCabinetMemoryService(recordValidator);
 
             Console.WriteLine();
 
@@ -327,6 +327,8 @@ namespace FileCabinetApp
             }
             catch (IOException e)
             {
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.Message);
                 Console.WriteLine(e.Message);
             }
             catch (UnauthorizedAccessException e)
