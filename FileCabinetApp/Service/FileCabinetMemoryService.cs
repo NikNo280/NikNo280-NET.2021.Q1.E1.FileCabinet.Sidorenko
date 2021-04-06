@@ -9,11 +9,10 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
-
     /// <summary>
     /// The class representing functions for interacting with the record model.
     /// </summary>
-    public class FileCabinetMemoryService
+    public class FileCabinetMemoryService : IFileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();

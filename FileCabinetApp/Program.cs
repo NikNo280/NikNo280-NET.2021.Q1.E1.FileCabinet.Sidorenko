@@ -328,8 +328,6 @@ namespace FileCabinetApp
             catch (IOException e)
             {
                 Console.WriteLine(e.Message);
-                Console.WriteLine(e.Message);
-                Console.WriteLine(e.Message);
             }
             catch (UnauthorizedAccessException e)
             {
