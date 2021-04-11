@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -25,7 +26,43 @@ namespace FileCabinetApp
 
         public int CreateRecord(FileCabinetRecord record)
         {
-            throw new NotImplementedException();
+            if (record is null)
+            {
+                throw new ArgumentNullException($"{record} is null or empty");
+            }
+
+            this.recordValidator.IsValid(record);
+            this.fileStream.Position = this.fileStream.Length;
+            int offset = 0;
+            byte[] bytes = BitConverter.GetBytes(record.Id);
+            this.fileStream.Write(bytes, offset, bytes.Length);
+
+            char[] firstName = new char[120];
+            Array.Copy(record.FirstName.ToArray(), firstName, record.FirstName.Length);
+            this.fileStream.Write(Encoding.UTF8.GetBytes(firstName), offset, Encoding.UTF8.GetByteCount(firstName));
+
+            char[] lastName = new char[120];
+            Array.Copy(record.LastName.ToArray(), lastName, record.LastName.Length);
+            this.fileStream.Write(Encoding.UTF8.GetBytes(lastName), offset, Encoding.UTF8.GetByteCount(lastName));
+
+            bytes = BitConverter.GetBytes(record.DateOfBirth.Year);
+            this.fileStream.Write(bytes, offset, bytes.Length);
+            bytes = BitConverter.GetBytes(record.DateOfBirth.Month);
+            this.fileStream.Write(bytes, offset, bytes.Length);
+            bytes = BitConverter.GetBytes(record.DateOfBirth.Day);
+            this.fileStream.Write(bytes, offset, bytes.Length);
+
+            bytes = BitConverter.GetBytes(record.Age);
+            this.fileStream.Write(bytes, offset, bytes.Length);
+
+            bytes = BitConverter.GetBytes(Convert.ToDouble(record.Salary));
+            this.fileStream.Write(bytes, offset, bytes.Length);
+
+            bytes = BitConverter.GetBytes(record.Gender);
+            this.fileStream.Write(bytes, offset, bytes.Length);
+
+            this.fileStream.Flush();
+            return 0;
         }
 
         public void EditRecord(FileCabinetRecord record)
@@ -55,7 +92,7 @@ namespace FileCabinetApp
 
         public int GetStat()
         {
-            throw new NotImplementedException();
+            return (int)this.fileStream.Length / 268;
         }
 
         public FileCabinetServiceSnapshot MakeSnapshot()
