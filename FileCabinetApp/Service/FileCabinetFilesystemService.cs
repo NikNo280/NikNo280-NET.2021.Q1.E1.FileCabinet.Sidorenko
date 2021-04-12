@@ -9,21 +9,31 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
+    /// <summary>
+    /// The class representing functions for interacting with the record model.
+    /// </summary>
     public class FileCabinetFilesystemService : IFileCabinetService
     {
-        private FileStream fileStream;
+        private const int RecordSize = 268;
         private readonly IRecordValidator recordValidator;
+        private readonly FileStream fileStream;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileCabinetMemoryService"/> class.
+        /// Initializes a new instance of the <see cref="FileCabinetFilesystemService"/> class.
         /// </summary>
         /// <param name="recordValidator">Validator.</param>
+        /// <param name="fileStream">File stream.</param>
         public FileCabinetFilesystemService(IRecordValidator recordValidator, FileStream fileStream)
         {
             this.recordValidator = recordValidator;
             this.fileStream = fileStream;
         }
 
+        /// <summary>
+        /// Create new record.
+        /// </summary>
+        /// <param name="record">New record.</param>
+        /// <returns>Returns new record id.</returns>
         public int CreateRecord(FileCabinetRecord record)
         {
             if (record is null)
@@ -65,36 +75,88 @@ namespace FileCabinetApp
             return 0;
         }
 
+        /// <summary>
+        /// Modify an existing record by id.
+        /// </summary>
+        /// <param name="record">New record.</param>
         public void EditRecord(FileCabinetRecord record)
         {
             throw new NotImplementedException();
         }
 
-        public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateofbirth)
-        {
-            throw new NotImplementedException();
-        }
-
+        /// <summary>
+        /// Find records by first name.
+        /// </summary>
+        /// <param name="firstName">Users first name.</param>
+        /// <returns>Array of records.</returns>
         public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Find records by last name.
+        /// </summary>
+        /// <param name="lastName">Users last name.</param>
+        /// <returns>Array of records.</returns>
         public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
         {
             throw new NotImplementedException();
         }
 
-        public ReadOnlyCollection<FileCabinetRecord> GetRecords()
+        /// <summary>
+        /// Find records by date of birth.
+        /// </summary>
+        /// <param name="dateofbirth">Users date of birth.</param>
+        /// <returns>Array of records.</returns>
+        public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateofbirth)
         {
             throw new NotImplementedException();
         }
 
-        public int GetStat()
+        /// <summary>
+        /// Gets all records.
+        /// </summary>
+        /// <returns>Array of records.</returns>
+        public ReadOnlyCollection<FileCabinetRecord> GetRecords()
         {
-            return (int)this.fileStream.Length / 268;
+            int numBytesToRead = (int)this.fileStream.Length;
+            int offset = 0;
+            var records = new List<FileCabinetRecord>();
+            while (numBytesToRead > 0)
+            {
+                byte[] bytes = new byte[RecordSize];
+                this.fileStream.Read(bytes, offset, bytes.Length);
+                var record = new FileCabinetRecord
+                {
+                    Id = BitConverter.ToInt32(bytes, 0),
+                    FirstName = Encoding.UTF8.GetString(bytes, 4, 120).Trim(new char[] { '\0' }),
+                    LastName = Encoding.UTF8.GetString(bytes, 124, 120).Trim(new char[] { '\0' }),
+                    DateOfBirth = new DateTime(BitConverter.ToInt32(bytes, 244), BitConverter.ToInt32(bytes, 248), BitConverter.ToInt32(bytes, 252)),
+                    Age = BitConverter.ToInt16(bytes, 256),
+                    Salary = Convert.ToDecimal(BitConverter.ToDouble(bytes, 258)),
+                    Gender = BitConverter.ToChar(bytes, 266),
+                };
+                records.Add(record);
+                numBytesToRead -= RecordSize;
+            }
+
+            return new ReadOnlyCollection<FileCabinetRecord>(records);
         }
 
+        /// <summary>
+        /// Gets count of records.
+        /// </summary>
+        /// <returns>Return count of records.</returns>
+        public int GetStat()
+        {
+            return (int)this.fileStream.Length / RecordSize;
+        }
+
+        /// <summary>
+        /// Generate new FileCabinetRecord snapshot.
+        /// </summary>
+        /// <returns>new FileCabinetRecord snapshot.</returns>
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
             throw new NotImplementedException();
