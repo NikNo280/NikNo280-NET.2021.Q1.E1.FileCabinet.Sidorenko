@@ -150,7 +150,7 @@ namespace FileCabinetApp
 
         private static ReadOnlyCollection<FileCabinetRecord> GetArrayFromDict(string source, Dictionary<string, List<FileCabinetRecord>> dictionary)
         {
-            if (string.IsNullOrEmpty(source))
+            if (string.IsNullOrWhiteSpace(source))
             {
                 throw new ArgumentNullException($"{nameof(source)} is null or empty");
             }

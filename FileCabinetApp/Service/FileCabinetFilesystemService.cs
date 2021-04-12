@@ -15,6 +15,7 @@ namespace FileCabinetApp
     public class FileCabinetFilesystemService : IFileCabinetService
     {
         private const int RecordSize = 268;
+        private const int NameSize = 120;
         private readonly IRecordValidator recordValidator;
         private readonly FileStream fileStream;
 
@@ -47,11 +48,11 @@ namespace FileCabinetApp
             byte[] bytes = BitConverter.GetBytes(record.Id);
             this.fileStream.Write(bytes, offset, bytes.Length);
 
-            char[] firstName = new char[120];
+            char[] firstName = new char[NameSize];
             Array.Copy(record.FirstName.ToArray(), firstName, record.FirstName.Length);
             this.fileStream.Write(Encoding.UTF8.GetBytes(firstName), offset, Encoding.UTF8.GetByteCount(firstName));
 
-            char[] lastName = new char[120];
+            char[] lastName = new char[NameSize];
             Array.Copy(record.LastName.ToArray(), lastName, record.LastName.Length);
             this.fileStream.Write(Encoding.UTF8.GetBytes(lastName), offset, Encoding.UTF8.GetByteCount(lastName));
 
@@ -96,11 +97,11 @@ namespace FileCabinetApp
                 this.fileStream.Read(bytes, offset, bytes.Length);
                 if (BitConverter.ToInt32(bytes, 0) == record.Id)
                 {
-                    char[] firstName = new char[120];
+                    char[] firstName = new char[NameSize];
                     Array.Copy(record.FirstName.ToArray(), firstName, record.FirstName.Length);
                     this.fileStream.Write(Encoding.UTF8.GetBytes(firstName), offset, Encoding.UTF8.GetByteCount(firstName));
 
-                    char[] lastName = new char[120];
+                    char[] lastName = new char[NameSize];
                     Array.Copy(record.LastName.ToArray(), lastName, record.LastName.Length);
                     this.fileStream.Write(Encoding.UTF8.GetBytes(lastName), offset, Encoding.UTF8.GetByteCount(lastName));
 
@@ -146,8 +147,8 @@ namespace FileCabinetApp
                 var record = new FileCabinetRecord
                 {
                     Id = BitConverter.ToInt32(bytes, 0),
-                    FirstName = Encoding.UTF8.GetString(bytes, 4, 120).Trim(new char[] { '\0' }),
-                    LastName = Encoding.UTF8.GetString(bytes, 124, 120).Trim(new char[] { '\0' }),
+                    FirstName = Encoding.UTF8.GetString(bytes, 4, NameSize).Trim(new char[] { '\0' }),
+                    LastName = Encoding.UTF8.GetString(bytes, 124, NameSize).Trim(new char[] { '\0' }),
                     DateOfBirth = new DateTime(BitConverter.ToInt32(bytes, 244), BitConverter.ToInt32(bytes, 248), BitConverter.ToInt32(bytes, 252)),
                     Age = BitConverter.ToInt16(bytes, 256),
                     Salary = Convert.ToDecimal(BitConverter.ToDouble(bytes, 258)),
@@ -177,7 +178,41 @@ namespace FileCabinetApp
         /// <returns>Array of records.</returns>
         public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(firstName))
+            {
+                throw new ArgumentNullException($"{nameof(firstName)} is null or empty");
+            }
+
+            int offset = 0;
+            byte[] bytes = new byte[NameSize];
+            var records = new List<FileCabinetRecord>();
+            for (int i = 0; i < this.GetStat(); i++)
+            {
+                this.fileStream.Position += 4;
+                this.fileStream.Read(bytes, offset, bytes.Length);
+                if (Encoding.UTF8.GetString(bytes, 0, NameSize).Trim(new char[] { '\0' }).ToUpperInvariant().Equals(firstName.ToUpperInvariant()))
+                {
+                    this.fileStream.Position = i * RecordSize;
+                    byte[] data = new byte[RecordSize];
+                    this.fileStream.Read(data, offset, data.Length);
+                    var record = new FileCabinetRecord
+                    {
+                        Id = BitConverter.ToInt32(data, 0),
+                        FirstName = Encoding.UTF8.GetString(data, 4, NameSize).Trim(new char[] { '\0' }),
+                        LastName = Encoding.UTF8.GetString(data, 124, NameSize).Trim(new char[] { '\0' }),
+                        DateOfBirth = new DateTime(BitConverter.ToInt32(data, 244), BitConverter.ToInt32(data, 248), BitConverter.ToInt32(data, 252)),
+                        Age = BitConverter.ToInt16(data, 256),
+                        Salary = Convert.ToDecimal(BitConverter.ToDouble(data, 258)),
+                        Gender = BitConverter.ToChar(data, 266),
+                    };
+                    records.Add(record);
+                }
+
+                this.fileStream.Position = (i + 1) * RecordSize;
+            }
+
+            this.fileStream.Position = 0;
+            return new ReadOnlyCollection<FileCabinetRecord>(records);
         }
 
         /// <summary>
@@ -187,7 +222,41 @@ namespace FileCabinetApp
         /// <returns>Array of records.</returns>
         public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(lastName))
+            {
+                throw new ArgumentNullException($"{nameof(lastName)} is null or empty");
+            }
+
+            int offset = 0;
+            byte[] bytes = new byte[NameSize];
+            var records = new List<FileCabinetRecord>();
+            for (int i = 0; i < this.GetStat(); i++)
+            {
+                this.fileStream.Position += 124;
+                this.fileStream.Read(bytes, offset, bytes.Length);
+                if (Encoding.UTF8.GetString(bytes, 0, NameSize).Trim(new char[] { '\0' }).ToUpperInvariant().Equals(lastName.ToUpperInvariant()))
+                {
+                    this.fileStream.Position = i * RecordSize;
+                    byte[] data = new byte[RecordSize];
+                    this.fileStream.Read(data, offset, data.Length);
+                    var record = new FileCabinetRecord
+                    {
+                        Id = BitConverter.ToInt32(data, 0),
+                        FirstName = Encoding.UTF8.GetString(data, 4, NameSize).Trim(new char[] { '\0' }),
+                        LastName = Encoding.UTF8.GetString(data, 124, NameSize).Trim(new char[] { '\0' }),
+                        DateOfBirth = new DateTime(BitConverter.ToInt32(data, 244), BitConverter.ToInt32(data, 248), BitConverter.ToInt32(data, 252)),
+                        Age = BitConverter.ToInt16(data, 256),
+                        Salary = Convert.ToDecimal(BitConverter.ToDouble(data, 258)),
+                        Gender = BitConverter.ToChar(data, 266),
+                    };
+                    records.Add(record);
+                }
+
+                this.fileStream.Position = (i + 1) * RecordSize;
+            }
+
+            this.fileStream.Position = 0;
+            return new ReadOnlyCollection<FileCabinetRecord>(records);
         }
 
         /// <summary>
@@ -197,7 +266,53 @@ namespace FileCabinetApp
         /// <returns>Array of records.</returns>
         public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateofbirth)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(dateofbirth))
+            {
+                throw new ArgumentNullException($"{nameof(dateofbirth)} is null or empty");
+            }
+
+            DateTime searchDateTime;
+            var result = DateTime.TryParseExact(dateofbirth, "d", CultureInfo.InvariantCulture, DateTimeStyles.None, out searchDateTime);
+            if (!result)
+            {
+                throw new ArgumentException($"{nameof(dateofbirth)} is not a number");
+            }
+
+            int offset = 0;
+            byte[] bytes = new byte[4];
+            var records = new List<FileCabinetRecord>();
+            for (int i = 0; i < this.GetStat(); i++)
+            {
+                this.fileStream.Position += 244;
+                this.fileStream.Read(bytes, offset, bytes.Length);
+                int year = BitConverter.ToInt32(bytes, 0);
+                this.fileStream.Read(bytes, offset, bytes.Length);
+                int month = BitConverter.ToInt32(bytes, 0);
+                this.fileStream.Read(bytes, offset, bytes.Length);
+                int day = BitConverter.ToInt32(bytes, 0);
+                if (new DateTime(year, month, day).Equals(searchDateTime))
+                {
+                    this.fileStream.Position = i * RecordSize;
+                    byte[] data = new byte[RecordSize];
+                    this.fileStream.Read(data, offset, data.Length);
+                    var record = new FileCabinetRecord
+                    {
+                        Id = BitConverter.ToInt32(data, 0),
+                        FirstName = Encoding.UTF8.GetString(data, 4, NameSize).Trim(new char[] { '\0' }),
+                        LastName = Encoding.UTF8.GetString(data, 124, NameSize).Trim(new char[] { '\0' }),
+                        DateOfBirth = new DateTime(BitConverter.ToInt32(data, 244), BitConverter.ToInt32(data, 248), BitConverter.ToInt32(data, 252)),
+                        Age = BitConverter.ToInt16(data, 256),
+                        Salary = Convert.ToDecimal(BitConverter.ToDouble(data, 258)),
+                        Gender = BitConverter.ToChar(data, 266),
+                    };
+                    records.Add(record);
+                }
+
+                this.fileStream.Position = (i + 1) * RecordSize;
+            }
+
+            this.fileStream.Position = 0;
+            return new ReadOnlyCollection<FileCabinetRecord>(records);
         }
 
         /// <summary>
