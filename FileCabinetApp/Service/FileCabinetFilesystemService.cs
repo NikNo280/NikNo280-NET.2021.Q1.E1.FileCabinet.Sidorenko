@@ -72,7 +72,9 @@ namespace FileCabinetApp
             this.fileStream.Write(bytes, offset, bytes.Length);
 
             this.fileStream.Flush();
-            return 0;
+            this.fileStream.Position = 0;
+
+            return record.Id;
         }
 
         /// <summary>
@@ -81,7 +83,91 @@ namespace FileCabinetApp
         /// <param name="record">New record.</param>
         public void EditRecord(FileCabinetRecord record)
         {
-            throw new NotImplementedException();
+            if (record is null)
+            {
+                throw new ArgumentNullException($"{nameof(record)} is null");
+            }
+
+            this.recordValidator.IsValid(record);
+            int offset = 0;
+            byte[] bytes = new byte[4];
+            for (int i = 0; i < this.GetStat(); i++)
+            {
+                this.fileStream.Read(bytes, offset, bytes.Length);
+                if (BitConverter.ToInt32(bytes, 0) == record.Id)
+                {
+                    char[] firstName = new char[120];
+                    Array.Copy(record.FirstName.ToArray(), firstName, record.FirstName.Length);
+                    this.fileStream.Write(Encoding.UTF8.GetBytes(firstName), offset, Encoding.UTF8.GetByteCount(firstName));
+
+                    char[] lastName = new char[120];
+                    Array.Copy(record.LastName.ToArray(), lastName, record.LastName.Length);
+                    this.fileStream.Write(Encoding.UTF8.GetBytes(lastName), offset, Encoding.UTF8.GetByteCount(lastName));
+
+                    bytes = BitConverter.GetBytes(record.DateOfBirth.Year);
+                    this.fileStream.Write(bytes, offset, bytes.Length);
+                    bytes = BitConverter.GetBytes(record.DateOfBirth.Month);
+                    this.fileStream.Write(bytes, offset, bytes.Length);
+                    bytes = BitConverter.GetBytes(record.DateOfBirth.Day);
+                    this.fileStream.Write(bytes, offset, bytes.Length);
+
+                    bytes = BitConverter.GetBytes(record.Age);
+                    this.fileStream.Write(bytes, offset, bytes.Length);
+
+                    bytes = BitConverter.GetBytes(Convert.ToDouble(record.Salary));
+                    this.fileStream.Write(bytes, offset, bytes.Length);
+
+                    bytes = BitConverter.GetBytes(record.Gender);
+                    this.fileStream.Write(bytes, offset, bytes.Length);
+                    this.fileStream.Position = 0;
+                    break;
+                }
+
+                this.fileStream.Position = (i + 1) * RecordSize;
+            }
+
+            this.fileStream.Position = 0;
+            throw new ArgumentException($"#{record.Id} record is not found.");
+        }
+
+        /// <summary>
+        /// Gets all records.
+        /// </summary>
+        /// <returns>Array of records.</returns>
+        public ReadOnlyCollection<FileCabinetRecord> GetRecords()
+        {
+            int numBytesToRead = (int)this.fileStream.Length;
+            int offset = 0;
+            var records = new List<FileCabinetRecord>();
+            while (numBytesToRead > 0)
+            {
+                byte[] bytes = new byte[RecordSize];
+                this.fileStream.Read(bytes, offset, bytes.Length);
+                var record = new FileCabinetRecord
+                {
+                    Id = BitConverter.ToInt32(bytes, 0),
+                    FirstName = Encoding.UTF8.GetString(bytes, 4, 120).Trim(new char[] { '\0' }),
+                    LastName = Encoding.UTF8.GetString(bytes, 124, 120).Trim(new char[] { '\0' }),
+                    DateOfBirth = new DateTime(BitConverter.ToInt32(bytes, 244), BitConverter.ToInt32(bytes, 248), BitConverter.ToInt32(bytes, 252)),
+                    Age = BitConverter.ToInt16(bytes, 256),
+                    Salary = Convert.ToDecimal(BitConverter.ToDouble(bytes, 258)),
+                    Gender = BitConverter.ToChar(bytes, 266),
+                };
+                records.Add(record);
+                numBytesToRead -= RecordSize;
+            }
+
+            this.fileStream.Position = 0;
+            return new ReadOnlyCollection<FileCabinetRecord>(records);
+        }
+
+        /// <summary>
+        /// Gets count of records.
+        /// </summary>
+        /// <returns>Return count of records.</returns>
+        public int GetStat()
+        {
+            return (int)this.fileStream.Length / RecordSize;
         }
 
         /// <summary>
@@ -112,45 +198,6 @@ namespace FileCabinetApp
         public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateofbirth)
         {
             throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Gets all records.
-        /// </summary>
-        /// <returns>Array of records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> GetRecords()
-        {
-            int numBytesToRead = (int)this.fileStream.Length;
-            int offset = 0;
-            var records = new List<FileCabinetRecord>();
-            while (numBytesToRead > 0)
-            {
-                byte[] bytes = new byte[RecordSize];
-                this.fileStream.Read(bytes, offset, bytes.Length);
-                var record = new FileCabinetRecord
-                {
-                    Id = BitConverter.ToInt32(bytes, 0),
-                    FirstName = Encoding.UTF8.GetString(bytes, 4, 120).Trim(new char[] { '\0' }),
-                    LastName = Encoding.UTF8.GetString(bytes, 124, 120).Trim(new char[] { '\0' }),
-                    DateOfBirth = new DateTime(BitConverter.ToInt32(bytes, 244), BitConverter.ToInt32(bytes, 248), BitConverter.ToInt32(bytes, 252)),
-                    Age = BitConverter.ToInt16(bytes, 256),
-                    Salary = Convert.ToDecimal(BitConverter.ToDouble(bytes, 258)),
-                    Gender = BitConverter.ToChar(bytes, 266),
-                };
-                records.Add(record);
-                numBytesToRead -= RecordSize;
-            }
-
-            return new ReadOnlyCollection<FileCabinetRecord>(records);
-        }
-
-        /// <summary>
-        /// Gets count of records.
-        /// </summary>
-        /// <returns>Return count of records.</returns>
-        public int GetStat()
-        {
-            return (int)this.fileStream.Length / RecordSize;
         }
 
         /// <summary>
