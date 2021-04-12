@@ -16,7 +16,7 @@ namespace FileCabinetApp
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
-        private static FileCabinetMemoryService fileCabinetService;
+        private static IFileCabinetService fileCabinetService;
         private static bool isRunning = true;
         private static IRecordValidator recordValidator;
 
@@ -57,54 +57,8 @@ namespace FileCabinetApp
 
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
             Console.WriteLine(Program.HintMessage);
-            if (args.Length == 0)
-            {
-                recordValidator = new DefaultValidator();
-                Console.WriteLine("Using default validation rules.");
-            }
-            else if (args[0].Contains("--validation-rules"))
-            {
-                switch (args[0].Split("=")[1].ToUpperInvariant())
-                {
-                    case "CUSTOM":
-                        recordValidator = new CustomValidator();
-                        Console.WriteLine("Using custom validation rules.");
-                        break;
-                    case "DEFAULT":
-                        recordValidator = new DefaultValidator();
-                        Console.WriteLine("Using default validation rules.");
-                        break;
-                    default:
-                        recordValidator = new DefaultValidator();
-                        Console.WriteLine("Using default validation rules.");
-                        break;
-                }
-            }
-            else if (args[0].Equals("-v"))
-            {
-                switch (args[1].ToUpperInvariant())
-                {
-                    case "CUSTOM":
-                        recordValidator = new CustomValidator();
-                        Console.WriteLine("Using custom validation rules.");
-                        break;
-                    case "DEFAULT":
-                        recordValidator = new DefaultValidator();
-                        Console.WriteLine("Using default validation rules.");
-                        break;
-                    default:
-                        recordValidator = new DefaultValidator();
-                        Console.WriteLine("Using default validation rules.");
-                        break;
-                }
-            }
-            else
-            {
-                recordValidator = new DefaultValidator();
-                Console.WriteLine("Using default validation rules.");
-            }
 
-            fileCabinetService = new FileCabinetMemoryService(recordValidator);
+            LoadSettings(args);
 
             Console.WriteLine();
 
@@ -328,12 +282,68 @@ namespace FileCabinetApp
             catch (IOException e)
             {
                 Console.WriteLine(e.Message);
-                Console.WriteLine(e.Message);
-                Console.WriteLine(e.Message);
             }
             catch (UnauthorizedAccessException e)
             {
                 Console.WriteLine(e.Message);
+            }
+        }
+
+        private static void LoadSettings(string[] args)
+        {
+            string[] settings = new string[] { "DEFAULT", "MEMORY" };
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i].Contains("--validation-rules"))
+                {
+                    settings[0] = args[i].Split("=")[1].ToUpperInvariant();
+                }
+                else if (args[i].Equals("-v"))
+                {
+                    i++;
+                    settings[0] = i < args.Length ? args[i].ToUpperInvariant() : "DEFAULT";
+                }
+                else if (args[i].Contains("--storage"))
+                {
+                    settings[1] = args[i].Split("=")[1].ToUpperInvariant();
+                }
+                else if (args[i].Contains("-s"))
+                {
+                    i++;
+                    settings[1] = i < args.Length ? args[i].ToUpperInvariant() : "MEMORY";
+                }
+            }
+
+            switch (settings[0])
+            {
+                case "CUSTOM":
+                    recordValidator = new CustomValidator();
+                    Console.WriteLine("Using custom validation rules.");
+                    break;
+                case "DEFAULT":
+                    recordValidator = new DefaultValidator();
+                    Console.WriteLine("Using default validation rules.");
+                    break;
+                default:
+                    recordValidator = new DefaultValidator();
+                    Console.WriteLine("Using default validation rules.");
+                    break;
+            }
+
+            switch (settings[1])
+            {
+                case "MEMORY":
+                    fileCabinetService = new FileCabinetMemoryService(recordValidator);
+                    Console.WriteLine("Using FileCabinetMemoryService.");
+                    break;
+                case "FILE":
+                    fileCabinetService = new FileCabinetFilesystemService(recordValidator, File.Open("cabinet-records.db", FileMode.OpenOrCreate));
+                    Console.WriteLine("Using FileCabinetFilesystemService.");
+                    break;
+                default:
+                    fileCabinetService = new FileCabinetMemoryService(recordValidator);
+                    Console.WriteLine("Using FileCabinetMemoryService.");
+                    break;
             }
         }
     }
