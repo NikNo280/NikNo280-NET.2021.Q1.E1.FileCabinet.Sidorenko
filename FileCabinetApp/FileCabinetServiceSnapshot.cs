@@ -38,7 +38,7 @@ namespace FileCabinetApp
 
             foreach (var item in this.records)
             {
-                cabinetRecordCsvWriter.Writer(item);
+                cabinetRecordCsvWriter.Write(item);
             }
         }
 
@@ -61,7 +61,7 @@ namespace FileCabinetApp
 
             foreach (var item in this.records)
             {
-                cabinetRecordXmlWriter.Writer(item);
+                cabinetRecordXmlWriter.Write(item);
             }
 
             xmlWriter.WriteEndDocument();

@@ -1,6 +1,7 @@
 ﻿using FileCabinetGenerator.RandomRecord;
 using System;
 using System.Globalization;
+using System.IO;
 
 namespace FileCabinetGenerator
 {
@@ -8,16 +9,32 @@ namespace FileCabinetGenerator
     {
         public static void Main(string[] args)
         {
-            DefaultRandomRecord defaultRandomRecord = new DefaultRandomRecord();
-
-            foreach (var item in LoadSettings(args))
+            var settings = LoadSettings(args);
+            int startId, recordsAmount;
+            bool result = int.TryParse(settings[2], out startId);
+            if (!result)
             {
-                defaultRandomRecord.GetRandomName();
-                Console.WriteLine(defaultRandomRecord.GetRandomName());
-                Console.WriteLine(defaultRandomRecord.GetRandomDateOfBirth().ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture));
-                Console.WriteLine(defaultRandomRecord.GetRandomAge());
-                Console.WriteLine(defaultRandomRecord.GetRandomGender());
-                Console.WriteLine(defaultRandomRecord.GetRandomSalary());
+                throw new ArgumentException("startId is not a number");
+            }
+
+            result = int.TryParse(settings[3], out recordsAmount);
+            if (!result)
+            {
+                throw new ArgumentException("recordsAmount is not a number");
+            }
+
+            var fileCabinet = new FileCabinet(new DefaultRandomRecord(), startId, recordsAmount);
+            using (var streamW = new StreamWriter(settings[1]))
+            {
+                switch (settings[0].ToUpperInvariant())
+                {
+                    case "CSV":
+                        fileCabinet.SaveToCsv(streamW);
+                        break;
+                    case "XML":
+                        fileCabinet.SaveToXml(streamW);
+                        break;
+                }
             }
         }
 

@@ -30,6 +30,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("edit", Edit),
             new Tuple<string, Action<string>>("find", Find),
             new Tuple<string, Action<string>>("export", Export),
+            new Tuple<string, Action<string>>("import", Import),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -37,11 +38,12 @@ namespace FileCabinetApp
             new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
             new string[] { "stat", "displays quality statistics", "The 'stat' command displays quality statistics." },
-            new string[] { "create", "create new record", "The 'stat' command create new record." },
-            new string[] { "list", "gets a list of records", "The 'stat' command gets a list of records." },
-            new string[] { "edit", "modify a data of an existing record.", "The 'stat' command modify a data of an existing record.." },
-            new string[] { "find", "finds records.", "The 'stat' command finds records." },
-            new string[] { "export", "exports service data to file", "The 'stat' command export exports service data to file" },
+            new string[] { "create", "create new record", "The 'create' command create new record." },
+            new string[] { "list", "gets a list of records", "The 'list' command gets a list of records." },
+            new string[] { "edit", "modify a data of an existing record.", "The 'edit' command modify a data of an existing record.." },
+            new string[] { "find", "finds records.", "The 'find' command finds records." },
+            new string[] { "export", "exports service data to file", "The 'export' command exports service data to file" },
+            new string[] { "import", "imports data from a file into a service", "The 'import' command imports data from a file into a service" },
         };
 
         /// <summary>
@@ -282,6 +284,40 @@ namespace FileCabinetApp
             catch (IOException e)
             {
                 Console.WriteLine(e.Message);
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        private static void Import(string parameters)
+        {
+            string[] data = parameters.Split(' ');
+            if (data.Length != 2)
+            {
+                Console.WriteLine("Incorrect parameters");
+                return;
+            }
+
+            try
+            {
+                using (var streamW = new StreamWriter(data[1]))
+                {
+                    switch (data[0].ToUpperInvariant())
+                    {
+                        case "CSV":
+                            Console.WriteLine($" records are exported to file {data[1]}.");
+                            break;
+                        case "XML":
+                            Console.WriteLine($"All records are exported to file {data[1]}.");
+                            break;
+                    }
+                }
+            }
+            catch (IOException)
+            {
+                Console.WriteLine($"Import error: {data[1]} is not exist.");
             }
             catch (UnauthorizedAccessException e)
             {

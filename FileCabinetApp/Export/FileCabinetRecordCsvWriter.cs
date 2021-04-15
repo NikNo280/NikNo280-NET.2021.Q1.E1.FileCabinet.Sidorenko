@@ -29,7 +29,7 @@ namespace FileCabinetApp
         /// Writes records to the file.
         /// </summary>
         /// <param name="fileCabinetRecord">The record to be written to the file.</param>
-        public void Writer(FileCabinetRecord fileCabinetRecord)
+        public void Write(FileCabinetRecord fileCabinetRecord)
         {
             if (fileCabinetRecord is null)
             {
@@ -38,7 +38,7 @@ namespace FileCabinetApp
 
             var line = $"{fileCabinetRecord.Id},{fileCabinetRecord.FirstName},{fileCabinetRecord.LastName}," +
                 $"{fileCabinetRecord.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)}," +
-                $"{fileCabinetRecord.Age},{fileCabinetRecord.Salary},{fileCabinetRecord.Gender}";
+                $"{fileCabinetRecord.Age},{fileCabinetRecord.Salary.ToString(CultureInfo.InvariantCulture)},{fileCabinetRecord.Gender}";
             this.textWriter.WriteLine(line);
             this.textWriter.Flush();
         }
