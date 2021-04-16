@@ -15,7 +15,7 @@
             </summary>
             <param name="textWriter">TextWriter.</param>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetRecordCsvWriter.Writer(FileCabinetApp.FileCabinetRecord)">
+        <member name="M:FileCabinetApp.FileCabinetRecordCsvWriter.Write(FileCabinetApp.FileCabinetRecord)">
             <summary>
             Writes records to the file.
             </summary>
@@ -32,34 +32,11 @@
             </summary>
             <param name="xmlWriter">XmlWriter.</param>
         </member>
-        <member name="M:FileCabinetApp.Export.FileCabinetRecordXmlWriter.Writer(FileCabinetApp.FileCabinetRecord)">
+        <member name="M:FileCabinetApp.Export.FileCabinetRecordXmlWriter.Write(FileCabinetApp.FileCabinetRecord)">
             <summary>
             Writes records to the file.
             </summary>
             <param name="fileCabinetRecord">The record to be written to the file.</param>
-        </member>
-        <member name="T:FileCabinetApp.FileCabinetServiceSnapshot">
-            <summary>
-            FileCabinetRecord snapshot.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.#ctor(FileCabinetApp.FileCabinetRecord[])">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetServiceSnapshot"/> class.
-            </summary>
-            <param name="records">Array of records.</param>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.SaveToCsv(System.IO.StreamWriter)">
-            <summary>
-            Save FileCabinetRecord snapshot to csv file.
-            </summary>
-            <param name="streamWriter">StreamWriter.</param>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.SaveToXml(System.IO.StreamWriter)">
-            <summary>
-            Save FileCabinetRecord snapshot xml to file.
-            </summary>
-            <param name="streamWriter">StreamWriter.</param>
         </member>
         <member name="T:FileCabinetApp.FileCabinetRecord">
             <summary>
@@ -121,6 +98,91 @@
             <value>
             User gender.
             </value>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetServiceSnapshot">
+            <summary>
+            FileCabinetRecord snapshot.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.#ctor(FileCabinetApp.FileCabinetRecord[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetServiceSnapshot"/> class.
+            </summary>
+            <param name="records">Array of records.</param>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetServiceSnapshot.Records">
+            <summary>
+            Gets records.
+            </summary>
+            <value>
+            ReadOnlyCollection of records.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetServiceSnapshot.RecordsImportCount">
+            <summary>
+            Gets the number of import records.
+            </summary>
+            <value>
+            The number of import records.
+            </value>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.SaveToCsv(System.IO.StreamWriter)">
+            <summary>
+            Save FileCabinetRecord snapshot to csv file.
+            </summary>
+            <param name="streamWriter">StreamWriter.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.SaveToXml(System.IO.StreamWriter)">
+            <summary>
+            Save FileCabinetRecord snapshot xml to file.
+            </summary>
+            <param name="streamWriter">StreamWriter.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.LoadFromCsv(System.IO.StreamReader)">
+            <summary>
+            Reads data from an Csv file.
+            </summary>
+            <param name="streamReader">StreamReader.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.LoadFromXml(System.IO.StreamReader)">
+            <summary>
+            Reads data from an XML file.
+            </summary>
+            <param name="streamReader">StreamReader.</param>
+        </member>
+        <member name="T:FileCabinetApp.Import.FileCabinetRecordCsvReader">
+            <summary>
+            This class provides functions to read data from a csv file.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Import.FileCabinetRecordCsvReader.#ctor(System.IO.StreamReader)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Import.FileCabinetRecordCsvReader"/> class.
+            </summary>
+            <param name="streamReader">StreamReader.</param>
+        </member>
+        <member name="M:FileCabinetApp.Import.FileCabinetRecordCsvReader.ReadAll">
+            <summary>
+            Gets all records from csv file.
+            </summary>
+            <returns>IList of records.</returns>
+        </member>
+        <member name="T:FileCabinetApp.Import.FileCabinetRecordXmlReader">
+            <summary>
+            This class provides functions to read data from a xml file.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Import.FileCabinetRecordXmlReader.#ctor(System.IO.StreamReader)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.Import.FileCabinetRecordXmlReader"/> class.
+            </summary>
+            <param name="streamReader">StreamReader.</param>
+        </member>
+        <member name="M:FileCabinetApp.Import.FileCabinetRecordXmlReader.ReadAll">
+            <summary>
+            Gets all records from xml file.
+            </summary>
+            <returns>IList of records.</returns>
         </member>
         <member name="T:FileCabinetApp.Program">
             <summary>
@@ -197,6 +259,24 @@
             </summary>
             <returns>new FileCabinetRecord snapshot.</returns>
         </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.Restore(FileCabinetApp.FileCabinetServiceSnapshot)">
+            <summary>
+            Restores data from snapshot.
+            </summary>
+            <param name="snapshot">FileCabinet snapshot.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.GetLastIndex">
+            <summary>
+            Gets last index of records.
+            </summary>
+            <returns>Last index of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.FindMaxId">
+            <summary>
+            /// Finds the maximum index of the records.
+            </summary>
+            <returns>The maximum index of the records.</returns>
+        </member>
         <member name="T:FileCabinetApp.FileCabinetMemoryService">
             <summary>
             The class representing functions for interacting with the record model.
@@ -260,6 +340,18 @@
             </summary>
             <returns>new FileCabinetRecord snapshot.</returns>
         </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.Restore(FileCabinetApp.FileCabinetServiceSnapshot)">
+            <summary>
+            Restores data from snapshot.
+            </summary>
+            <param name="snapshot">FileCabinet snapshot.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.GetLastIndex">
+            <summary>
+            Gets last index of records.
+            </summary>
+            <returns>Last index of records.</returns>
+        </member>
         <member name="T:FileCabinetApp.IFileCabinetService">
             <summary>
             Provides functionality for interacting with records.
@@ -316,6 +408,18 @@
             Generate new FileCabinetRecord snapshot.
             </summary>
             <returns>new FileCabinetRecord snapshot.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.Restore(FileCabinetApp.FileCabinetServiceSnapshot)">
+            <summary>
+            Restores data from snapshot.
+            </summary>
+            <param name="snapshot">FileCabinet snapshot.</param>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.GetLastIndex">
+            <summary>
+            Gets last index of records.
+            </summary>
+            <returns>Last index of records.</returns>
         </member>
         <member name="T:FileCabinetApp.TypeConverter">
             <summary>

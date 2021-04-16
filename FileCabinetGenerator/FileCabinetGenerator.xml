@@ -4,5 +4,17 @@
         <name>FileCabinetGenerator</name>
     </assembly>
     <members>
+        <member name="M:FileCabinetGenerator.FileCabinet.SaveToCsv(System.IO.StreamWriter)">
+            <summary>
+            Save FileCabinetRecord snapshot to csv file.
+            </summary>
+            <param name="streamWriter">StreamWriter.</param>
+        </member>
+        <member name="M:FileCabinetGenerator.FileCabinet.SaveToXml(System.IO.StreamWriter)">
+            <summary>
+            Save FileCabinetRecord snapshot xml to file.
+            </summary>
+            <param name="streamWriter">StreamWriter.</param>
+        </member>
     </members>
 </doc>

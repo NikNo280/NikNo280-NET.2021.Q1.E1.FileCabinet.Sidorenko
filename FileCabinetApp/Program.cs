@@ -153,7 +153,7 @@ namespace FileCabinetApp
             var gender = TypeConverter.ReadInput(TypeConverter.CharConverter, recordValidator.GenderValidator);
             var record = new FileCabinetRecord
             {
-                Id = Program.fileCabinetService.GetStat() + 1,
+                Id = Program.fileCabinetService.GetLastIndex() + 1,
                 FirstName = firstName,
                 LastName = lastName,
                 DateOfBirth = dateOfBirth,
@@ -162,7 +162,7 @@ namespace FileCabinetApp
                 Gender = gender,
             };
             Program.fileCabinetService.CreateRecord(record);
-            Console.WriteLine($"Record #{Program.fileCabinetService.GetStat()} is created.");
+            Console.WriteLine($"Record #{Program.fileCabinetService.GetLastIndex()} is created.");
         }
 
         private static void List(string parameters)
@@ -302,22 +302,27 @@ namespace FileCabinetApp
 
             try
             {
-                using (var streamW = new StreamWriter(data[1]))
+                using (var streamReader = new StreamReader(data[1]))
                 {
+                    var snapshot = Program.fileCabinetService.MakeSnapshot();
                     switch (data[0].ToUpperInvariant())
                     {
                         case "CSV":
-                            Console.WriteLine($" records are exported to file {data[1]}.");
+                            snapshot.LoadFromCsv(streamReader);
+                            Program.fileCabinetService.Restore(snapshot);
+                            Console.WriteLine($"{snapshot.RecordsImportCount} records were imported from {data[1]}");
                             break;
                         case "XML":
-                            Console.WriteLine($"All records are exported to file {data[1]}.");
+                            snapshot.LoadFromXml(streamReader);
+                            Program.fileCabinetService.Restore(snapshot);
+                            Console.WriteLine($"{snapshot.RecordsImportCount} records were imported from {data[1]}");
                             break;
                     }
                 }
             }
             catch (IOException)
             {
-                Console.WriteLine($"Import error: {data[1]} is not exist.");
+                Console.WriteLine($"Import error: file {data[1]} is not exist.");
             }
             catch (UnauthorizedAccessException e)
             {

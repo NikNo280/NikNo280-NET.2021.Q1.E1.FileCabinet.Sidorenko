@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Xml;
 using FileCabinetApp.Export;
+using FileCabinetApp.Import;
 
 namespace FileCabinetApp
 {
@@ -11,6 +14,7 @@ namespace FileCabinetApp
     public class FileCabinetServiceSnapshot
     {
         private FileCabinetRecord[] records;
+        private int recordsImportCount;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCabinetServiceSnapshot"/> class.
@@ -19,6 +23,34 @@ namespace FileCabinetApp
         public FileCabinetServiceSnapshot(FileCabinetRecord[] records)
         {
             this.records = records;
+        }
+
+        /// <summary>
+        /// Gets records.
+        /// </summary>
+        /// <value>
+        /// ReadOnlyCollection of records.
+        /// </value>
+        public ReadOnlyCollection<FileCabinetRecord> Records
+        {
+            get
+            {
+                return new ReadOnlyCollection<FileCabinetRecord>(this.records);
+            }
+        }
+
+        /// <summary>
+        /// Gets the number of import records.
+        /// </summary>
+        /// <value>
+        /// The number of import records.
+        /// </value>
+        public int RecordsImportCount
+        {
+            get
+            {
+                return this.recordsImportCount;
+            }
         }
 
         /// <summary>
@@ -66,6 +98,40 @@ namespace FileCabinetApp
 
             xmlWriter.WriteEndDocument();
             xmlWriter.Flush();
+        }
+
+        /// <summary>
+        /// Reads data from an Csv file.
+        /// </summary>
+        /// <param name="streamReader">StreamReader.</param>
+        public void LoadFromCsv(StreamReader streamReader)
+        {
+            var csvRecordsReader = new FileCabinetRecordCsvReader(streamReader);
+            var records = new List<FileCabinetRecord>();
+            foreach (var record in csvRecordsReader.ReadAll())
+            {
+                records.Add(record);
+            }
+
+            this.recordsImportCount = records.Count;
+            this.records = records.ToArray();
+        }
+
+        /// <summary>
+        /// Reads data from an XML file.
+        /// </summary>
+        /// <param name="streamReader">StreamReader.</param>
+        public void LoadFromXml(StreamReader streamReader)
+        {
+            var xmlRecordsReader = new FileCabinetRecordXmlReader(streamReader);
+            var records = new List<FileCabinetRecord>();
+            foreach (var record in xmlRecordsReader.ReadAll())
+            {
+                records.Add(record);
+            }
+
+            this.recordsImportCount = records.Count;
+            this.records = records.ToArray();
         }
     }
 }

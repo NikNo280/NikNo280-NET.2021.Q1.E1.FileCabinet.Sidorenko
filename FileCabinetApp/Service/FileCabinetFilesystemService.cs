@@ -89,6 +89,7 @@ namespace FileCabinetApp
                 throw new ArgumentNullException($"{nameof(record)} is null");
             }
 
+            this.fileStream.Position = 0;
             this.recordValidator.IsValid(record);
             int offset = 0;
             byte[] bytes = new byte[4];
@@ -121,7 +122,7 @@ namespace FileCabinetApp
                     bytes = BitConverter.GetBytes(record.Gender);
                     this.fileStream.Write(bytes, offset, bytes.Length);
                     this.fileStream.Position = 0;
-                    break;
+                    return;
                 }
 
                 this.fileStream.Position = (i + 1) * RecordSize;
@@ -321,7 +322,81 @@ namespace FileCabinetApp
         /// <returns>new FileCabinetRecord snapshot.</returns>
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
-            throw new NotImplementedException();
+            return new FileCabinetServiceSnapshot(this.GetRecords().ToArray());
+        }
+
+        /// <summary>
+        /// Restores data from snapshot.
+        /// </summary>
+        /// <param name="snapshot">FileCabinet snapshot.</param>
+        public void Restore(FileCabinetServiceSnapshot snapshot)
+        {
+            if (snapshot is null)
+            {
+                throw new ArgumentNullException($"{nameof(snapshot)} is null");
+            }
+
+            Dictionary<int, FileCabinetRecord> id_dictionary = new Dictionary<int, FileCabinetRecord>();
+
+            foreach (var record in this.GetRecords())
+            {
+                id_dictionary.Add(record.Id, record);
+            }
+
+            foreach (var record in snapshot.Records)
+            {
+                if (id_dictionary.ContainsKey(record.Id))
+                {
+                    this.EditRecord(record);
+                }
+                else
+                {
+                    this.CreateRecord(record);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets last index of records.
+        /// </summary>
+        /// <returns>Last index of records.</returns>
+        public int GetLastIndex()
+        {
+            if (this.fileStream.Length == 0)
+            {
+                return 1;
+            }
+            else
+            {
+                return this.FindMaxId();
+            }
+        }
+
+        /// <summary>
+        /// /// Finds the maximum index of the records.
+        /// </summary>
+        /// <returns>The maximum index of the records.</returns>
+        public int FindMaxId()
+        {
+            this.fileStream.Position = 0;
+            int offset = 0;
+            byte[] bytes = new byte[4];
+            int max = int.MinValue;
+            int temp;
+            for (int i = 0; i < this.GetStat(); i++)
+            {
+                this.fileStream.Read(bytes, offset, bytes.Length);
+                temp = BitConverter.ToInt32(bytes, 0);
+                if (BitConverter.ToInt32(bytes, 0) > max)
+                {
+                    max = temp;
+                }
+
+                this.fileStream.Position = (i + 1) * RecordSize;
+            }
+
+            this.fileStream.Position = 0;
+            return max;
         }
     }
 }

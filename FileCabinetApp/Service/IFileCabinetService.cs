@@ -63,5 +63,17 @@ namespace FileCabinetApp
         /// </summary>
         /// <returns>new FileCabinetRecord snapshot.</returns>
         public FileCabinetServiceSnapshot MakeSnapshot();
+
+        /// <summary>
+        /// Restores data from snapshot.
+        /// </summary>
+        /// <param name="snapshot">FileCabinet snapshot.</param>
+        public void Restore(FileCabinetServiceSnapshot snapshot);
+
+        /// <summary>
+        /// Gets last index of records.
+        /// </summary>
+        /// <returns>Last index of records.</returns>
+        public int GetLastIndex();
     }
 }
