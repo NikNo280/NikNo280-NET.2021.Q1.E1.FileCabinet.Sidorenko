@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace FileCabinetApp
 {
     /// <summary>
     /// Class representing the model record.
     /// </summary>
+    [XmlRoot("record")]
     public class FileCabinetRecord
     {
         /// <summary>
@@ -17,6 +15,7 @@ namespace FileCabinetApp
         /// <value>
         /// User id.
         /// </value>
+        [XmlAttribute(AttributeName = "id")]
         public int Id { get; set; }
 
         /// <summary>
@@ -25,6 +24,7 @@ namespace FileCabinetApp
         /// <value>
         /// User first name.
         /// </value>
+        [XmlElement(ElementName = "first")]
         public string FirstName { get; set; }
 
         /// <summary>
@@ -33,6 +33,7 @@ namespace FileCabinetApp
         /// <value>
         /// User last name.
         /// </value>
+        [XmlElement(ElementName = "last")]
         public string LastName { get; set; }
 
         /// <summary>
@@ -41,6 +42,7 @@ namespace FileCabinetApp
         /// <value>
         /// User date of birth.
         /// </value>
+        [XmlElement(ElementName = "dateOfBirth")]
         public DateTime DateOfBirth { get; set; }
 
         /// <summary>
@@ -49,6 +51,7 @@ namespace FileCabinetApp
         /// <value>
         /// User age.
         /// </value>
+        [XmlElement(ElementName = "age")]
         public short Age { get; set; }
 
         /// <summary>
@@ -57,6 +60,7 @@ namespace FileCabinetApp
         /// <value>
         /// User salary.
         /// </value>
+        [XmlElement(ElementName = "salary")]
         public decimal Salary { get; set; }
 
         /// <summary>
@@ -65,6 +69,7 @@ namespace FileCabinetApp
         /// <value>
         /// User gender.
         /// </value>
+        [XmlElement(ElementName = "gender")]
         public char Gender { get; set; }
     }
 }

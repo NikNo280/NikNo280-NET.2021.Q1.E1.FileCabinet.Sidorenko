@@ -28,7 +28,7 @@ namespace FileCabinetApp.Export
         /// Writes records to the file.
         /// </summary>
         /// <param name="fileCabinetRecord">The record to be written to the file.</param>
-        public void Writer(FileCabinetRecord fileCabinetRecord)
+        public void Write(FileCabinetRecord fileCabinetRecord)
         {
             if (fileCabinetRecord is null)
             {

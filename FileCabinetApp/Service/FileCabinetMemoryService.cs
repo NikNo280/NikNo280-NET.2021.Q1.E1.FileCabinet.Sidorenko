@@ -148,6 +148,46 @@ namespace FileCabinetApp
             return new FileCabinetServiceSnapshot(this.list.ToArray());
         }
 
+        /// <summary>
+        /// Restores data from snapshot.
+        /// </summary>
+        /// <param name="snapshot">FileCabinet snapshot.</param>
+        public void Restore(FileCabinetServiceSnapshot snapshot)
+        {
+            if (snapshot is null)
+            {
+                throw new ArgumentNullException($"{nameof(snapshot)} is null");
+            }
+
+            var id_dictionary = new Dictionary<int, FileCabinetRecord>();
+
+            foreach (var record in this.list)
+            {
+                id_dictionary.Add(record.Id, record);
+            }
+
+            foreach (var record in snapshot.Records)
+            {
+                if (id_dictionary.ContainsKey(record.Id))
+                {
+                    this.EditRecord(record);
+                }
+                else
+                {
+                    this.CreateRecord(record);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets last index of records.
+        /// </summary>
+        /// <returns>Last index of records.</returns>
+        public int GetLastIndex()
+        {
+            return this.list.Count == 0 ? 0 : this.list.Max(record => record.Id);
+        }
+
         private static ReadOnlyCollection<FileCabinetRecord> GetArrayFromDict(string source, Dictionary<string, List<FileCabinetRecord>> dictionary)
         {
             if (string.IsNullOrWhiteSpace(source))

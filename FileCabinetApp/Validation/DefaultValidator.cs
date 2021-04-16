@@ -32,12 +32,12 @@ namespace FileCabinetApp
                 throw new ArgumentNullException($"{nameof(record.LastName)} is null");
             }
 
-            if (record.FirstName.Length <= 2 || record.FirstName.Length > 60)
+            if (record.FirstName.Length < 2 || record.FirstName.Length > 60)
             {
                 throw new ArgumentException($"{nameof(record.FirstName.Length)} is less than 2 or bigger than 60");
             }
 
-            if (record.LastName.Length <= 2 || record.LastName.Length > 60)
+            if (record.LastName.Length < 2 || record.LastName.Length > 60)
             {
                 throw new ArgumentException($"{nameof(record.LastName.Length)} is less than 2 or bigger than 60");
             }
@@ -52,7 +52,7 @@ namespace FileCabinetApp
                 throw new ArgumentException($"{nameof(record.LastName)} consists only of spaces");
             }
 
-            if (record.Age < 0 || record.Age > 110)
+            if (record.Age <= 0 || record.Age > 110)
             {
                 throw new ArgumentException($"{nameof(record.Age)} is less than zero or bigger than 110");
             }
@@ -85,7 +85,7 @@ namespace FileCabinetApp
                 return new Tuple<bool, string>(false, $"{nameof(name)} is null");
             }
 
-            if (name.Length <= 2 || name.Length > 60)
+            if (name.Length < 2 || name.Length > 60)
             {
                 return new Tuple<bool, string>(false, $"{nameof(name.Length)} is less than 2 or bigger than 60");
             }

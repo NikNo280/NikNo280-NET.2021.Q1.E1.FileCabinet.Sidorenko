@@ -30,6 +30,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("edit", Edit),
             new Tuple<string, Action<string>>("find", Find),
             new Tuple<string, Action<string>>("export", Export),
+            new Tuple<string, Action<string>>("import", Import),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -37,11 +38,12 @@ namespace FileCabinetApp
             new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
             new string[] { "stat", "displays quality statistics", "The 'stat' command displays quality statistics." },
-            new string[] { "create", "create new record", "The 'stat' command create new record." },
-            new string[] { "list", "gets a list of records", "The 'stat' command gets a list of records." },
-            new string[] { "edit", "modify a data of an existing record.", "The 'stat' command modify a data of an existing record.." },
-            new string[] { "find", "finds records.", "The 'stat' command finds records." },
-            new string[] { "export", "exports service data to file", "The 'stat' command export exports service data to file" },
+            new string[] { "create", "create new record", "The 'create' command create new record." },
+            new string[] { "list", "gets a list of records", "The 'list' command gets a list of records." },
+            new string[] { "edit", "modify a data of an existing record.", "The 'edit' command modify a data of an existing record.." },
+            new string[] { "find", "finds records.", "The 'find' command finds records." },
+            new string[] { "export", "exports service data to file", "The 'export' command exports service data to file" },
+            new string[] { "import", "imports data from a file into a service", "The 'import' command imports data from a file into a service" },
         };
 
         /// <summary>
@@ -151,7 +153,7 @@ namespace FileCabinetApp
             var gender = TypeConverter.ReadInput(TypeConverter.CharConverter, recordValidator.GenderValidator);
             var record = new FileCabinetRecord
             {
-                Id = Program.fileCabinetService.GetStat() + 1,
+                Id = Program.fileCabinetService.GetLastIndex() + 1,
                 FirstName = firstName,
                 LastName = lastName,
                 DateOfBirth = dateOfBirth,
@@ -160,7 +162,7 @@ namespace FileCabinetApp
                 Gender = gender,
             };
             Program.fileCabinetService.CreateRecord(record);
-            Console.WriteLine($"Record #{Program.fileCabinetService.GetStat()} is created.");
+            Console.WriteLine($"Record #{Program.fileCabinetService.GetLastIndex()} is created.");
         }
 
         private static void List(string parameters)
@@ -282,6 +284,45 @@ namespace FileCabinetApp
             catch (IOException e)
             {
                 Console.WriteLine(e.Message);
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        private static void Import(string parameters)
+        {
+            string[] data = parameters.Split(' ');
+            if (data.Length != 2)
+            {
+                Console.WriteLine("Incorrect parameters");
+                return;
+            }
+
+            try
+            {
+                using (var streamReader = new StreamReader(data[1]))
+                {
+                    var snapshot = Program.fileCabinetService.MakeSnapshot();
+                    switch (data[0].ToUpperInvariant())
+                    {
+                        case "CSV":
+                            snapshot.LoadFromCsv(streamReader);
+                            Program.fileCabinetService.Restore(snapshot);
+                            Console.WriteLine($"{snapshot.RecordsImportCount} records were imported from {data[1]}");
+                            break;
+                        case "XML":
+                            snapshot.LoadFromXml(streamReader);
+                            Program.fileCabinetService.Restore(snapshot);
+                            Console.WriteLine($"{snapshot.RecordsImportCount} records were imported from {data[1]}");
+                            break;
+                    }
+                }
+            }
+            catch (IOException)
+            {
+                Console.WriteLine($"Import error: file {data[1]} is not exist.");
             }
             catch (UnauthorizedAccessException e)
             {
