@@ -82,5 +82,16 @@ namespace FileCabinetApp
         /// <param name="id">Id record to delete.</param>
         /// <returns>Whether the entry has been deleted.</returns>
         public bool Remove(int id);
+
+        /// <summary>
+        /// Defragments the data file.
+        /// </summary>
+        public void Purge();
+
+        /// <summary>
+        /// Gets number of records deleted.
+        /// </summary>
+        /// <returns>Number of records deleted.</returns>
+        public int GetCountDeletedRecords();
     }
 }

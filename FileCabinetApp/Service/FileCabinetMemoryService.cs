@@ -210,6 +210,22 @@ namespace FileCabinetApp
             return false;
         }
 
+        /// <summary>
+        /// Defragments the data file.
+        /// </summary>
+        public void Purge()
+        {
+        }
+
+        /// <summary>
+        /// Gets number of records deleted.
+        /// </summary>
+        /// <returns>Number of records deleted.</returns>
+        public int GetCountDeletedRecords()
+        {
+            return 0;
+        }
+
         private static void RemoveRecordInDict(Dictionary<string, List<FileCabinetRecord>> dictionary, FileCabinetRecord record, string key)
         {
             if (string.IsNullOrWhiteSpace(key))

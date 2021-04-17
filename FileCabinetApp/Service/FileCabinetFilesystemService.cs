@@ -443,6 +443,9 @@ namespace FileCabinetApp
             return false;
         }
 
+        /// <summary>
+        /// Defragments the data file.
+        /// </summary>
         public void Purge()
         {
             long numBytesToRead = this.fileStream.Length;
@@ -476,6 +479,24 @@ namespace FileCabinetApp
 
             this.fileStream.Position = 0;
             File.Delete("temp.db");
+        }
+
+        /// <summary>
+        /// Gets number of records deleted.
+        /// </summary>
+        /// <returns>Number of records deleted.</returns>
+        public int GetCountDeletedRecords()
+        {
+            int count = 0;
+            for (int i = 0; i < this.GetStat(); i++)
+            {
+                if (this.IsDeleted(i))
+                {
+                    count++;
+                }
+            }
+
+            return count;
         }
 
         private bool IsDeleted(int index)
