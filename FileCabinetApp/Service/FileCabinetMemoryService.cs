@@ -188,6 +188,78 @@ namespace FileCabinetApp
             return this.list.Count == 0 ? 0 : this.list.Max(record => record.Id);
         }
 
+        /// <summary>
+        /// Removes records.
+        /// </summary>
+        /// <param name="id">Id record to delete.</param>
+        /// <returns>Whether the entry has been deleted.</returns>
+        public bool Remove(int id)
+        {
+            foreach (var record in this.list)
+            {
+                if (record.Id == id)
+                {
+                    this.list.Remove(record);
+                    RemoveRecordInDict(this.firstNameDictionary, record, record.FirstName);
+                    RemoveRecordInDict(this.lastNameDictionary, record, record.LastName);
+                    RemoveRecordInDict(this.dateOfBirthDictionary, record, record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture));
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Defragments the data file.
+        /// </summary>
+        public void Purge()
+        {
+        }
+
+        /// <summary>
+        /// Gets number of records deleted.
+        /// </summary>
+        /// <returns>Number of records deleted.</returns>
+        public int GetCountDeletedRecords()
+        {
+            return 0;
+        }
+
+        private static void RemoveRecordInDict(Dictionary<string, List<FileCabinetRecord>> dictionary, FileCabinetRecord record, string key)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                throw new ArgumentNullException($"{nameof(key)} is null or empty");
+            }
+
+            if (record is null)
+            {
+                throw new ArgumentNullException($"{nameof(record)} is null");
+            }
+
+            if (dictionary is null)
+            {
+                throw new ArgumentNullException($"{nameof(dictionary)} is null");
+            }
+
+            if (dictionary.ContainsKey(key.ToUpperInvariant()))
+            {
+                var fileCabinetRecords = dictionary[key.ToUpperInvariant()];
+                if (fileCabinetRecords.Contains(record))
+                {
+                    if (fileCabinetRecords.Count == 1)
+                    {
+                        dictionary.Remove(key.ToUpperInvariant());
+                    }
+                    else
+                    {
+                        fileCabinetRecords.Remove(record);
+                    }
+                }
+            }
+        }
+
         private static ReadOnlyCollection<FileCabinetRecord> GetArrayFromDict(string source, Dictionary<string, List<FileCabinetRecord>> dictionary)
         {
             if (string.IsNullOrWhiteSpace(source))

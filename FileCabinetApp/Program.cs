@@ -31,6 +31,8 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("find", Find),
             new Tuple<string, Action<string>>("export", Export),
             new Tuple<string, Action<string>>("import", Import),
+            new Tuple<string, Action<string>>("remove", Remove),
+            new Tuple<string, Action<string>>("purge", Purge),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -44,6 +46,8 @@ namespace FileCabinetApp
             new string[] { "find", "finds records.", "The 'find' command finds records." },
             new string[] { "export", "exports service data to file", "The 'export' command exports service data to file" },
             new string[] { "import", "imports data from a file into a service", "The 'import' command imports data from a file into a service" },
+            new string[] { "remove", "removes record by id", "The 'remove' removes record by id" },
+            new string[] { "purge", "defragments the data file", "The 'purge' defragments the data file" },
         };
 
         /// <summary>
@@ -134,7 +138,8 @@ namespace FileCabinetApp
         private static void Stat(string parameters)
         {
             var recordsCount = Program.fileCabinetService.GetStat();
-            Console.WriteLine($"{recordsCount} record(s).");
+            var recordsDeletedCount = Program.fileCabinetService.GetCountDeletedRecords();
+            Console.WriteLine($"{recordsCount - recordsDeletedCount} record(s). {recordsDeletedCount} deleted record(s)");
         }
 
         private static void Create(string parameters)
@@ -222,6 +227,12 @@ namespace FileCabinetApp
         private static void Find(string parameters)
         {
             var parametersSplit = parameters.Split(" ");
+            if (parametersSplit.Length != 2 || string.IsNullOrWhiteSpace(parametersSplit[0]) || string.IsNullOrWhiteSpace(parametersSplit[1]))
+            {
+                Console.WriteLine("Error input");
+                return;
+            }
+
             ReadOnlyCollection<FileCabinetRecord> records = parametersSplit[0].ToUpperInvariant() switch
             {
                 "FIRSTNAME" => Program.fileCabinetService.FindByFirstName(parametersSplit[1]),
@@ -328,6 +339,34 @@ namespace FileCabinetApp
             {
                 Console.WriteLine(e.Message);
             }
+        }
+
+        private static void Remove(string parameters)
+        {
+            int id;
+            bool result = int.TryParse(parameters, out id);
+            if (!result)
+            {
+                Console.WriteLine("id is not a number");
+                return;
+            }
+
+            if (Program.fileCabinetService.Remove(id))
+            {
+                Console.WriteLine($"Record #{id} is removed.");
+            }
+            else
+            {
+                Console.WriteLine($"Record #{id} is doesn't exists.");
+            }
+        }
+
+        private static void Purge(string parameters)
+        {
+            int countRecords = Program.fileCabinetService.GetStat();
+            Program.fileCabinetService.Purge();
+            int newCountRecords = Program.fileCabinetService.GetStat();
+            Console.WriteLine($"Data file processing is completed: {countRecords - newCountRecords} of {countRecords} records were purged.");
         }
 
         private static void LoadSettings(string[] args)
