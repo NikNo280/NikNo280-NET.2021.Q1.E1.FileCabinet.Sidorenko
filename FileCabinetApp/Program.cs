@@ -32,6 +32,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("export", Export),
             new Tuple<string, Action<string>>("import", Import),
             new Tuple<string, Action<string>>("remove", Remove),
+            new Tuple<string, Action<string>>("purge", Purge),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -46,6 +47,7 @@ namespace FileCabinetApp
             new string[] { "export", "exports service data to file", "The 'export' command exports service data to file" },
             new string[] { "import", "imports data from a file into a service", "The 'import' command imports data from a file into a service" },
             new string[] { "remove", "removes record by id", "The 'remove' removes record by id" },
+            new string[] { "purge", "defragments the data file", "The 'purge' defragments the data file" },
         };
 
         /// <summary>
@@ -299,26 +301,6 @@ namespace FileCabinetApp
             }
         }
 
-        private static void Remove(string parameters)
-        {
-            int id;
-            bool result = int.TryParse(parameters, out id);
-            if (!result)
-            {
-                Console.WriteLine("id is not a number");
-                return;
-            }
-
-            if (Program.fileCabinetService.Remove(id))
-            {
-                Console.WriteLine($"Record #{id} is removed.");
-            }
-            else
-            {
-                Console.WriteLine($"Record #{id} is doesn't exists.");
-            }
-        }
-
         private static void Import(string parameters)
         {
             string[] data = parameters.Split(' ');
@@ -355,6 +337,42 @@ namespace FileCabinetApp
             catch (UnauthorizedAccessException e)
             {
                 Console.WriteLine(e.Message);
+            }
+        }
+
+        private static void Remove(string parameters)
+        {
+            int id;
+            bool result = int.TryParse(parameters, out id);
+            if (!result)
+            {
+                Console.WriteLine("id is not a number");
+                return;
+            }
+
+            if (Program.fileCabinetService.Remove(id))
+            {
+                Console.WriteLine($"Record #{id} is removed.");
+            }
+            else
+            {
+                Console.WriteLine($"Record #{id} is doesn't exists.");
+            }
+        }
+
+        private static void Purge(string parameters)
+        {
+            if (Program.fileCabinetService is FileCabinetFilesystemService)
+            {
+                int countRecords = fileCabinetService.GetStat();
+                var fileCabinetFilesystemService = Program.fileCabinetService as FileCabinetFilesystemService;
+                fileCabinetFilesystemService.Purge();
+                int newCountRecords = fileCabinetService.GetStat();
+                Console.WriteLine($"Data file processing is completed: {countRecords - newCountRecords} of {countRecords} records were purged.");
+            }
+            else
+            {
+                Console.WriteLine($"This command is not supported for {Program.fileCabinetService.GetType()}");
             }
         }
 

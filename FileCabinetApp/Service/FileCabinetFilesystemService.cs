@@ -142,12 +142,13 @@ namespace FileCabinetApp
         /// <returns>Array of records.</returns>
         public ReadOnlyCollection<FileCabinetRecord> GetRecords()
         {
+            this.fileStream.Position = 0;
             int numBytesToRead = (int)this.fileStream.Length;
             int offset = 0;
             var records = new List<FileCabinetRecord>();
+            byte[] bytes = new byte[RecordSize];
             while (numBytesToRead > 0)
             {
-                byte[] bytes = new byte[RecordSize];
                 this.fileStream.Read(bytes, offset, bytes.Length);
                 var record = new FileCabinetRecord
                 {
@@ -440,6 +441,41 @@ namespace FileCabinetApp
 
             this.fileStream.Position = 0;
             return false;
+        }
+
+        public void Purge()
+        {
+            long numBytesToRead = this.fileStream.Length;
+            int offset = 0;
+            byte[] bytes = new byte[RecordSize];
+            using (FileStream file = File.Open("temp.db", FileMode.Create))
+            {
+                while (numBytesToRead > 0)
+                {
+                    this.fileStream.Read(bytes, offset, bytes.Length);
+                    if (!BitConverter.ToBoolean(bytes, 268))
+                    {
+                        file.Write(bytes, 0, bytes.Length);
+                    }
+
+                    numBytesToRead -= RecordSize;
+                }
+
+                this.fileStream.SetLength(0);
+
+                numBytesToRead = file.Length;
+
+                file.Position = 0;
+                while (numBytesToRead > 0)
+                {
+                    file.Read(bytes, offset, bytes.Length);
+                    this.fileStream.Write(bytes, 0, bytes.Length);
+                    numBytesToRead -= RecordSize;
+                }
+            }
+
+            this.fileStream.Position = 0;
+            File.Delete("temp.db");
         }
 
         private bool IsDeleted(int index)
