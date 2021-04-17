@@ -14,7 +14,7 @@ namespace FileCabinetApp
     /// </summary>
     public class FileCabinetFilesystemService : IFileCabinetService
     {
-        private const int RecordSize = 268;
+        private const int RecordSize = 269;
         private const int NameSize = 120;
         private readonly IRecordValidator recordValidator;
         private readonly FileStream fileStream;
@@ -72,6 +72,9 @@ namespace FileCabinetApp
             bytes = BitConverter.GetBytes(record.Gender);
             this.fileStream.Write(bytes, offset, bytes.Length);
 
+            bytes = BitConverter.GetBytes(false);
+            this.fileStream.Write(bytes, offset, bytes.Length);
+
             this.fileStream.Flush();
             this.fileStream.Position = 0;
 
@@ -96,7 +99,7 @@ namespace FileCabinetApp
             for (int i = 0; i < this.GetStat(); i++)
             {
                 this.fileStream.Read(bytes, offset, bytes.Length);
-                if (BitConverter.ToInt32(bytes, 0) == record.Id)
+                if (!this.IsDeleted(i) && BitConverter.ToInt32(bytes, 0) == record.Id)
                 {
                     char[] firstName = new char[NameSize];
                     Array.Copy(record.FirstName.ToArray(), firstName, record.FirstName.Length);
@@ -121,6 +124,7 @@ namespace FileCabinetApp
 
                     bytes = BitConverter.GetBytes(record.Gender);
                     this.fileStream.Write(bytes, offset, bytes.Length);
+
                     this.fileStream.Position = 0;
                     return;
                 }
@@ -155,7 +159,12 @@ namespace FileCabinetApp
                     Salary = Convert.ToDecimal(BitConverter.ToDouble(bytes, 258)),
                     Gender = BitConverter.ToChar(bytes, 266),
                 };
-                records.Add(record);
+
+                if (!BitConverter.ToBoolean(bytes, 268))
+                {
+                    records.Add(record);
+                }
+
                 numBytesToRead -= RecordSize;
             }
 
@@ -191,7 +200,7 @@ namespace FileCabinetApp
             {
                 this.fileStream.Position += 4;
                 this.fileStream.Read(bytes, offset, bytes.Length);
-                if (Encoding.UTF8.GetString(bytes, 0, NameSize).Trim(new char[] { '\0' }).ToUpperInvariant().Equals(firstName.ToUpperInvariant()))
+                if (!this.IsDeleted(i) && Encoding.UTF8.GetString(bytes, 0, NameSize).Trim(new char[] { '\0' }).ToUpperInvariant().Equals(firstName.ToUpperInvariant()))
                 {
                     this.fileStream.Position = i * RecordSize;
                     byte[] data = new byte[RecordSize];
@@ -235,7 +244,7 @@ namespace FileCabinetApp
             {
                 this.fileStream.Position += 124;
                 this.fileStream.Read(bytes, offset, bytes.Length);
-                if (Encoding.UTF8.GetString(bytes, 0, NameSize).Trim(new char[] { '\0' }).ToUpperInvariant().Equals(lastName.ToUpperInvariant()))
+                if (!this.IsDeleted(i) && Encoding.UTF8.GetString(bytes, 0, NameSize).Trim(new char[] { '\0' }).ToUpperInvariant().Equals(lastName.ToUpperInvariant()))
                 {
                     this.fileStream.Position = i * RecordSize;
                     byte[] data = new byte[RecordSize];
@@ -273,47 +282,49 @@ namespace FileCabinetApp
             }
 
             DateTime searchDateTime;
-            var result = DateTime.TryParseExact(dateofbirth, "d", CultureInfo.InvariantCulture, DateTimeStyles.None, out searchDateTime);
-            if (!result)
+            var result = DateTime.TryParseExact(dateofbirth, "yyyy-MMM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out searchDateTime);
+            if (result)
             {
-                throw new ArgumentException($"{nameof(dateofbirth)} is not a number");
-            }
-
-            int offset = 0;
-            byte[] bytes = new byte[4];
-            var records = new List<FileCabinetRecord>();
-            for (int i = 0; i < this.GetStat(); i++)
-            {
-                this.fileStream.Position += 244;
-                this.fileStream.Read(bytes, offset, bytes.Length);
-                int year = BitConverter.ToInt32(bytes, 0);
-                this.fileStream.Read(bytes, offset, bytes.Length);
-                int month = BitConverter.ToInt32(bytes, 0);
-                this.fileStream.Read(bytes, offset, bytes.Length);
-                int day = BitConverter.ToInt32(bytes, 0);
-                if (new DateTime(year, month, day).Equals(searchDateTime))
+                int offset = 0;
+                byte[] bytes = new byte[4];
+                var records = new List<FileCabinetRecord>();
+                for (int i = 0; i < this.GetStat(); i++)
                 {
-                    this.fileStream.Position = i * RecordSize;
-                    byte[] data = new byte[RecordSize];
-                    this.fileStream.Read(data, offset, data.Length);
-                    var record = new FileCabinetRecord
+                    this.fileStream.Position += 244;
+                    this.fileStream.Read(bytes, offset, bytes.Length);
+                    int year = BitConverter.ToInt32(bytes, 0);
+                    this.fileStream.Read(bytes, offset, bytes.Length);
+                    int month = BitConverter.ToInt32(bytes, 0);
+                    this.fileStream.Read(bytes, offset, bytes.Length);
+                    int day = BitConverter.ToInt32(bytes, 0);
+                    if (!this.IsDeleted(i) && new DateTime(year, month, day).Equals(searchDateTime))
                     {
-                        Id = BitConverter.ToInt32(data, 0),
-                        FirstName = Encoding.UTF8.GetString(data, 4, NameSize).Trim(new char[] { '\0' }),
-                        LastName = Encoding.UTF8.GetString(data, 124, NameSize).Trim(new char[] { '\0' }),
-                        DateOfBirth = new DateTime(BitConverter.ToInt32(data, 244), BitConverter.ToInt32(data, 248), BitConverter.ToInt32(data, 252)),
-                        Age = BitConverter.ToInt16(data, 256),
-                        Salary = Convert.ToDecimal(BitConverter.ToDouble(data, 258)),
-                        Gender = BitConverter.ToChar(data, 266),
-                    };
-                    records.Add(record);
+                        this.fileStream.Position = i * RecordSize;
+                        byte[] data = new byte[RecordSize];
+                        this.fileStream.Read(data, offset, data.Length);
+                        var record = new FileCabinetRecord
+                        {
+                            Id = BitConverter.ToInt32(data, 0),
+                            FirstName = Encoding.UTF8.GetString(data, 4, NameSize).Trim(new char[] { '\0' }),
+                            LastName = Encoding.UTF8.GetString(data, 124, NameSize).Trim(new char[] { '\0' }),
+                            DateOfBirth = new DateTime(BitConverter.ToInt32(data, 244), BitConverter.ToInt32(data, 248), BitConverter.ToInt32(data, 252)),
+                            Age = BitConverter.ToInt16(data, 256),
+                            Salary = Convert.ToDecimal(BitConverter.ToDouble(data, 258)),
+                            Gender = BitConverter.ToChar(data, 266),
+                        };
+                        records.Add(record);
+                    }
+
+                    this.fileStream.Position = (i + 1) * RecordSize;
                 }
 
-                this.fileStream.Position = (i + 1) * RecordSize;
+                this.fileStream.Position = 0;
+                return new ReadOnlyCollection<FileCabinetRecord>(records);
             }
-
-            this.fileStream.Position = 0;
-            return new ReadOnlyCollection<FileCabinetRecord>(records);
+            else
+            {
+                return new ReadOnlyCollection<FileCabinetRecord>(new List<FileCabinetRecord>());
+            }
         }
 
         /// <summary>
@@ -364,7 +375,7 @@ namespace FileCabinetApp
         {
             if (this.fileStream.Length == 0)
             {
-                return 1;
+                return 0;
             }
             else
             {
@@ -387,7 +398,7 @@ namespace FileCabinetApp
             {
                 this.fileStream.Read(bytes, offset, bytes.Length);
                 temp = BitConverter.ToInt32(bytes, 0);
-                if (BitConverter.ToInt32(bytes, 0) > max)
+                if (!this.IsDeleted(i) && BitConverter.ToInt32(bytes, 0) > max)
                 {
                     max = temp;
                 }
@@ -397,6 +408,48 @@ namespace FileCabinetApp
 
             this.fileStream.Position = 0;
             return max;
+        }
+
+        /// <summary>
+        /// Removes records.
+        /// </summary>
+        /// <param name="id">Id record to delete.</param>
+        /// <returns>Whether the entry has been deleted.</returns>
+        public bool Remove(int id)
+        {
+            this.fileStream.Position = 0;
+            int offset = 0;
+            byte[] bytes = new byte[4];
+            for (int i = 0; i < this.GetStat(); i++)
+            {
+                this.fileStream.Read(bytes, offset, bytes.Length);
+                int recordId = BitConverter.ToInt32(bytes, 0);
+                bool isDeleted = this.IsDeleted(i);
+
+                if (recordId == id && !isDeleted)
+                {
+                    this.fileStream.Position += RecordSize - sizeof(int) - sizeof(bool);
+                    bytes = BitConverter.GetBytes(true);
+                    this.fileStream.Write(bytes, offset, bytes.Length);
+                    this.fileStream.Position = 0;
+                    return true;
+                }
+
+                this.fileStream.Position = (i + 1) * RecordSize;
+            }
+
+            this.fileStream.Position = 0;
+            return false;
+        }
+
+        private bool IsDeleted(int index)
+        {
+            long tempPosition = this.fileStream.Position;
+            byte[] isDeleted_bytes = new byte[1];
+            this.fileStream.Position = ((index + 1) * RecordSize) - 1;
+            this.fileStream.Read(isDeleted_bytes, 0, isDeleted_bytes.Length);
+            this.fileStream.Position = tempPosition;
+            return BitConverter.ToBoolean(isDeleted_bytes, 0);
         }
     }
 }
