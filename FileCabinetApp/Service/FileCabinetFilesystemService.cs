@@ -66,15 +66,12 @@ namespace FileCabinetApp
             bytes = BitConverter.GetBytes(record.Age);
             this.fileStream.Write(bytes, offset, bytes.Length);
 
-            /*
             int[] bits = decimal.GetBits(record.Salary);
             foreach (var bit in bits)
             {
-
+                bytes = BitConverter.GetBytes(bit);
+                this.fileStream.Write(bytes, offset, bytes.Length);
             }
-            */
-            bytes = BitConverter.GetBytes(Convert.ToDouble(record.Salary));
-            this.fileStream.Write(bytes, offset, bytes.Length);
 
             bytes = BitConverter.GetBytes(record.Gender);
             this.fileStream.Write(bytes, offset, bytes.Length);
@@ -126,8 +123,12 @@ namespace FileCabinetApp
                     bytes = BitConverter.GetBytes(record.Age);
                     this.fileStream.Write(bytes, offset, bytes.Length);
 
-                    bytes = BitConverter.GetBytes(Convert.ToDouble(record.Salary));
-                    this.fileStream.Write(bytes, offset, bytes.Length);
+                    int[] bits = decimal.GetBits(record.Salary);
+                    foreach (var bit in bits)
+                    {
+                        bytes = BitConverter.GetBytes(bit);
+                        this.fileStream.Write(bytes, offset, bytes.Length);
+                    }
 
                     bytes = BitConverter.GetBytes(record.Gender);
                     this.fileStream.Write(bytes, offset, bytes.Length);
@@ -164,11 +165,20 @@ namespace FileCabinetApp
                     LastName = Encoding.UTF8.GetString(bytes, 124, NameSize).Trim(new char[] { '\0' }),
                     DateOfBirth = new DateTime(BitConverter.ToInt32(bytes, 244), BitConverter.ToInt32(bytes, 248), BitConverter.ToInt32(bytes, 252)),
                     Age = BitConverter.ToInt16(bytes, 256),
-                    Salary = Convert.ToDecimal(BitConverter.ToDouble(bytes, 258)),
-                    Gender = BitConverter.ToChar(bytes, 266),
+                    Gender = BitConverter.ToChar(bytes, 274),
                 };
 
-                if (!BitConverter.ToBoolean(bytes, 268))
+                int[] bits = new int[4];
+                int position = 258;
+                for (int i = 0; i < bits.Length; i++)
+                {
+                    bits[i] = BitConverter.ToInt32(bytes, position);
+                    position += sizeof(int);
+                }
+
+                record.Salary = new decimal(bits);
+
+                if (!BitConverter.ToBoolean(bytes, RecordSize - sizeof(bool)))
                 {
                     records.Add(record);
                 }
@@ -220,9 +230,19 @@ namespace FileCabinetApp
                         LastName = Encoding.UTF8.GetString(data, 124, NameSize).Trim(new char[] { '\0' }),
                         DateOfBirth = new DateTime(BitConverter.ToInt32(data, 244), BitConverter.ToInt32(data, 248), BitConverter.ToInt32(data, 252)),
                         Age = BitConverter.ToInt16(data, 256),
-                        Salary = Convert.ToDecimal(BitConverter.ToDouble(data, 258)),
-                        Gender = BitConverter.ToChar(data, 266),
+                        Gender = BitConverter.ToChar(data, 274),
                     };
+
+                    int[] bits = new int[4];
+                    int position = 258;
+                    for (int j = 0; i < bits.Length; i++)
+                    {
+                        bits[j] = BitConverter.ToInt32(data, position);
+                        position += sizeof(int);
+                    }
+
+                    record.Salary = new decimal(bits);
+
                     records.Add(record);
                 }
 
@@ -265,8 +285,19 @@ namespace FileCabinetApp
                         DateOfBirth = new DateTime(BitConverter.ToInt32(data, 244), BitConverter.ToInt32(data, 248), BitConverter.ToInt32(data, 252)),
                         Age = BitConverter.ToInt16(data, 256),
                         Salary = Convert.ToDecimal(BitConverter.ToDouble(data, 258)),
-                        Gender = BitConverter.ToChar(data, 266),
+                        Gender = BitConverter.ToChar(data, 274),
                     };
+
+                    int[] bits = new int[4];
+                    int position = 258;
+                    for (int j = 0; i < bits.Length; i++)
+                    {
+                        bits[j] = BitConverter.ToInt32(data, position);
+                        position += sizeof(int);
+                    }
+
+                    record.Salary = new decimal(bits);
+
                     records.Add(record);
                 }
 
@@ -318,8 +349,19 @@ namespace FileCabinetApp
                             DateOfBirth = new DateTime(BitConverter.ToInt32(data, 244), BitConverter.ToInt32(data, 248), BitConverter.ToInt32(data, 252)),
                             Age = BitConverter.ToInt16(data, 256),
                             Salary = Convert.ToDecimal(BitConverter.ToDouble(data, 258)),
-                            Gender = BitConverter.ToChar(data, 266),
+                            Gender = BitConverter.ToChar(data, 274),
                         };
+
+                        int[] bits = new int[4];
+                        int position = 258;
+                        for (int j = 0; i < bits.Length; i++)
+                        {
+                            bits[j] = BitConverter.ToInt32(data, position);
+                            position += sizeof(int);
+                        }
+
+                        record.Salary = new decimal(bits);
+
                         records.Add(record);
                     }
 
@@ -463,7 +505,7 @@ namespace FileCabinetApp
                 while (numBytesToRead > 0)
                 {
                     this.fileStream.Read(bytes, offset, bytes.Length);
-                    if (!BitConverter.ToBoolean(bytes, 268))
+                    if (!BitConverter.ToBoolean(bytes, RecordSize - sizeof(bool)))
                     {
                         file.Write(bytes, 0, bytes.Length);
                     }
