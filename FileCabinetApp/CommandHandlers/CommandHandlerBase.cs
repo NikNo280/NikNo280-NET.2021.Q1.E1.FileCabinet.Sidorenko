@@ -12,23 +12,9 @@ namespace FileCabinetApp.CommandHandlers
     public abstract class CommandHandlerBase : ICommandHandler
     {
         /// <summary>
-        /// File cabinet service.
-        /// </summary>
-        private IFileCabinetService fileCabinetService;
-
-        /// <summary>
         /// Following command handler.
         /// </summary>
         private ICommandHandler nextCommandHandler;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommandHandlerBase"/> class.
-        /// </summary>
-        /// <param name="fileCabinetService">File cabinet service.</param>
-        protected CommandHandlerBase(IFileCabinetService fileCabinetService)
-        {
-            this.fileCabinetService = fileCabinetService;
-        }
 
         /// <summary>
         /// Gets next command handler.
@@ -41,20 +27,6 @@ namespace FileCabinetApp.CommandHandlers
             get
             {
                 return this.nextCommandHandler;
-            }
-        }
-
-        /// <summary>
-        /// Gets file cabinet service.
-        /// </summary>
-        /// <value>
-        /// File cabinet service.
-        /// </value>
-        protected IFileCabinetService FileCabinetService
-        {
-            get
-            {
-                return this.fileCabinetService;
             }
         }
 

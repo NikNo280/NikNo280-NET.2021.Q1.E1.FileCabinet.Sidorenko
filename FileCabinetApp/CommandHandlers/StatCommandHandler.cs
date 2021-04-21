@@ -9,7 +9,7 @@ namespace FileCabinetApp.CommandHandlers
     /// <summary>
     /// This class provides a stat command hadler.
     /// </summary>
-    public class StatCommandHandler : CommandHandlerBase
+    public class StatCommandHandler : ServiceCommandHandler
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StatCommandHandler"/> class.

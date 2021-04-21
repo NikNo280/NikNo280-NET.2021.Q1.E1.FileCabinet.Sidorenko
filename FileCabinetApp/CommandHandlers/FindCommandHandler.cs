@@ -11,7 +11,7 @@ namespace FileCabinetApp.CommandHandlers
     /// <summary>
     /// This class provides a find command hadler.
     /// </summary>
-    public class FindCommandHandler : CommandHandlerBase
+    public class FindCommandHandler : ServiceCommandHandler
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FindCommandHandler"/> class.

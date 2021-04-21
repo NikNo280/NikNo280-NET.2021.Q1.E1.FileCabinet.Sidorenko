@@ -10,7 +10,7 @@ namespace FileCabinetApp.CommandHandlers
     /// <summary>
     /// This class provides a export command hadler.
     /// </summary>
-    public class ExportCommandHandler : CommandHandlerBase
+    public class ExportCommandHandler : ServiceCommandHandler
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ExportCommandHandler"/> class.

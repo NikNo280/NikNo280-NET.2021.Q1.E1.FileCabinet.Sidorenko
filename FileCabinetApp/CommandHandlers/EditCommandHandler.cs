@@ -9,7 +9,7 @@ namespace FileCabinetApp.CommandHandlers
     /// <summary>
     /// This class provides a edit command hadler.
     /// </summary>
-    public class EditCommandHandler : CommandHandlerBase
+    public class EditCommandHandler : ServiceCommandHandler
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EditCommandHandler"/> class.

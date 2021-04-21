@@ -9,7 +9,7 @@ namespace FileCabinetApp.CommandHandlers
     /// <summary>
     /// This class provides a remove command hadler.
     /// </summary>
-    public class RemoveCommandHandler : CommandHandlerBase
+    public class RemoveCommandHandler : ServiceCommandHandler
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RemoveCommandHandler"/> class.

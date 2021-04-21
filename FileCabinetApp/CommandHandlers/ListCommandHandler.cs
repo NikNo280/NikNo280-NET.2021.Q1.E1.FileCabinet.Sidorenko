@@ -10,7 +10,7 @@ namespace FileCabinetApp.CommandHandlers
     /// <summary>
     /// This class provides a list command hadler.
     /// </summary>
-    public class ListCommandHandler : CommandHandlerBase
+    public class ListCommandHandler : ServiceCommandHandler
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ListCommandHandler"/> class.

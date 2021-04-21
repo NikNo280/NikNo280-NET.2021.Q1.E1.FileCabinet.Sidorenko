@@ -66,8 +66,8 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(fileCabinetService));
             }
 
-            var helpCommandHandler = new HelpCommandHandler(fileCabinetService);
-            var exitCommandHandler = new ExitCommandHandler(fileCabinetService);
+            var helpCommandHandler = new HelpCommandHandler();
+            var exitCommandHandler = new ExitCommandHandler();
             var statCommandHandler = new StatCommandHandler(fileCabinetService);
             var createCommandHandler = new CreateCommandHandler(fileCabinetService);
             var listCommandHandler = new ListCommandHandler(fileCabinetService);
@@ -77,7 +77,7 @@ namespace FileCabinetApp
             var importCommandHandler = new ImportCommandHandler(fileCabinetService);
             var removeCommandHandler = new RemoveCommandHandler(fileCabinetService);
             var purgeCommandHandler = new PurgeCommandHandler(fileCabinetService);
-            var missedCommandHandler = new MissedCommandHandler(fileCabinetService);
+            var missedCommandHandler = new MissedCommandHandler();
 
             helpCommandHandler.SetNext(exitCommandHandler);
             exitCommandHandler.SetNext(statCommandHandler);

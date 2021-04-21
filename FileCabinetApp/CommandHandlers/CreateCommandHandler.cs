@@ -9,7 +9,7 @@ namespace FileCabinetApp.CommandHandlers
      /// <summary>
      /// This class provides a create command hadler.
      /// </summary>
-    public class CreateCommandHandler : CommandHandlerBase
+    public class CreateCommandHandler : ServiceCommandHandler
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateCommandHandler"/> class.

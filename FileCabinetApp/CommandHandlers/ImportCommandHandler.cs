@@ -10,7 +10,7 @@ namespace FileCabinetApp.CommandHandlers
     /// <summary>
     /// This class provides a import command hadler.
     /// </summary>
-    public class ImportCommandHandler : CommandHandlerBase
+    public class ImportCommandHandler : ServiceCommandHandler
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ImportCommandHandler"/> class.

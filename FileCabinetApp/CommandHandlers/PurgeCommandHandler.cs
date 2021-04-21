@@ -9,7 +9,7 @@ namespace FileCabinetApp.CommandHandlers
     /// <summary>
     /// This class provides a purge command hadler.
     /// </summary>
-    public class PurgeCommandHandler : CommandHandlerBase
+    public class PurgeCommandHandler : ServiceCommandHandler
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PurgeCommandHandler"/> class.
