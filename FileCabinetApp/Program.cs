@@ -9,8 +9,8 @@ namespace FileCabinetApp
     /// </summary>
     public static class Program
     {
-        public static bool isRunning = true;
         public static IRecordValidator recordValidator;
+        private static bool isRunning = true;
         private const string DeveloperName = "Nikita Sidorenko";
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
         private static IFileCabinetService fileCabinetService;
@@ -67,7 +67,7 @@ namespace FileCabinetApp
             }
 
             var helpCommandHandler = new HelpCommandHandler();
-            var exitCommandHandler = new ExitCommandHandler();
+            var exitCommandHandler = new ExitCommandHandler(ExitProgram);
             var statCommandHandler = new StatCommandHandler(fileCabinetService);
             var createCommandHandler = new CreateCommandHandler(fileCabinetService);
             var listCommandHandler = new ListCommandHandler(fileCabinetService);
@@ -91,6 +91,11 @@ namespace FileCabinetApp
             removeCommandHandler.SetNext(purgeCommandHandler);
             purgeCommandHandler.SetNext(missedCommandHandler);
             return helpCommandHandler;
+        }
+
+        private static void ExitProgram(bool isRunning)
+        {
+            Program.isRunning = isRunning;
         }
 
         private static void LoadSettings(string[] args)
