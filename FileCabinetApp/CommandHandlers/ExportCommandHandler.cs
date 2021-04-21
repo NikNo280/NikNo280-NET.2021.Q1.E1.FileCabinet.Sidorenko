@@ -13,6 +13,15 @@ namespace FileCabinetApp.CommandHandlers
     public class ExportCommandHandler : CommandHandlerBase
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="ExportCommandHandler"/> class.
+        /// </summary>
+        /// <param name="fileCabinetService">File cabinet service.</param>
+        public ExportCommandHandler(IFileCabinetService fileCabinetService)
+            : base(fileCabinetService)
+        {
+        }
+
+        /// <summary>
         /// Command handler.
         /// </summary>
         /// <param name="appCommandRequest">Request.</param>
@@ -34,7 +43,7 @@ namespace FileCabinetApp.CommandHandlers
 
                 try
                 {
-                    var snapshot = Program.fileCabinetService.MakeSnapshot();
+                    var snapshot = this.FileCabinetService.MakeSnapshot();
                     if (File.Exists(data[1]))
                     {
                         Console.Write($"File is exist - rewrite {data[1]}? [Y/n] ");

@@ -12,6 +12,15 @@ namespace FileCabinetApp.CommandHandlers
     public class CreateCommandHandler : CommandHandlerBase
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="CreateCommandHandler"/> class.
+        /// </summary>
+        /// <param name="fileCabinetService">File cabinet service.</param>
+        public CreateCommandHandler(IFileCabinetService fileCabinetService)
+            : base(fileCabinetService)
+        {
+        }
+
+        /// <summary>
         /// Command handler.
         /// </summary>
         /// <param name="appCommandRequest">Request.</param>
@@ -38,7 +47,7 @@ namespace FileCabinetApp.CommandHandlers
                 var gender = TypeConverter.ReadInput(TypeConverter.CharConverter, Program.recordValidator.GenderValidator);
                 var record = new FileCabinetRecord
                 {
-                    Id = Program.fileCabinetService.GetLastIndex() + 1,
+                    Id = this.FileCabinetService.GetLastIndex() + 1,
                     FirstName = firstName,
                     LastName = lastName,
                     DateOfBirth = dateOfBirth,
@@ -46,8 +55,8 @@ namespace FileCabinetApp.CommandHandlers
                     Salary = salary,
                     Gender = gender,
                 };
-                Program.fileCabinetService.CreateRecord(record);
-                Console.WriteLine($"Record #{Program.fileCabinetService.GetLastIndex()} is created.");
+                this.FileCabinetService.CreateRecord(record);
+                Console.WriteLine($"Record #{this.FileCabinetService.GetLastIndex()} is created.");
             }
             else
             {

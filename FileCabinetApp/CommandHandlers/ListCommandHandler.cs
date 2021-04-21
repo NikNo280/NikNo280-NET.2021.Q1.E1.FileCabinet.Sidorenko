@@ -13,6 +13,15 @@ namespace FileCabinetApp.CommandHandlers
     public class ListCommandHandler : CommandHandlerBase
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="ListCommandHandler"/> class.
+        /// </summary>
+        /// <param name="fileCabinetService">File cabinet service.</param>
+        public ListCommandHandler(IFileCabinetService fileCabinetService)
+            : base(fileCabinetService)
+        {
+        }
+
+        /// <summary>
         /// Command handler.
         /// </summary>
         /// <param name="appCommandRequest">Request.</param>
@@ -25,7 +34,7 @@ namespace FileCabinetApp.CommandHandlers
 
             if (string.Equals(appCommandRequest.Command, "list", StringComparison.InvariantCultureIgnoreCase))
             {
-                foreach (var item in Program.fileCabinetService.GetRecords())
+                foreach (var item in this.FileCabinetService.GetRecords())
                 {
                     Console.WriteLine($"#{item.Id}, {item.FirstName}, {item.LastName}, " +
                         $"{item.Age}, {item.Salary}, {item.Gender}, " +

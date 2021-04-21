@@ -12,6 +12,15 @@ namespace FileCabinetApp.CommandHandlers
     public class EditCommandHandler : CommandHandlerBase
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="EditCommandHandler"/> class.
+        /// </summary>
+        /// <param name="fileCabinetService">File cabinet service.</param>
+        public EditCommandHandler(IFileCabinetService fileCabinetService)
+            : base(fileCabinetService)
+        {
+        }
+
+        /// <summary>
         /// Command handler.
         /// </summary>
         /// <param name="appCommandRequest">Request.</param>
@@ -57,7 +66,7 @@ namespace FileCabinetApp.CommandHandlers
                         Salary = salary,
                         Gender = gender,
                     };
-                    Program.fileCabinetService.EditRecord(editRecord);
+                    this.FileCabinetService.EditRecord(editRecord);
                     Console.WriteLine($"Record #{id} is updated.");
                 }
                 catch (ArgumentException e)

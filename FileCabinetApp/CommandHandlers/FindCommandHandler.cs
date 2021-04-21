@@ -14,6 +14,15 @@ namespace FileCabinetApp.CommandHandlers
     public class FindCommandHandler : CommandHandlerBase
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="FindCommandHandler"/> class.
+        /// </summary>
+        /// <param name="fileCabinetService">File cabinet service.</param>
+        public FindCommandHandler(IFileCabinetService fileCabinetService)
+            : base(fileCabinetService)
+        {
+        }
+
+        /// <summary>
         /// Command handler.
         /// </summary>
         /// <param name="appCommandRequest">Request.</param>
@@ -35,9 +44,9 @@ namespace FileCabinetApp.CommandHandlers
 
                 ReadOnlyCollection<FileCabinetRecord> records = parametersSplit[0].ToUpperInvariant() switch
                 {
-                    "FIRSTNAME" => Program.fileCabinetService.FindByFirstName(parametersSplit[1]),
-                    "LASTNAME" => Program.fileCabinetService.FindByLastName(parametersSplit[1]),
-                    "DATEOFBIRTH" => Program.fileCabinetService.FindByDateOfBirth(parametersSplit[1]),
+                    "FIRSTNAME" => this.FileCabinetService.FindByFirstName(parametersSplit[1]),
+                    "LASTNAME" => this.FileCabinetService.FindByLastName(parametersSplit[1]),
+                    "DATEOFBIRTH" => this.FileCabinetService.FindByDateOfBirth(parametersSplit[1]),
                     _ => new ReadOnlyCollection<FileCabinetRecord>(new List<FileCabinetRecord>())
                 };
                 if (records.Count == 0)

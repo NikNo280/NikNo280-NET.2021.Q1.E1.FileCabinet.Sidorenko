@@ -30,6 +30,15 @@ namespace FileCabinetApp.CommandHandlers
         };
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="HelpCommandHandler"/> class.
+        /// </summary>
+        /// <param name="fileCabinetService">File cabinet service.</param>
+        public HelpCommandHandler(IFileCabinetService fileCabinetService)
+            : base(fileCabinetService)
+        {
+        }
+
+        /// <summary>
         /// Command handler.
         /// </summary>
         /// <param name="appCommandRequest">Request.</param>

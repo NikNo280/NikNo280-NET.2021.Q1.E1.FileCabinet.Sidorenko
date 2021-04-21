@@ -12,6 +12,15 @@ namespace FileCabinetApp.CommandHandlers
     public class StatCommandHandler : CommandHandlerBase
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="StatCommandHandler"/> class.
+        /// </summary>
+        /// <param name="fileCabinetService">File cabinet service.</param>
+        public StatCommandHandler(IFileCabinetService fileCabinetService)
+            : base(fileCabinetService)
+        {
+        }
+
+        /// <summary>
         /// Command handler.
         /// </summary>
         /// <param name="appCommandRequest">Request.</param>
@@ -24,8 +33,8 @@ namespace FileCabinetApp.CommandHandlers
 
             if (string.Equals(appCommandRequest.Command, "stat", StringComparison.InvariantCultureIgnoreCase))
             {
-                var recordsCount = Program.fileCabinetService.GetStat();
-                var recordsDeletedCount = Program.fileCabinetService.GetCountDeletedRecords();
+                var recordsCount = this.FileCabinetService.GetStat();
+                var recordsDeletedCount = this.FileCabinetService.GetCountDeletedRecords();
                 Console.WriteLine($"{recordsCount - recordsDeletedCount} record(s). {recordsDeletedCount} deleted record(s)");
             }
             else

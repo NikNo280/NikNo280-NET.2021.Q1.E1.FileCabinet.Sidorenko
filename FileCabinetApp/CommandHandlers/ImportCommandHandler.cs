@@ -13,6 +13,15 @@ namespace FileCabinetApp.CommandHandlers
     public class ImportCommandHandler : CommandHandlerBase
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="ImportCommandHandler"/> class.
+        /// </summary>
+        /// <param name="fileCabinetService">File cabinet service.</param>
+        public ImportCommandHandler(IFileCabinetService fileCabinetService)
+            : base(fileCabinetService)
+        {
+        }
+
+        /// <summary>
         /// Command handler.
         /// </summary>
         /// <param name="appCommandRequest">Request.</param>
@@ -36,17 +45,17 @@ namespace FileCabinetApp.CommandHandlers
                 {
                     using (var streamReader = new StreamReader(data[1]))
                     {
-                        var snapshot = Program.fileCabinetService.MakeSnapshot();
+                        var snapshot = this.FileCabinetService.MakeSnapshot();
                         switch (data[0].ToUpperInvariant())
                         {
                             case "CSV":
                                 snapshot.LoadFromCsv(streamReader);
-                                Program.fileCabinetService.Restore(snapshot);
+                                this.FileCabinetService.Restore(snapshot);
                                 Console.WriteLine($"{snapshot.RecordsImportCount} records were imported from {data[1]}");
                                 break;
                             case "XML":
                                 snapshot.LoadFromXml(streamReader);
-                                Program.fileCabinetService.Restore(snapshot);
+                                this.FileCabinetService.Restore(snapshot);
                                 Console.WriteLine($"{snapshot.RecordsImportCount} records were imported from {data[1]}");
                                 break;
                         }
