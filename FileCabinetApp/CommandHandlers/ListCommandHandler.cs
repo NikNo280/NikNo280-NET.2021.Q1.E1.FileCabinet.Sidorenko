@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using FileCabinetApp.CommandHandlers.Interface;
 
 namespace FileCabinetApp.CommandHandlers
 {
@@ -12,13 +8,16 @@ namespace FileCabinetApp.CommandHandlers
     /// </summary>
     public class ListCommandHandler : ServiceCommandHandler
     {
+        private IRecordPrinter recordPrinter;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ListCommandHandler"/> class.
         /// </summary>
         /// <param name="fileCabinetService">File cabinet service.</param>
-        public ListCommandHandler(IFileCabinetService fileCabinetService)
+        public ListCommandHandler(IFileCabinetService fileCabinetService, IRecordPrinter recordPrinter)
             : base(fileCabinetService)
         {
+            this.recordPrinter = recordPrinter;
         }
 
         /// <summary>
@@ -34,12 +33,7 @@ namespace FileCabinetApp.CommandHandlers
 
             if (string.Equals(appCommandRequest.Command, "list", StringComparison.InvariantCultureIgnoreCase))
             {
-                foreach (var item in this.FileCabinetService.GetRecords())
-                {
-                    Console.WriteLine($"#{item.Id}, {item.FirstName}, {item.LastName}, " +
-                        $"{item.Age}, {item.Salary}, {item.Gender}, " +
-                        $"{item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}");
-                }
+                this.recordPrinter.Print(this.FileCabinetService.GetRecords());
             }
             else
             {
