@@ -34,17 +34,17 @@ namespace FileCabinetApp.CommandHandlers
             if (string.Equals(appCommandRequest.Command, "create", StringComparison.InvariantCultureIgnoreCase))
             {
                 Console.Write("First name: ");
-                var firstName = TypeConverter.ReadInput(TypeConverter.StringConverter, Program.recordValidator.NameValidator);
+                var firstName = TypeConverter.ReadInput(TypeConverter.StringConverter, Program.ValidateFirstName);
                 Console.Write("Last  name: ");
-                var lastName = TypeConverter.ReadInput(TypeConverter.StringConverter, Program.recordValidator.NameValidator);
+                var lastName = TypeConverter.ReadInput(TypeConverter.StringConverter, Program.ValidateFirstName);
                 Console.Write("Date of birth: ");
-                var dateOfBirth = TypeConverter.ReadInput(TypeConverter.DateTimeConverter, Program.recordValidator.DateOfBirthValidator);
+                var dateOfBirth = TypeConverter.ReadInput(TypeConverter.DateTimeConverter, Program.ValidateDateOfBirth);
                 Console.Write("Age: ");
-                var age = TypeConverter.ReadInput(TypeConverter.ShortConverter, Program.recordValidator.AgeValidator);
+                var age = TypeConverter.ReadInput(TypeConverter.ShortConverter, Program.ValidateAge);
                 Console.Write("Salary: ");
-                var salary = TypeConverter.ReadInput(TypeConverter.DecimalConverter, Program.recordValidator.SalaryValidator);
+                var salary = TypeConverter.ReadInput(TypeConverter.DecimalConverter, Program.ValidateSalary);
                 Console.Write("Gender (M/W): ");
-                var gender = TypeConverter.ReadInput(TypeConverter.CharConverter, Program.recordValidator.GenderValidator);
+                var gender = TypeConverter.ReadInput(TypeConverter.CharConverter, Program.ValidateGender);
                 var record = new FileCabinetRecord
                 {
                     Id = this.FileCabinetService.GetLastIndex() + 1,

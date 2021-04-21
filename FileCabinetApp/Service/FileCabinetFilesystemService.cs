@@ -42,7 +42,7 @@ namespace FileCabinetApp
                 throw new ArgumentNullException($"{record} is null or empty");
             }
 
-            this.recordValidator.IsValid(record);
+            this.recordValidator.ValidateParameters(record);
             this.fileStream.Position = this.fileStream.Length;
             int offset = 0;
             byte[] bytes = BitConverter.GetBytes(record.Id);
@@ -93,7 +93,7 @@ namespace FileCabinetApp
             }
 
             this.fileStream.Position = 0;
-            this.recordValidator.IsValid(record);
+            this.recordValidator.ValidateParameters(record);
             int offset = 0;
             byte[] bytes = new byte[4];
             for (int i = 0; i < this.GetStat(); i++)

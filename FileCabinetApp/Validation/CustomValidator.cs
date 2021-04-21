@@ -15,62 +15,19 @@ namespace FileCabinetApp
         /// Сhecks the validity of the data.
         /// </summary>
         /// <param name="record">The record that is checked for correctness.</param>
-        public void IsValid(FileCabinetRecord record)
+        public void ValidateParameters(FileCabinetRecord record)
         {
             if (record is null)
             {
-                throw new ArgumentNullException($"{nameof(record)} is null");
+                throw new ArgumentNullException(nameof(record));
             }
 
-            if (record.FirstName is null)
-            {
-                throw new ArgumentNullException($"{nameof(record.FirstName)} is null");
-            }
-
-            if (record.LastName is null)
-            {
-                throw new ArgumentNullException($"{nameof(record.LastName)} is null");
-            }
-
-            if (record.FirstName.Length < 1 || record.FirstName.Length > 120)
-            {
-                throw new ArgumentException($"{nameof(record.FirstName.Length)} is less than 1 or bigger than 120");
-            }
-
-            if (record.LastName.Length < 1 || record.LastName.Length > 120)
-            {
-                throw new ArgumentException($"{nameof(record.LastName.Length)} is less than 1 or bigger than 120");
-            }
-
-            if (record.FirstName.Equals(new string(' ', record.FirstName.Length)))
-            {
-                throw new ArgumentException($"{nameof(record.FirstName)} consists only of spaces");
-            }
-
-            if (record.LastName.Equals(new string(' ', record.LastName.Length)))
-            {
-                throw new ArgumentException($"{nameof(record.LastName)} consists only of spaces");
-            }
-
-            if (record.Age <= 18 || record.Age > 110)
-            {
-                throw new ArgumentException($"{nameof(record.Age)} is less than 18 or bigger than 110");
-            }
-
-            if (record.Salary < 1000)
-            {
-                throw new ArgumentException($"{nameof(record.Salary)} is less than 1000");
-            }
-
-            if (record.DateOfBirth >= DateTime.Now || record.DateOfBirth <= new DateTime(1920, 1, 1))
-            {
-                throw new ArgumentException($"{nameof(record.DateOfBirth)} is less than 01-Jan-1920 or greater than current date");
-            }
-
-            if (record.Gender != 'M' && record.Gender != 'W')
-            {
-                throw new ArgumentException($"{nameof(record.Gender)} gender != 'M' && gender != 'W'");
-            }
+            this.ValidateFirstName(record.FirstName);
+            this.ValidateSecondtName(record.FirstName);
+            this.ValidateDateOfBirth(record.DateOfBirth);
+            this.ValidateAge(record.Age);
+            this.ValidateSalary(record.Salary);
+            this.ValidateGender(record.Gender);
         }
 
         /// <summary>
@@ -78,7 +35,47 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="name">Input name.</param>
         /// <returns>Tuple with result validation and error message.</returns>
-        public Tuple<bool, string> NameValidator(string name)
+        private Tuple<bool, string> ValidateFirstName(string name)
+        {
+            if (name is null)
+            {
+                return new Tuple<bool, string>(false, $"{nameof(name)} is null");
+            }
+
+            if (name.Length < 1 || name.Length > 120)
+            {
+                return new Tuple<bool, string>(false, $"{nameof(name.Length)} is less than 1 or bigger than 120");
+            }
+
+            return new Tuple<bool, string>(true, name);
+        }
+
+        /// <summary>
+        ///  Сhecks a validity of a name.
+        /// </summary>
+        /// <param name="name">Input name.</param>
+        /// <returns>Tuple with result validation and error message.</returns>
+        private Tuple<bool, string> ValidateSecondtName(string name)
+        {
+            if (name is null)
+            {
+                return new Tuple<bool, string>(false, $"{nameof(name)} is null");
+            }
+
+            if (name.Length < 1 || name.Length > 120)
+            {
+                return new Tuple<bool, string>(false, $"{nameof(name.Length)} is less than 1 or bigger than 120");
+            }
+
+            return new Tuple<bool, string>(true, name);
+        }
+
+        /// <summary>
+        ///  Сhecks a validity of a name.
+        /// </summary>
+        /// <param name="name">Input name.</param>
+        /// <returns>Tuple with result validation and error message.</returns>
+        private Tuple<bool, string> ValidateSecondName(string name)
         {
             if (name is null)
             {
@@ -98,7 +95,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="age">Input age.</param>
         /// <returns>Tuple with result validation and error message.</returns>
-        public Tuple<bool, string> AgeValidator(short age)
+        private Tuple<bool, string> ValidateAge(short age)
         {
             if (age <= 18 || age > 110)
             {
@@ -113,7 +110,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="salary">Input salary.</param>
         /// <returns>Tuple with result validation and error message.</returns>
-        public Tuple<bool, string> SalaryValidator(decimal salary)
+        private Tuple<bool, string> ValidateSalary(decimal salary)
         {
             if (salary < 1000)
             {
@@ -128,7 +125,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="gender">Input gender.</param>
         /// <returns>Tuple with result validation and error message.</returns>
-        public Tuple<bool, string> GenderValidator(char gender)
+        private Tuple<bool, string> ValidateGender(char gender)
         {
             if (gender != 'M' && gender != 'W')
             {
@@ -143,7 +140,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="dateOfBirth">Input dateOfBirth.</param>
         /// <returns>Tuple with result validation and error message.</returns>
-        public Tuple<bool, string> DateOfBirthValidator(DateTime dateOfBirth)
+        private Tuple<bool, string> ValidateDateOfBirth(DateTime dateOfBirth)
         {
             if (dateOfBirth >= DateTime.Now || dateOfBirth <= new DateTime(1920, 1, 1))
             {

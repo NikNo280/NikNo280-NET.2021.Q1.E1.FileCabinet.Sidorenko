@@ -41,7 +41,7 @@ namespace FileCabinetApp
                 throw new ArgumentNullException($"{nameof(record)} is null");
             }
 
-            this.recordValidator.IsValid(record);
+            this.recordValidator.ValidateParameters(record);
 
             this.list.Add(record);
             AddToDict(record.FirstName, this.firstNameDictionary, record);
@@ -80,7 +80,7 @@ namespace FileCabinetApp
                 throw new ArgumentNullException($"{nameof(record)} is null");
             }
 
-            this.recordValidator.IsValid(record);
+            this.recordValidator.ValidateParameters(record);
 
             foreach (var item in this.list)
             {
