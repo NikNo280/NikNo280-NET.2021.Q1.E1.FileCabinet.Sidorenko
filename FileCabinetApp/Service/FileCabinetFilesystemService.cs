@@ -14,7 +14,7 @@ namespace FileCabinetApp
     /// </summary>
     public class FileCabinetFilesystemService : IFileCabinetService
     {
-        private const int RecordSize = 269;
+        private const int RecordSize = 277;
         private const int NameSize = 120;
         private readonly IRecordValidator recordValidator;
         private readonly FileStream fileStream;
@@ -66,6 +66,13 @@ namespace FileCabinetApp
             bytes = BitConverter.GetBytes(record.Age);
             this.fileStream.Write(bytes, offset, bytes.Length);
 
+            /*
+            int[] bits = decimal.GetBits(record.Salary);
+            foreach (var bit in bits)
+            {
+
+            }
+            */
             bytes = BitConverter.GetBytes(Convert.ToDouble(record.Salary));
             this.fileStream.Write(bytes, offset, bytes.Length);
 

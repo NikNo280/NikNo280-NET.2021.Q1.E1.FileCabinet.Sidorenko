@@ -1,14 +1,25 @@
-﻿using FileCabinetGenerator.RandomRecord;
-using System;
-using System.Globalization;
+﻿using System;
 using System.IO;
+using FileCabinetGenerator.RandomRecord;
 
 namespace FileCabinetGenerator
 {
+    /// <summary>
+    /// Main class.
+    /// </summary>
     public static class Program
     {
+        /// <summary>
+        /// Main.
+        /// </summary>
+        /// <param name="args">Arguments.</param>
         public static void Main(string[] args)
         {
+            if (args is null)
+            {
+                throw new ArgumentNullException(nameof(args));
+            }
+
             var settings = LoadSettings(args);
             int startId, recordsAmount;
             bool result = int.TryParse(settings[2], out startId);

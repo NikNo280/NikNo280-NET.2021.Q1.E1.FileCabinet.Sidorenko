@@ -14,7 +14,8 @@ namespace FileCabinetApp
         /// <summary>
         /// Сhecks the validity of the data.
         /// </summary>
-        /// <param name="record">The record that is checked for correctness.</param>
-        public void ValidateParameters(FileCabinetRecord record);
+        /// <param name="parameters">Parameters that are checked for correctness.</param>
+        /// <returns>Whether the parameter meets the specified criteria.</returns>
+        public bool ValidateParameters(FileCabinetRecord parameters);
     }
 }

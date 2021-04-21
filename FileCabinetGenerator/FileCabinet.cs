@@ -1,21 +1,27 @@
-﻿using FileCabinetApp;
-using FileCabinetApp.Export;
-using FileCabinetGenerator.RandomRecord;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Xml;
 using System.Xml.Serialization;
+using FileCabinetApp;
+using FileCabinetGenerator.RandomRecord;
 
 namespace FileCabinetGenerator
 {
+    /// <summary>
+    /// This class provides functions for generating and writing records to a file.
+    /// </summary>
     public class FileCabinet
     {
         private readonly IRandomRecord randomRecord;
         private int id;
         private int recordsAmount;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileCabinet"/> class.
+        /// </summary>
+        /// <param name="randomRecord">Random record.</param>
+        /// <param name="startId">Start id.</param>
+        /// <param name="countRecords">Count records.</param>
         public FileCabinet(IRandomRecord randomRecord, int startId, int countRecords)
         {
             this.randomRecord = randomRecord;

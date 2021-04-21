@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using FileCabinetApp.Validation.InputValidation;
 
 namespace FileCabinetApp.CommandHandlers
 {
@@ -11,13 +8,17 @@ namespace FileCabinetApp.CommandHandlers
     /// </summary>
     public class EditCommandHandler : ServiceCommandHandler
     {
+        private readonly IInputValidation inputValidation;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="EditCommandHandler"/> class.
         /// </summary>
         /// <param name="fileCabinetService">File cabinet service.</param>
-        public EditCommandHandler(IFileCabinetService fileCabinetService)
+        /// <param name="inputValidation">Input validator.</param>
+        public EditCommandHandler(IFileCabinetService fileCabinetService, IInputValidation inputValidation)
             : base(fileCabinetService)
         {
+            this.inputValidation = inputValidation;
         }
 
         /// <summary>
@@ -43,17 +44,17 @@ namespace FileCabinetApp.CommandHandlers
                 }
 
                 Console.Write("First name: ");
-                var firstName = TypeConverter.ReadInput(TypeConverter.StringConverter, Program.ValidateFirstName);
+                var firstName = TypeConverter.ReadInput(TypeConverter.StringConverter, this.inputValidation.FirstNameValidator);
                 Console.Write("Last  name: ");
-                var lastName = TypeConverter.ReadInput(TypeConverter.StringConverter, Program.ValidateFirstName);
+                var lastName = TypeConverter.ReadInput(TypeConverter.StringConverter, this.inputValidation.SecondNameValidator);
                 Console.Write("Date of birth: ");
-                var dateOfBirth = TypeConverter.ReadInput(TypeConverter.DateTimeConverter, Program.ValidateDateOfBirth);
+                var dateOfBirth = TypeConverter.ReadInput(TypeConverter.DateTimeConverter, this.inputValidation.DateOfBirthValidator);
                 Console.Write("Age: ");
-                var age = TypeConverter.ReadInput(TypeConverter.ShortConverter, Program.ValidateAge);
+                var age = TypeConverter.ReadInput(TypeConverter.ShortConverter, this.inputValidation.AgeValidator);
                 Console.Write("Salary: ");
-                var salary = TypeConverter.ReadInput(TypeConverter.DecimalConverter, Program.ValidateSalary);
+                var salary = TypeConverter.ReadInput(TypeConverter.DecimalConverter, this.inputValidation.SalaryValidator);
                 Console.Write("Gender (M/W): ");
-                var gender = TypeConverter.ReadInput(TypeConverter.CharConverter, Program.ValidateGender);
+                var gender = TypeConverter.ReadInput(TypeConverter.CharConverter, this.inputValidation.GenderValidator);
                 try
                 {
                     var editRecord = new FileCabinetRecord

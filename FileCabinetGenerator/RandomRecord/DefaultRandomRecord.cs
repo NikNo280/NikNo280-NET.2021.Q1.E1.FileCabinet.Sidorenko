@@ -7,10 +7,17 @@ using System.Threading.Tasks;
 
 namespace FileCabinetGenerator.RandomRecord
 {
+    /// <summary>
+    /// This class provides functions to randomly generate records.
+    /// </summary>
     public class DefaultRandomRecord : IRandomRecord
     {
-        public static Random rnd = new Random();
+        private static Random rnd = new Random();
 
+        /// <summary>
+        /// Gets random name.
+        /// </summary>
+        /// <returns>Random name.</returns>
         public string GetRandomName()
         {
             char[] letters = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
@@ -25,6 +32,10 @@ namespace FileCabinetGenerator.RandomRecord
             return name.ToString();
         }
 
+        /// <summary>
+        /// Gets random date of birth.
+        /// </summary>
+        /// <returns>Random date of birth.</returns>
         public DateTime GetRandomDateOfBirth()
         {
             DateTime start = new DateTime(1950, 1, 1);
@@ -32,22 +43,35 @@ namespace FileCabinetGenerator.RandomRecord
             return start.AddDays(rnd.Next(range));
         }
 
+        /// <summary>
+        /// Gets random age.
+        /// </summary>
+        /// <returns>Random age.</returns>
         public short GetRandomAge()
         {
             return (short)rnd.Next(1, 111);
         }
 
+        /// <summary>
+        /// Gets random salary.
+        /// </summary>
+        /// <returns>Random salary.</returns>
         public decimal GetRandomSalary()
         {
             return (decimal)rnd.NextDouble() + rnd.Next(1, int.MaxValue);
         }
 
+        /// <summary>
+        /// Gets random gender.
+        /// </summary>
+        /// <returns>Random gender.</returns>
         public char GetRandomGender()
         {
             return rnd.Next(0, 2) switch
             {
                 0 => 'M',
-                1 => 'W'
+                1 => 'W',
+                _ => 'M',
             };
         }
     }

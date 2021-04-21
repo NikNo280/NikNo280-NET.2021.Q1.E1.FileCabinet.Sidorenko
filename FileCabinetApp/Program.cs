@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using FileCabinetApp.CommandHandlers;
+using FileCabinetApp.Validation;
+using FileCabinetApp.Validation.Extension;
+using FileCabinetApp.Validation.InputValidation;
 
 namespace FileCabinetApp
 {
@@ -11,11 +14,12 @@ namespace FileCabinetApp
     /// </summary>
     public static class Program
     {
-        public static IRecordValidator recordValidator;
         private const string DeveloperName = "Nikita Sidorenko";
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
         private static bool isRunning = true;
+        private static IRecordValidator recordValidator;
         private static IFileCabinetService fileCabinetService;
+        private static IInputValidation inputValidation;
 
         /// <summary>
         /// Main function.
@@ -35,7 +39,7 @@ namespace FileCabinetApp
 
             Console.WriteLine();
 
-            var commandHandler = CreateCommandHandlers(Program.fileCabinetService);
+            var commandHandler = CreateCommandHandlers(Program.fileCabinetService, Program.inputValidation);
             do
             {
                 Console.Write("> ");
@@ -61,7 +65,7 @@ namespace FileCabinetApp
             while (isRunning);
         }
 
-        private static ICommandHandler CreateCommandHandlers(IFileCabinetService fileCabinetService)
+        private static ICommandHandler CreateCommandHandlers(IFileCabinetService fileCabinetService, IInputValidation inputValidation)
         {
             if (fileCabinetService is null)
             {
@@ -71,9 +75,9 @@ namespace FileCabinetApp
             var helpCommandHandler = new HelpCommandHandler();
             var exitCommandHandler = new ExitCommandHandler(ExitProgram);
             var statCommandHandler = new StatCommandHandler(fileCabinetService);
-            var createCommandHandler = new CreateCommandHandler(fileCabinetService);
+            var createCommandHandler = new CreateCommandHandler(fileCabinetService, inputValidation);
             var listCommandHandler = new ListCommandHandler(fileCabinetService, Print);
-            var editCommandHandler = new EditCommandHandler(fileCabinetService);
+            var editCommandHandler = new EditCommandHandler(fileCabinetService, inputValidation);
             var findCommandHandler = new FindCommandHandler(fileCabinetService, Print);
             var exportCommandHandler = new ExportCommandHandler(fileCabinetService);
             var importCommandHandler = new ImportCommandHandler(fileCabinetService);
@@ -147,15 +151,18 @@ namespace FileCabinetApp
             switch (settings[0])
             {
                 case "CUSTOM":
-                    recordValidator = new CustomValidator();
+                    recordValidator = new ValidatorBuilder().CreateCustom();
+                    inputValidation = new CustomInputValidation();
                     Console.WriteLine("Using custom validation rules.");
                     break;
                 case "DEFAULT":
-                    recordValidator = new DefaultValidator();
+                    recordValidator = new ValidatorBuilder().CreateDefault();
+                    inputValidation = new DefaultInputValidation();
                     Console.WriteLine("Using default validation rules.");
                     break;
                 default:
-                    recordValidator = new DefaultValidator();
+                    recordValidator = new ValidatorBuilder().CreateDefault();
+                    inputValidation = new DefaultInputValidation();
                     Console.WriteLine("Using default validation rules.");
                     break;
             }
@@ -175,106 +182,6 @@ namespace FileCabinetApp
                     Console.WriteLine("Using FileCabinetMemoryService.");
                     break;
             }
-        }
-
-        /// <summary>
-        ///  Сhecks a validity of a name.
-        /// </summary>
-        /// <param name="name">Input name.</param>
-        /// <returns>Tuple with result validation and error message.</returns>
-        public static Tuple<bool, string> ValidateFirstName(string name)
-        {
-            if (name is null)
-            {
-                return new Tuple<bool, string>(false, $"{nameof(name)} is null");
-            }
-
-            if (name.Length < 2 || name.Length > 60)
-            {
-                return new Tuple<bool, string>(false, $"{nameof(name.Length)} is less than 2 or bigger than 60");
-            }
-
-            return new Tuple<bool, string>(true, name);
-        }
-
-        /// <summary>
-        ///  Сhecks a validity of a name.
-        /// </summary>
-        /// <param name="name">Input name.</param>
-        /// <returns>Tuple with result validation and error message.</returns>
-        public static Tuple<bool, string> ValidateSecondName(string name)
-        {
-            if (name is null)
-            {
-                return new Tuple<bool, string>(false, $"{nameof(name)} is null");
-            }
-
-            if (name.Length < 1 || name.Length > 120)
-            {
-                return new Tuple<bool, string>(false, $"{nameof(name.Length)} is less than 1 or bigger than 120");
-            }
-
-            return new Tuple<bool, string>(true, name);
-        }
-
-        /// <summary>
-        ///  Сhecks a validity of a name.
-        /// </summary>
-        /// <param name="age">Input age.</param>
-        /// <returns>Tuple with result validation and error message.</returns>
-        public static Tuple<bool, string> ValidateAge(short age)
-        {
-            if (age <= 18 || age > 110)
-            {
-                return new Tuple<bool, string>(false, $"{age} is less than 18 or bigger than 110");
-            }
-
-            return new Tuple<bool, string>(true, "ok");
-        }
-
-        /// <summary>
-        ///  Сhecks a validity of a name.
-        /// </summary>
-        /// <param name="salary">Input salary.</param>
-        /// <returns>Tuple with result validation and error message.</returns>
-        public static Tuple<bool, string> ValidateSalary(decimal salary)
-        {
-            if (salary < 1000)
-            {
-                return new Tuple<bool, string>(false, $"{nameof(salary)} is less than 1000");
-            }
-
-            return new Tuple<bool, string>(true, "ok");
-        }
-
-        /// <summary>
-        ///  Сhecks a validity of a name.
-        /// </summary>
-        /// <param name="gender">Input gender.</param>
-        /// <returns>Tuple with result validation and error message.</returns>
-        public static Tuple<bool, string> ValidateGender(char gender)
-        {
-            if (gender != 'M' && gender != 'W')
-            {
-                return new Tuple<bool, string>(false, $"{nameof(gender)} gender != 'M' && gender != 'W'");
-            }
-
-            return new Tuple<bool, string>(true, "ok");
-        }
-
-        /// <summary>
-        ///  Сhecks a validity of a name.
-        /// </summary>
-        /// <param name="dateOfBirth">Input dateOfBirth.</param>
-        /// <returns>Tuple with result validation and error message.</returns>
-        public static Tuple<bool, string> ValidateDateOfBirth(DateTime dateOfBirth)
-        {
-            if (dateOfBirth >= DateTime.Now || dateOfBirth <= new DateTime(1920, 1, 1))
-            {
-                return new Tuple<bool, string>(false, $"{nameof(dateOfBirth)} is less than 01-Jan-1920 or greater than current date");
-            }
-
-            return new Tuple<bool, string>(true, "ok");
         }
     }
 }
