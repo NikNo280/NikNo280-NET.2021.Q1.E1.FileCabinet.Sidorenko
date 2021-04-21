@@ -220,30 +220,7 @@ namespace FileCabinetApp
                 this.fileStream.Read(bytes, offset, bytes.Length);
                 if (!this.IsDeleted(i) && Encoding.UTF8.GetString(bytes, 0, NameSize).Trim(new char[] { '\0' }).ToUpperInvariant().Equals(firstName.ToUpperInvariant()))
                 {
-                    this.fileStream.Position = i * RecordSize;
-                    byte[] data = new byte[RecordSize];
-                    this.fileStream.Read(data, offset, data.Length);
-                    var record = new FileCabinetRecord
-                    {
-                        Id = BitConverter.ToInt32(data, 0),
-                        FirstName = Encoding.UTF8.GetString(data, 4, NameSize).Trim(new char[] { '\0' }),
-                        LastName = Encoding.UTF8.GetString(data, 124, NameSize).Trim(new char[] { '\0' }),
-                        DateOfBirth = new DateTime(BitConverter.ToInt32(data, 244), BitConverter.ToInt32(data, 248), BitConverter.ToInt32(data, 252)),
-                        Age = BitConverter.ToInt16(data, 256),
-                        Gender = BitConverter.ToChar(data, 274),
-                    };
-
-                    int[] bits = new int[4];
-                    int position = 258;
-                    for (int j = 0; i < bits.Length; i++)
-                    {
-                        bits[j] = BitConverter.ToInt32(data, position);
-                        position += sizeof(int);
-                    }
-
-                    record.Salary = new decimal(bits);
-
-                    records.Add(record);
+                    records.Add(this.GetRecordById(i));
                 }
 
                 this.fileStream.Position = (i + 1) * RecordSize;
@@ -274,31 +251,7 @@ namespace FileCabinetApp
                 this.fileStream.Read(bytes, offset, bytes.Length);
                 if (!this.IsDeleted(i) && Encoding.UTF8.GetString(bytes, 0, NameSize).Trim(new char[] { '\0' }).ToUpperInvariant().Equals(lastName.ToUpperInvariant()))
                 {
-                    this.fileStream.Position = i * RecordSize;
-                    byte[] data = new byte[RecordSize];
-                    this.fileStream.Read(data, offset, data.Length);
-                    var record = new FileCabinetRecord
-                    {
-                        Id = BitConverter.ToInt32(data, 0),
-                        FirstName = Encoding.UTF8.GetString(data, 4, NameSize).Trim(new char[] { '\0' }),
-                        LastName = Encoding.UTF8.GetString(data, 124, NameSize).Trim(new char[] { '\0' }),
-                        DateOfBirth = new DateTime(BitConverter.ToInt32(data, 244), BitConverter.ToInt32(data, 248), BitConverter.ToInt32(data, 252)),
-                        Age = BitConverter.ToInt16(data, 256),
-                        Salary = Convert.ToDecimal(BitConverter.ToDouble(data, 258)),
-                        Gender = BitConverter.ToChar(data, 274),
-                    };
-
-                    int[] bits = new int[4];
-                    int position = 258;
-                    for (int j = 0; i < bits.Length; i++)
-                    {
-                        bits[j] = BitConverter.ToInt32(data, position);
-                        position += sizeof(int);
-                    }
-
-                    record.Salary = new decimal(bits);
-
-                    records.Add(record);
+                    records.Add(this.GetRecordById(i));
                 }
 
                 this.fileStream.Position = (i + 1) * RecordSize;
@@ -338,31 +291,7 @@ namespace FileCabinetApp
                     int day = BitConverter.ToInt32(bytes, 0);
                     if (!this.IsDeleted(i) && new DateTime(year, month, day).Equals(searchDateTime))
                     {
-                        this.fileStream.Position = i * RecordSize;
-                        byte[] data = new byte[RecordSize];
-                        this.fileStream.Read(data, offset, data.Length);
-                        var record = new FileCabinetRecord
-                        {
-                            Id = BitConverter.ToInt32(data, 0),
-                            FirstName = Encoding.UTF8.GetString(data, 4, NameSize).Trim(new char[] { '\0' }),
-                            LastName = Encoding.UTF8.GetString(data, 124, NameSize).Trim(new char[] { '\0' }),
-                            DateOfBirth = new DateTime(BitConverter.ToInt32(data, 244), BitConverter.ToInt32(data, 248), BitConverter.ToInt32(data, 252)),
-                            Age = BitConverter.ToInt16(data, 256),
-                            Salary = Convert.ToDecimal(BitConverter.ToDouble(data, 258)),
-                            Gender = BitConverter.ToChar(data, 274),
-                        };
-
-                        int[] bits = new int[4];
-                        int position = 258;
-                        for (int j = 0; i < bits.Length; i++)
-                        {
-                            bits[j] = BitConverter.ToInt32(data, position);
-                            position += sizeof(int);
-                        }
-
-                        record.Salary = new decimal(bits);
-
-                        records.Add(record);
+                        records.Add(this.GetRecordById(i));
                     }
 
                     this.fileStream.Position = (i + 1) * RecordSize;
@@ -556,6 +485,34 @@ namespace FileCabinetApp
             this.fileStream.Read(isDeleted_bytes, 0, isDeleted_bytes.Length);
             this.fileStream.Position = tempPosition;
             return BitConverter.ToBoolean(isDeleted_bytes, 0);
+        }
+
+        private FileCabinetRecord GetRecordById(int i)
+        {
+            this.fileStream.Position = i * RecordSize;
+            int offset = 0;
+            byte[] data = new byte[RecordSize];
+            this.fileStream.Read(data, offset, data.Length);
+            var record = new FileCabinetRecord
+            {
+                Id = BitConverter.ToInt32(data, 0),
+                FirstName = Encoding.UTF8.GetString(data, 4, NameSize).Trim(new char[] { '\0' }),
+                LastName = Encoding.UTF8.GetString(data, 124, NameSize).Trim(new char[] { '\0' }),
+                DateOfBirth = new DateTime(BitConverter.ToInt32(data, 244), BitConverter.ToInt32(data, 248), BitConverter.ToInt32(data, 252)),
+                Age = BitConverter.ToInt16(data, 256),
+                Gender = BitConverter.ToChar(data, 274),
+            };
+
+            int[] bits = new int[4];
+            int position = 258;
+            for (int j = 0; j < bits.Length; j++)
+            {
+                bits[j] = BitConverter.ToInt32(data, position);
+                position += sizeof(int);
+            }
+
+            record.Salary = new decimal(bits);
+            return record;
         }
     }
 }
