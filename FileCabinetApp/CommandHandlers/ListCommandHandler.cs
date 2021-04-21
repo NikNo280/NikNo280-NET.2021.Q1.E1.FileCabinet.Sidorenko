@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FileCabinetApp.CommandHandlers.Interface;
 
 namespace FileCabinetApp.CommandHandlers
@@ -8,13 +9,14 @@ namespace FileCabinetApp.CommandHandlers
     /// </summary>
     public class ListCommandHandler : ServiceCommandHandler
     {
-        private IRecordPrinter recordPrinter;
+        private Action<IEnumerable<FileCabinetRecord>> recordPrinter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ListCommandHandler"/> class.
         /// </summary>
         /// <param name="fileCabinetService">File cabinet service.</param>
-        public ListCommandHandler(IFileCabinetService fileCabinetService, IRecordPrinter recordPrinter)
+        /// <param name="recordPrinter">Record printer.</param>
+        public ListCommandHandler(IFileCabinetService fileCabinetService, Action<IEnumerable<FileCabinetRecord>> recordPrinter)
             : base(fileCabinetService)
         {
             this.recordPrinter = recordPrinter;
@@ -33,7 +35,7 @@ namespace FileCabinetApp.CommandHandlers
 
             if (string.Equals(appCommandRequest.Command, "list", StringComparison.InvariantCultureIgnoreCase))
             {
-                this.recordPrinter.Print(this.FileCabinetService.GetRecords());
+                this.recordPrinter(this.FileCabinetService.GetRecords());
             }
             else
             {

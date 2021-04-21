@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using FileCabinetApp.CommandHandlers;
 
@@ -70,9 +72,9 @@ namespace FileCabinetApp
             var exitCommandHandler = new ExitCommandHandler(ExitProgram);
             var statCommandHandler = new StatCommandHandler(fileCabinetService);
             var createCommandHandler = new CreateCommandHandler(fileCabinetService);
-            var listCommandHandler = new ListCommandHandler(fileCabinetService, new DefaultRecordPrinet());
+            var listCommandHandler = new ListCommandHandler(fileCabinetService, Print);
             var editCommandHandler = new EditCommandHandler(fileCabinetService);
-            var findCommandHandler = new FindCommandHandler(fileCabinetService, new DefaultRecordPrinet());
+            var findCommandHandler = new FindCommandHandler(fileCabinetService, Print);
             var exportCommandHandler = new ExportCommandHandler(fileCabinetService);
             var importCommandHandler = new ImportCommandHandler(fileCabinetService);
             var removeCommandHandler = new RemoveCommandHandler(fileCabinetService);
@@ -96,6 +98,25 @@ namespace FileCabinetApp
         private static void ExitProgram(bool isRunning)
         {
             Program.isRunning = isRunning;
+        }
+
+        /// <summary>
+        /// Print records.
+        /// </summary>
+        /// <param name="records">Records.</param>
+        private static void Print(IEnumerable<FileCabinetRecord> records)
+        {
+            if (records is null)
+            {
+                throw new ArgumentNullException(nameof(records));
+            }
+
+            foreach (var record in records)
+            {
+                Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, " +
+                    $"{record.Age}, {record.Salary}, {record.Gender}, " +
+                    $"{record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}");
+            }
         }
 
         private static void LoadSettings(string[] args)
