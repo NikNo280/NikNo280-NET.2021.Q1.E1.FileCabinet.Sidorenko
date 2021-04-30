@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
+using Microsoft.Extensions.Configuration;
 
 namespace FileCabinetApp.Validation.Extension
 {
@@ -11,6 +9,13 @@ namespace FileCabinetApp.Validation.Extension
     /// </summary>
     public static class ValidatorBuilderExtension
     {
+        /// <summary>
+        /// Config.
+        /// </summary>
+        private static readonly IConfiguration Config = new ConfigurationBuilder()
+            .AddJsonFile("validation-rules.json", true, true)
+            .Build();
+
         /// <summary>
         /// Create default validator.
         /// </summary>
@@ -24,12 +29,14 @@ namespace FileCabinetApp.Validation.Extension
             }
 
             return validatorBuilder
-                .ValidateFirstName(2, 60)
-                .ValidateLastName(2, 60)
-                .ValidateDateOfBirth(new DateTime(1950, 1, 1), DateTime.Now)
-                .ValidateAge(1, 72)
-                .ValidateSalary(0, decimal.MaxValue)
-                .ValidateGender("MW".ToCharArray())
+                .ValidateFirstName(int.Parse(Config["default:firstName:min"], CultureInfo.InvariantCulture), int.Parse(Config["default:firstName:max"], CultureInfo.InvariantCulture))
+                .ValidateLastName(int.Parse(Config["default:lastName:min"], CultureInfo.InvariantCulture), int.Parse(Config["default:lastName:max"], CultureInfo.InvariantCulture))
+                .ValidateDateOfBirth(
+                    DateTime.ParseExact(Config["default:dateOfBirth:from"], "dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    DateTime.ParseExact(Config["default:dateOfBirth:to"], "dd/MM/yyyy", CultureInfo.InvariantCulture))
+                .ValidateAge(short.Parse(Config["default:age:min"], CultureInfo.InvariantCulture), short.Parse(Config["default:age:max"], CultureInfo.InvariantCulture))
+                .ValidateSalary(decimal.Parse(Config["default:salary:min"], CultureInfo.InvariantCulture), decimal.Parse(Config["default:salary:max"], CultureInfo.InvariantCulture))
+                .ValidateGender(Config["default:genders"].ToCharArray())
                 .Create();
         }
 
@@ -46,12 +53,14 @@ namespace FileCabinetApp.Validation.Extension
             }
 
             return validatorBuilder
-                .ValidateFirstName(2, 100)
-                .ValidateLastName(2, 100)
-                .ValidateDateOfBirth(new DateTime(1900, 1, 1), DateTime.Now)
-                .ValidateAge(1, 120)
-                .ValidateSalary(0, 999999)
-                .ValidateGender("MWO".ToCharArray())
+                .ValidateFirstName(int.Parse(Config["custom:firstName:min"], CultureInfo.InvariantCulture), int.Parse(Config["custom:firstName:max"], CultureInfo.InvariantCulture))
+                .ValidateLastName(int.Parse(Config["custom:lastName:min"], CultureInfo.InvariantCulture), int.Parse(Config["custom:lastName:max"], CultureInfo.InvariantCulture))
+                .ValidateDateOfBirth(
+                    DateTime.ParseExact(Config["custom:dateOfBirth:from"], "dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    DateTime.ParseExact(Config["custom:dateOfBirth:to"], "dd/MM/yyyy", CultureInfo.InvariantCulture))
+                .ValidateAge(short.Parse(Config["custom:age:min"], CultureInfo.InvariantCulture), short.Parse(Config["custom:age:max"], CultureInfo.InvariantCulture))
+                .ValidateSalary(decimal.Parse(Config["custom:salary:min"], CultureInfo.InvariantCulture), decimal.Parse(Config["custom:salary:max"], CultureInfo.InvariantCulture))
+                .ValidateGender(Config["custom:genders"].ToCharArray())
                 .Create();
         }
     }

@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using FileCabinetApp.CommandHandlers;
+using FileCabinetApp.Service.Decorator;
 using FileCabinetApp.Validation;
 using FileCabinetApp.Validation.Extension;
 using FileCabinetApp.Validation.InputValidation;
+using NLog;
+using NLog.Config;
 
 namespace FileCabinetApp
 {
@@ -125,7 +128,7 @@ namespace FileCabinetApp
 
         private static void LoadSettings(string[] args)
         {
-            string[] settings = new string[] { "DEFAULT", "MEMORY" };
+            string[] settings = new string[] { "DEFAULT", "MEMORY", "false", "false" };
             for (int i = 0; i < args.Length; i++)
             {
                 if (args[i].Contains("--validation-rules"))
@@ -141,10 +144,18 @@ namespace FileCabinetApp
                 {
                     settings[1] = args[i].Split("=")[1].ToUpperInvariant();
                 }
-                else if (args[i].Contains("-s"))
+                else if (args[i].Equals("-s"))
                 {
                     i++;
                     settings[1] = i < args.Length ? args[i].ToUpperInvariant() : "MEMORY";
+                }
+                else if (args[i].Equals("-use-stopwatch"))
+                {
+                    settings[2] = "true";
+                }
+                else if (args[i].Equals("-use-logger"))
+                {
+                    settings[3] = "true";
                 }
             }
 
@@ -181,6 +192,17 @@ namespace FileCabinetApp
                     fileCabinetService = new FileCabinetMemoryService(recordValidator);
                     Console.WriteLine("Using FileCabinetMemoryService.");
                     break;
+            }
+
+            if (settings[2].Equals("true"))
+            {
+                fileCabinetService = new ServiceMeter(fileCabinetService, new ConsoleTicksPrinter());
+            }
+
+            if (settings[3].Equals("true"))
+            {
+                LogManager.Configuration = new XmlLoggingConfiguration("NLog.config");
+                fileCabinetService = new ServiceLogger(fileCabinetService, LogManager.GetCurrentClassLogger());
             }
         }
     }

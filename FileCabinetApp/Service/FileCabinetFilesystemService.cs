@@ -363,33 +363,6 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// /// Finds the maximum index of the records.
-        /// </summary>
-        /// <returns>The maximum index of the records.</returns>
-        public int FindMaxId()
-        {
-            this.fileStream.Position = 0;
-            int offset = 0;
-            byte[] bytes = new byte[4];
-            int max = int.MinValue;
-            int temp;
-            for (int i = 0; i < this.GetStat(); i++)
-            {
-                this.fileStream.Read(bytes, offset, bytes.Length);
-                temp = BitConverter.ToInt32(bytes, 0);
-                if (!this.IsDeleted(i) && BitConverter.ToInt32(bytes, 0) > max)
-                {
-                    max = temp;
-                }
-
-                this.fileStream.Position = (i + 1) * RecordSize;
-            }
-
-            this.fileStream.Position = 0;
-            return max;
-        }
-
-        /// <summary>
         /// Removes records.
         /// </summary>
         /// <param name="id">Id record to delete.</param>
@@ -475,6 +448,33 @@ namespace FileCabinetApp
             }
 
             return count;
+        }
+
+        /// <summary>
+        /// /// Finds the maximum index of the records.
+        /// </summary>
+        /// <returns>The maximum index of the records.</returns>
+        protected int FindMaxId()
+        {
+            this.fileStream.Position = 0;
+            int offset = 0;
+            byte[] bytes = new byte[4];
+            int max = int.MinValue;
+            int temp;
+            for (int i = 0; i < this.GetStat(); i++)
+            {
+                this.fileStream.Read(bytes, offset, bytes.Length);
+                temp = BitConverter.ToInt32(bytes, 0);
+                if (!this.IsDeleted(i) && BitConverter.ToInt32(bytes, 0) > max)
+                {
+                    max = temp;
+                }
+
+                this.fileStream.Position = (i + 1) * RecordSize;
+            }
+
+            this.fileStream.Position = 0;
+            return max;
         }
 
         private bool IsDeleted(int index)

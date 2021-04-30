@@ -32,7 +32,15 @@ namespace FileCabinetApp.Import
         public IList<FileCabinetRecord> ReadAll()
         {
             XmlSerializer formatter = new XmlSerializer(typeof(FileCabinetRecord[]));
-            return (FileCabinetRecord[])formatter.Deserialize(this.reader);
+            if (formatter.CanDeserialize(this.reader))
+            {
+                return (FileCabinetRecord[])formatter.Deserialize(this.reader);
+            }
+            else
+            {
+                Console.WriteLine("Failed to read data");
+                return Array.Empty<FileCabinetRecord>();
+            }
         }
     }
 }
