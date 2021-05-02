@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using FileCabinetApp.Service.Iterator;
 using NLog;
 
 namespace FileCabinetApp.Service.Decorator
@@ -66,8 +67,8 @@ namespace FileCabinetApp.Service.Decorator
         /// Find records by date of birth.
         /// </summary>
         /// <param name="dateofbirth">Users date of birth.</param>
-        /// <returns>Array of records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateofbirth)
+        /// <returns>Record Iterator.</returns>
+        public IRecordIterator FindByDateOfBirth(string dateofbirth)
         {
             this.logger.Info($"{DateTime.Now} - Calling Find() with dateofbirth = '{dateofbirth}'");
             var value = this.fileCabinetService.FindByDateOfBirth(dateofbirth);
@@ -79,8 +80,8 @@ namespace FileCabinetApp.Service.Decorator
         /// Find records by first name.
         /// </summary>
         /// <param name="firstName">Users first name.</param>
-        /// <returns>Array of records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
+        /// <returns>Record Iterator.</returns>
+        public IRecordIterator FindByFirstName(string firstName)
         {
             this.logger.Info($"{DateTime.Now} - Calling Find() with firstName = '{firstName}'");
             var value = this.fileCabinetService.FindByFirstName(firstName);
@@ -92,8 +93,8 @@ namespace FileCabinetApp.Service.Decorator
         /// Find records by last name.
         /// </summary>
         /// <param name="lastName">Users last name.</param>
-        /// <returns>Array of records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
+        /// <returns>Record Iterator.</returns>
+        public IRecordIterator FindByLastName(string lastName)
         {
             this.logger.Info($"{DateTime.Now} - Calling Find() with lastName = '{lastName}'");
             var value = this.fileCabinetService.FindByLastName(lastName);

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using FileCabinetApp.CommandHandlers;
 using FileCabinetApp.Service.Decorator;
+using FileCabinetApp.Service.Iterator;
 using FileCabinetApp.Validation;
 using FileCabinetApp.Validation.Extension;
 using FileCabinetApp.Validation.InputValidation;
@@ -123,6 +124,26 @@ namespace FileCabinetApp
                 Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, " +
                     $"{record.Age}, {record.Salary}, {record.Gender}, " +
                     $"{record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}");
+            }
+        }
+
+        /// <summary>
+        /// Print records.
+        /// </summary>
+        /// <param name="recordIterator">Record iterator.</param>
+        private static void Print(IRecordIterator recordIterator)
+        {
+            if (recordIterator is null)
+            {
+                throw new ArgumentNullException(nameof(recordIterator));
+            }
+
+            while (recordIterator.HasMore())
+            {
+                var record = recordIterator.GetNext();
+                Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, " +
+                $"{record.Age}, {record.Salary}, {record.Gender}, " +
+                $"{record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}");
             }
         }
 

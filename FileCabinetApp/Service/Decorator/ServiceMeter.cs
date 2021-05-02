@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using FileCabinetApp.Service.Iterator;
 
 namespace FileCabinetApp.Service.Decorator
 {
@@ -59,8 +55,8 @@ namespace FileCabinetApp.Service.Decorator
         /// Find records by date of birth.
         /// </summary>
         /// <param name="dateofbirth">Users date of birth.</param>
-        /// <returns>Array of records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateofbirth)
+        /// <returns>Record Iterator.</returns>
+        public IRecordIterator FindByDateOfBirth(string dateofbirth)
         {
             this.stopwatch.Start();
             var value = this.fileCabinetService.FindByDateOfBirth(dateofbirth);
@@ -73,8 +69,8 @@ namespace FileCabinetApp.Service.Decorator
         /// Find records by first name.
         /// </summary>
         /// <param name="firstName">Users first name.</param>
-        /// <returns>Array of records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
+        /// <returns>Record Iterator.</returns>
+        public IRecordIterator FindByFirstName(string firstName)
         {
             this.stopwatch.Start();
             var value = this.fileCabinetService.FindByFirstName(firstName);
@@ -87,8 +83,8 @@ namespace FileCabinetApp.Service.Decorator
         /// Find records by last name.
         /// </summary>
         /// <param name="lastName">Users last name.</param>
-        /// <returns>Array of records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
+        /// <returns>Record Iterator.</returns>
+        public IRecordIterator FindByLastName(string lastName)
         {
             this.stopwatch.Start();
             var value = this.fileCabinetService.FindByLastName(lastName);

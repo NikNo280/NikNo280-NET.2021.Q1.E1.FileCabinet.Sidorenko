@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using FileCabinetApp.Service.Iterator;
 
 namespace FileCabinetApp.CommandHandlers
 {
@@ -9,14 +8,14 @@ namespace FileCabinetApp.CommandHandlers
     /// </summary>
     public class FindCommandHandler : ServiceCommandHandler
     {
-        private Action<IEnumerable<FileCabinetRecord>> recordPrinter;
+        private Action<IRecordIterator> recordPrinter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FindCommandHandler"/> class.
         /// </summary>
         /// <param name="fileCabinetService">File cabinet service.</param>
         /// <param name="recordPrinter">Record printer.</param>
-        public FindCommandHandler(IFileCabinetService fileCabinetService, Action<IEnumerable<FileCabinetRecord>> recordPrinter)
+        public FindCommandHandler(IFileCabinetService fileCabinetService, Action<IRecordIterator> recordPrinter)
             : base(fileCabinetService)
         {
             this.recordPrinter = recordPrinter;
@@ -42,20 +41,21 @@ namespace FileCabinetApp.CommandHandlers
                     return;
                 }
 
-                ReadOnlyCollection<FileCabinetRecord> records = parametersSplit[0].ToUpperInvariant() switch
+                IRecordIterator recordsIterator = parametersSplit[0].ToUpperInvariant() switch
                 {
                     "FIRSTNAME" => this.FileCabinetService.FindByFirstName(parametersSplit[1]),
                     "LASTNAME" => this.FileCabinetService.FindByLastName(parametersSplit[1]),
                     "DATEOFBIRTH" => this.FileCabinetService.FindByDateOfBirth(parametersSplit[1]),
-                    _ => new ReadOnlyCollection<FileCabinetRecord>(new List<FileCabinetRecord>())
+                    _ => null
                 };
-                if (records.Count == 0)
+
+                if (recordsIterator is null)
                 {
-                    Console.WriteLine("no records found");
+                    Console.WriteLine("no matching parameter found");
                 }
                 else
                 {
-                    this.recordPrinter(records);
+                    this.recordPrinter(recordsIterator);
                 }
             }
             else

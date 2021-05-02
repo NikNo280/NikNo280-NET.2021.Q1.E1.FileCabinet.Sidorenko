@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using FileCabinetApp.Service.Iterator;
 
 namespace FileCabinetApp
 {
@@ -17,7 +15,7 @@ namespace FileCabinetApp
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
-        private readonly Dictionary<string, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<string, List<FileCabinetRecord>>();
+        private readonly Dictionary<DateTime, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
         private readonly IRecordValidator recordValidator;
 
         /// <summary>
@@ -44,9 +42,9 @@ namespace FileCabinetApp
             this.recordValidator.ValidateParameters(record);
 
             this.list.Add(record);
-            AddToDict(record.FirstName, this.firstNameDictionary, record);
-            AddToDict(record.LastName, this.lastNameDictionary, record);
-            AddToDict(record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), this.dateOfBirthDictionary, record);
+            AddToDict(record.FirstName.ToUpperInvariant(), this.firstNameDictionary, record);
+            AddToDict(record.LastName.ToUpperInvariant(), this.lastNameDictionary, record);
+            AddToDict(record.DateOfBirth, this.dateOfBirthDictionary, record);
 
             return record.Id;
         }
@@ -97,9 +95,9 @@ namespace FileCabinetApp
                         Gender = record.Gender,
                     };
 
-                    UpdateDict(this.firstNameDictionary, item.FirstName, record.FirstName, editRecord);
-                    UpdateDict(this.lastNameDictionary, item.LastName, record.LastName, editRecord);
-                    UpdateDict(this.dateOfBirthDictionary, item.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), editRecord);
+                    UpdateDict(this.firstNameDictionary, item.FirstName.ToUpperInvariant(), record.FirstName.ToUpperInvariant(), editRecord);
+                    UpdateDict(this.lastNameDictionary, item.LastName.ToUpperInvariant(), record.LastName.ToUpperInvariant(), editRecord);
+                    UpdateDict(this.dateOfBirthDictionary, item.DateOfBirth, record.DateOfBirth, editRecord);
                     this.list.Remove(item);
                     this.list.Add(editRecord);
                     return;
@@ -113,30 +111,54 @@ namespace FileCabinetApp
         /// Find records by first name.
         /// </summary>
         /// <param name="firstName">Users first name.</param>
-        /// <returns>Array of records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
+        /// <returns>Record Iterator.</returns>
+        public IRecordIterator FindByFirstName(string firstName)
         {
-            return GetArrayFromDict(firstName, this.firstNameDictionary);
+            if (string.IsNullOrWhiteSpace(firstName))
+            {
+                throw new ArgumentException($"{nameof(firstName)} is null or empty");
+            }
+
+            return GetIteratorFromDict(firstName.ToUpperInvariant(), this.firstNameDictionary);
         }
 
         /// <summary>
         /// Find records by last name.
         /// </summary>
         /// <param name="lastName">Users last name.</param>
-        /// <returns>Array of records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
+        /// <returns>Record Iterator.</returns>
+        public IRecordIterator FindByLastName(string lastName)
         {
-            return GetArrayFromDict(lastName, this.lastNameDictionary);
+            if (string.IsNullOrWhiteSpace(lastName))
+            {
+                throw new ArgumentException($"{nameof(lastName)} is null or empty");
+            }
+
+            return GetIteratorFromDict(lastName.ToUpperInvariant(), this.lastNameDictionary);
         }
 
         /// <summary>
         /// Find records by date of birth.
         /// </summary>
         /// <param name="dateofbirth">Users date of birth.</param>
-        /// <returns>Array of records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateofbirth)
+        /// <returns>Record Iterator.</returns>
+        public IRecordIterator FindByDateOfBirth(string dateofbirth)
         {
-            return GetArrayFromDict(dateofbirth, this.dateOfBirthDictionary);
+            if (string.IsNullOrWhiteSpace(dateofbirth))
+            {
+                throw new ArgumentException($"{nameof(dateofbirth)} is null or empty");
+            }
+
+            DateTime dateTime;
+            bool result = DateTime.TryParseExact(dateofbirth, "yyyy-MMM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime);
+            if (result)
+            {
+                return GetIteratorFromDict(dateTime, this.dateOfBirthDictionary);
+            }
+            else
+            {
+                return new MemoryIterator(new List<FileCabinetRecord>());
+            }
         }
 
         /// <summary>
@@ -202,7 +224,7 @@ namespace FileCabinetApp
                     this.list.Remove(record);
                     RemoveRecordInDict(this.firstNameDictionary, record, record.FirstName);
                     RemoveRecordInDict(this.lastNameDictionary, record, record.LastName);
-                    RemoveRecordInDict(this.dateOfBirthDictionary, record, record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture));
+                    RemoveRecordInDict(this.dateOfBirthDictionary, record, record.DateOfBirth);
                     return true;
                 }
             }
@@ -226,13 +248,8 @@ namespace FileCabinetApp
             return 0;
         }
 
-        private static void RemoveRecordInDict(Dictionary<string, List<FileCabinetRecord>> dictionary, FileCabinetRecord record, string key)
+        private static void RemoveRecordInDict<T>(Dictionary<T, List<FileCabinetRecord>> dictionary, FileCabinetRecord record, T key)
         {
-            if (string.IsNullOrWhiteSpace(key))
-            {
-                throw new ArgumentNullException($"{nameof(key)} is null or empty");
-            }
-
             if (record is null)
             {
                 throw new ArgumentNullException($"{nameof(record)} is null");
@@ -243,14 +260,14 @@ namespace FileCabinetApp
                 throw new ArgumentNullException($"{nameof(dictionary)} is null");
             }
 
-            if (dictionary.ContainsKey(key.ToUpperInvariant()))
+            if (dictionary.ContainsKey(key))
             {
-                var fileCabinetRecords = dictionary[key.ToUpperInvariant()];
+                var fileCabinetRecords = dictionary[key];
                 if (fileCabinetRecords.Contains(record))
                 {
                     if (fileCabinetRecords.Count == 1)
                     {
-                        dictionary.Remove(key.ToUpperInvariant());
+                        dictionary.Remove(key);
                     }
                     else
                     {
@@ -260,38 +277,33 @@ namespace FileCabinetApp
             }
         }
 
-        private static ReadOnlyCollection<FileCabinetRecord> GetArrayFromDict(string source, Dictionary<string, List<FileCabinetRecord>> dictionary)
+        private static IRecordIterator GetIteratorFromDict<T>(T source, Dictionary<T, List<FileCabinetRecord>> dictionary)
         {
-            if (string.IsNullOrWhiteSpace(source))
+            if (dictionary.ContainsKey(source))
             {
-                throw new ArgumentNullException($"{nameof(source)} is null or empty");
-            }
-
-            if (dictionary.ContainsKey(source.ToUpperInvariant()))
-            {
-                return new ReadOnlyCollection<FileCabinetRecord>(dictionary[source.ToUpperInvariant()]);
+                return new MemoryIterator(dictionary[source]);
             }
             else
             {
-                return new ReadOnlyCollection<FileCabinetRecord>(new List<FileCabinetRecord>());
+                return new MemoryIterator(new List<FileCabinetRecord>());
             }
         }
 
-        private static void AddToDict(string key, Dictionary<string, List<FileCabinetRecord>> dictionary, FileCabinetRecord record)
+        private static void AddToDict<T>(T key, Dictionary<T, List<FileCabinetRecord>> dictionary, FileCabinetRecord record)
         {
-            if (dictionary.ContainsKey(key.ToUpperInvariant()))
+            if (dictionary.ContainsKey(key))
             {
-                dictionary[key.ToUpperInvariant()].Add(record);
+                dictionary[key].Add(record);
             }
             else
             {
-                dictionary.Add(key.ToUpperInvariant(), new List<FileCabinetRecord>() { record });
+                dictionary.Add(key, new List<FileCabinetRecord>() { record });
             }
         }
 
-        private static void UpdateDict(Dictionary<string, List<FileCabinetRecord>> dictionary, string oldKey, string newKey, FileCabinetRecord record)
+        private static void UpdateDict<T>(Dictionary<T, List<FileCabinetRecord>> dictionary, T oldKey, T newKey, FileCabinetRecord record)
         {
-            dictionary[oldKey.ToUpperInvariant()].Remove(dictionary[oldKey.ToUpperInvariant()].Where(item => item.Id == record.Id).First());
+            dictionary[oldKey].Remove(dictionary[oldKey].Where(item => item.Id == record.Id).First());
             AddToDict(newKey, dictionary, record);
         }
     }

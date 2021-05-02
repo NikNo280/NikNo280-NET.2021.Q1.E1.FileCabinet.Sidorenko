@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
+using FileCabinetApp.Service.Iterator;
 
 namespace FileCabinetApp
 {
@@ -41,22 +37,22 @@ namespace FileCabinetApp
         /// Find records by first name.
         /// </summary>
         /// <param name="firstName">Users first name.</param>
-        /// <returns>Array of records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName);
+        /// <returns>Record Iterator.</returns>
+        public IRecordIterator FindByFirstName(string firstName);
 
         /// <summary>
         /// Find records by last name.
         /// </summary>
         /// <param name="lastName">Users last name.</param>
-        /// <returns>Array of records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName);
+        /// <returns>Record Iterator.</returns>
+        public IRecordIterator FindByLastName(string lastName);
 
         /// <summary>
         /// Find records by date of birth.
         /// </summary>
         /// <param name="dateofbirth">Users date of birth.</param>
-        /// <returns>Array of records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateofbirth);
+        /// <returns>Record Iterator.</returns>
+        public IRecordIterator FindByDateOfBirth(string dateofbirth);
 
         /// <summary>
         /// Generate new FileCabinetRecord snapshot.
