@@ -119,31 +119,18 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(records));
             }
 
+            bool isEmpty = true;
             foreach (var record in records)
             {
+                isEmpty = false;
                 Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, " +
                     $"{record.Age}, {record.Salary}, {record.Gender}, " +
                     $"{record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}");
             }
-        }
 
-        /// <summary>
-        /// Print records.
-        /// </summary>
-        /// <param name="recordIterator">Record iterator.</param>
-        private static void Print(IRecordIterator recordIterator)
-        {
-            if (recordIterator is null)
+            if (isEmpty)
             {
-                throw new ArgumentNullException(nameof(recordIterator));
-            }
-
-            while (recordIterator.HasMore())
-            {
-                var record = recordIterator.GetNext();
-                Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, " +
-                $"{record.Age}, {record.Salary}, {record.Gender}, " +
-                $"{record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}");
+                Console.WriteLine("no records found");
             }
         }
 

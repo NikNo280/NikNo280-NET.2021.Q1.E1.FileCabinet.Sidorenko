@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using FileCabinetApp.Service.Iterator;
+using FileCabinetApp.Service.Iterator.Enumerable;
 
 namespace FileCabinetApp
 {
@@ -235,7 +236,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="firstName">Users first name.</param>
         /// <returns>Record Iterator.</returns>
-        public IRecordIterator FindByFirstName(string firstName)
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
             if (string.IsNullOrWhiteSpace(firstName))
             {
@@ -245,10 +246,10 @@ namespace FileCabinetApp
             firstName = firstName.ToUpperInvariant();
             if (this.firstNameDictionary.ContainsKey(firstName))
             {
-                return new FilesystemIterator(this, this.firstNameDictionary[firstName]);
+                return new FilesystemEnumerable(this, this.firstNameDictionary[firstName]);
             }
 
-            return new FilesystemIterator(this, new List<long>());
+            return new FilesystemEnumerable(this, new List<long>());
         }
 
         /// <summary>
@@ -256,7 +257,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="lastName">Users last name.</param>
         /// <returns>Record Iterator.</returns>
-        public IRecordIterator FindByLastName(string lastName)
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
             if (string.IsNullOrWhiteSpace(lastName))
             {
@@ -266,10 +267,10 @@ namespace FileCabinetApp
             lastName = lastName.ToUpperInvariant();
             if (this.lastNameDictionary.ContainsKey(lastName))
             {
-                return new FilesystemIterator(this, this.lastNameDictionary[lastName]);
+                return new FilesystemEnumerable(this, this.lastNameDictionary[lastName]);
             }
 
-            return new FilesystemIterator(this, new List<long>());
+            return new FilesystemEnumerable(this, new List<long>());
         }
 
         /// <summary>
@@ -277,7 +278,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="dateofbirth">Users date of birth.</param>
         /// <returns>Record Iterator.</returns>
-        public IRecordIterator FindByDateOfBirth(string dateofbirth)
+        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateofbirth)
         {
             if (string.IsNullOrWhiteSpace(dateofbirth))
             {
@@ -288,10 +289,10 @@ namespace FileCabinetApp
             bool result = DateTime.TryParseExact(dateofbirth, "yyyy-MMM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime);
             if (result && this.dateOfBirthDictionary.ContainsKey(dateTime))
             {
-                return new FilesystemIterator(this, this.dateOfBirthDictionary[dateTime]);
+                return new FilesystemEnumerable(this, this.dateOfBirthDictionary[dateTime]);
             }
 
-            return new FilesystemIterator(this, new List<long>());
+            return new FilesystemEnumerable(this, new List<long>());
         }
 
         /// <summary>

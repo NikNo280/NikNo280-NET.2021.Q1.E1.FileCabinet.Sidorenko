@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using FileCabinetApp.Service.Iterator;
+using FileCabinetApp.Service.Iterator.Enumerable;
 
 namespace FileCabinetApp
 {
@@ -112,7 +114,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="firstName">Users first name.</param>
         /// <returns>Record Iterator.</returns>
-        public IRecordIterator FindByFirstName(string firstName)
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
             if (string.IsNullOrWhiteSpace(firstName))
             {
@@ -127,7 +129,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="lastName">Users last name.</param>
         /// <returns>Record Iterator.</returns>
-        public IRecordIterator FindByLastName(string lastName)
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
             if (string.IsNullOrWhiteSpace(lastName))
             {
@@ -142,7 +144,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="dateofbirth">Users date of birth.</param>
         /// <returns>Record Iterator.</returns>
-        public IRecordIterator FindByDateOfBirth(string dateofbirth)
+        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateofbirth)
         {
             if (string.IsNullOrWhiteSpace(dateofbirth))
             {
@@ -157,7 +159,7 @@ namespace FileCabinetApp
             }
             else
             {
-                return new MemoryIterator(new List<FileCabinetRecord>());
+                return new MemoryEnumerable(Array.Empty<FileCabinetRecord>());
             }
         }
 
@@ -277,15 +279,15 @@ namespace FileCabinetApp
             }
         }
 
-        private static IRecordIterator GetIteratorFromDict<T>(T source, Dictionary<T, List<FileCabinetRecord>> dictionary)
+        private static IEnumerable<FileCabinetRecord> GetIteratorFromDict<T>(T source, Dictionary<T, List<FileCabinetRecord>> dictionary)
         {
             if (dictionary.ContainsKey(source))
             {
-                return new MemoryIterator(dictionary[source]);
+                return new MemoryEnumerable(dictionary[source].ToArray());
             }
             else
             {
-                return new MemoryIterator(new List<FileCabinetRecord>());
+                return new MemoryEnumerable(Array.Empty<FileCabinetRecord>());
             }
         }
 

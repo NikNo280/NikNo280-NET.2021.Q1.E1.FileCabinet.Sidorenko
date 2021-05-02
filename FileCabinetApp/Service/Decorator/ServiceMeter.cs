@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using FileCabinetApp.Service.Iterator;
 
@@ -56,7 +57,7 @@ namespace FileCabinetApp.Service.Decorator
         /// </summary>
         /// <param name="dateofbirth">Users date of birth.</param>
         /// <returns>Record Iterator.</returns>
-        public IRecordIterator FindByDateOfBirth(string dateofbirth)
+        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateofbirth)
         {
             this.stopwatch.Start();
             var value = this.fileCabinetService.FindByDateOfBirth(dateofbirth);
@@ -70,7 +71,7 @@ namespace FileCabinetApp.Service.Decorator
         /// </summary>
         /// <param name="firstName">Users first name.</param>
         /// <returns>Record Iterator.</returns>
-        public IRecordIterator FindByFirstName(string firstName)
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
             this.stopwatch.Start();
             var value = this.fileCabinetService.FindByFirstName(firstName);
@@ -84,7 +85,7 @@ namespace FileCabinetApp.Service.Decorator
         /// </summary>
         /// <param name="lastName">Users last name.</param>
         /// <returns>Record Iterator.</returns>
-        public IRecordIterator FindByLastName(string lastName)
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
             this.stopwatch.Start();
             var value = this.fileCabinetService.FindByLastName(lastName);

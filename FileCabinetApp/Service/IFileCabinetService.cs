@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using FileCabinetApp.Service.Iterator;
 
 namespace FileCabinetApp
@@ -38,21 +39,21 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="firstName">Users first name.</param>
         /// <returns>Record Iterator.</returns>
-        public IRecordIterator FindByFirstName(string firstName);
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName);
 
         /// <summary>
         /// Find records by last name.
         /// </summary>
         /// <param name="lastName">Users last name.</param>
         /// <returns>Record Iterator.</returns>
-        public IRecordIterator FindByLastName(string lastName);
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName);
 
         /// <summary>
         /// Find records by date of birth.
         /// </summary>
         /// <param name="dateofbirth">Users date of birth.</param>
         /// <returns>Record Iterator.</returns>
-        public IRecordIterator FindByDateOfBirth(string dateofbirth);
+        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateofbirth);
 
         /// <summary>
         /// Generate new FileCabinetRecord snapshot.

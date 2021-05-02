@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FileCabinetApp.Service.Iterator;
 
 namespace FileCabinetApp.CommandHandlers
@@ -8,14 +9,14 @@ namespace FileCabinetApp.CommandHandlers
     /// </summary>
     public class FindCommandHandler : ServiceCommandHandler
     {
-        private Action<IRecordIterator> recordPrinter;
+        private Action<IEnumerable<FileCabinetRecord>> recordPrinter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FindCommandHandler"/> class.
         /// </summary>
         /// <param name="fileCabinetService">File cabinet service.</param>
         /// <param name="recordPrinter">Record printer.</param>
-        public FindCommandHandler(IFileCabinetService fileCabinetService, Action<IRecordIterator> recordPrinter)
+        public FindCommandHandler(IFileCabinetService fileCabinetService, Action<IEnumerable<FileCabinetRecord>> recordPrinter)
             : base(fileCabinetService)
         {
             this.recordPrinter = recordPrinter;
@@ -41,7 +42,7 @@ namespace FileCabinetApp.CommandHandlers
                     return;
                 }
 
-                IRecordIterator recordsIterator = parametersSplit[0].ToUpperInvariant() switch
+                IEnumerable<FileCabinetRecord> recordsIterator = parametersSplit[0].ToUpperInvariant() switch
                 {
                     "FIRSTNAME" => this.FileCabinetService.FindByFirstName(parametersSplit[1]),
                     "LASTNAME" => this.FileCabinetService.FindByLastName(parametersSplit[1]),

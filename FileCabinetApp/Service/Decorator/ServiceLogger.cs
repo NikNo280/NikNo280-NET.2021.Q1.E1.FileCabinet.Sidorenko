@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using FileCabinetApp.Service.Iterator;
@@ -68,7 +69,7 @@ namespace FileCabinetApp.Service.Decorator
         /// </summary>
         /// <param name="dateofbirth">Users date of birth.</param>
         /// <returns>Record Iterator.</returns>
-        public IRecordIterator FindByDateOfBirth(string dateofbirth)
+        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateofbirth)
         {
             this.logger.Info($"{DateTime.Now} - Calling Find() with dateofbirth = '{dateofbirth}'");
             var value = this.fileCabinetService.FindByDateOfBirth(dateofbirth);
@@ -81,7 +82,7 @@ namespace FileCabinetApp.Service.Decorator
         /// </summary>
         /// <param name="firstName">Users first name.</param>
         /// <returns>Record Iterator.</returns>
-        public IRecordIterator FindByFirstName(string firstName)
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
             this.logger.Info($"{DateTime.Now} - Calling Find() with firstName = '{firstName}'");
             var value = this.fileCabinetService.FindByFirstName(firstName);
@@ -94,7 +95,7 @@ namespace FileCabinetApp.Service.Decorator
         /// </summary>
         /// <param name="lastName">Users last name.</param>
         /// <returns>Record Iterator.</returns>
-        public IRecordIterator FindByLastName(string lastName)
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
             this.logger.Info($"{DateTime.Now} - Calling Find() with lastName = '{lastName}'");
             var value = this.fileCabinetService.FindByLastName(lastName);
