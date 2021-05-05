@@ -56,8 +56,15 @@ namespace FileCabinetApp.CommandHandlers
                     Salary = salary,
                     Gender = gender,
                 };
-                this.FileCabinetService.CreateRecord(record);
-                Console.WriteLine($"Record #{this.FileCabinetService.GetLastIndex()} is created.");
+                try
+                {
+                    this.FileCabinetService.CreateRecord(record);
+                    Console.WriteLine($"Record #{this.FileCabinetService.GetLastIndex()} is created.");
+                }
+                catch (ArgumentException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
             else
             {

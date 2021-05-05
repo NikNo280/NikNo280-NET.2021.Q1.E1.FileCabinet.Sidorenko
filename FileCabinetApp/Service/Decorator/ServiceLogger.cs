@@ -148,6 +148,24 @@ namespace FileCabinetApp.Service.Decorator
         }
 
         /// <summary>
+        /// Insert record.
+        /// </summary>
+        /// <param name="record">Record.</param>
+        public void InsertRecord(FileCabinetRecord record)
+        {
+            if (record is null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
+            this.logger.Info($"{DateTime.Now} - Calling Create() with FirstName = '{record.FirstName}', LastName = '{record.LastName}', " +
+                $"DateOfBirth = '{record.DateOfBirth.ToString($"dd/MM/yyyy", CultureInfo.InvariantCulture)}', " +
+                $"Age = '{record.Age}', Salary = '{record.Salary}', Gender = '{record.Gender}'");
+            this.fileCabinetService.InsertRecord(record);
+            this.logger.Info($"{DateTime.Now} - Create() ended");
+        }
+
+        /// <summary>
         /// Generate new FileCabinetRecord snapshot.
         /// </summary>
         /// <returns>new FileCabinetRecord snapshot.</returns>

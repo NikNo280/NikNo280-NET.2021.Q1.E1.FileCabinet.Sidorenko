@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using FileCabinetApp.Service.Iterator;
@@ -50,6 +51,23 @@ namespace FileCabinetApp.Service.Decorator
             this.fileCabinetService.EditRecord(record);
             this.stopwatch.Stop();
             this.printer.Print("Edit", this.stopwatch.ElapsedTicks);
+        }
+
+        /// <summary>
+        /// Insert record.
+        /// </summary>
+        /// <param name="record">Record.</param>
+        public void InsertRecord(FileCabinetRecord record)
+        {
+            if (record is null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
+            this.stopwatch.Start();
+            this.fileCabinetService.InsertRecord(record);
+            this.stopwatch.Stop();
+            this.printer.Print("Insert", this.stopwatch.ElapsedTicks);
         }
 
         /// <summary>

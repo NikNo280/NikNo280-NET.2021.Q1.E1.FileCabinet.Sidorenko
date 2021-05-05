@@ -90,5 +90,11 @@ namespace FileCabinetApp
         /// </summary>
         /// <returns>Number of records deleted.</returns>
         public int GetCountDeletedRecords();
+
+        /// <summary>
+        /// Insert record.
+        /// </summary>
+        /// <param name="record">Record.</param>
+        public void InsertRecord(FileCabinetRecord record);
     }
 }

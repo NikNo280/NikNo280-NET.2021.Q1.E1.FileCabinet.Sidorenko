@@ -164,6 +164,37 @@ namespace FileCabinetApp
         }
 
         /// <summary>
+        /// Insert record.
+        /// </summary>
+        /// <param name="record">Record.</param>
+        public void InsertRecord(FileCabinetRecord record)
+        {
+            if (record is null)
+            {
+                throw new ArgumentNullException($"{nameof(record)} is null");
+            }
+
+            if (this.IsRecordById(record.Id))
+            {
+                this.EditRecord(record);
+            }
+            else
+            {
+                this.CreateRecord(record);
+            }
+        }
+
+        /// <summary>
+        /// looking for an record with this ID exists.
+        /// </summary>
+        /// <param name="id">Records id.</param>
+        /// <returns>Is there a record with such an identifier.</returns>
+        public bool IsRecordById(int id)
+        {
+            return this.list.Any(recod => recod.Id == id);
+        }
+
+        /// <summary>
         /// Generate new FileCabinetRecord snapshot.
         /// </summary>
         /// <returns>new FileCabinetRecord snapshot.</returns>

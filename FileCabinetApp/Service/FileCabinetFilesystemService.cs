@@ -47,7 +47,11 @@ namespace FileCabinetApp
                 throw new ArgumentNullException($"{record} is null or empty");
             }
 
-            this.recordValidator.ValidateParameters(record);
+            if (!this.recordValidator.ValidateParameters(record))
+            {
+                throw new ArgumentException("Incorrect prarameters");
+            }
+
             this.fileStream.Position = this.fileStream.Length;
 
             AddToDict(record.FirstName.ToUpperInvariant(), this.firstNameDictionary, this.fileStream.Position);
@@ -104,6 +108,11 @@ namespace FileCabinetApp
             if (record is null)
             {
                 throw new ArgumentNullException($"{nameof(record)} is null");
+            }
+
+            if (!this.recordValidator.ValidateParameters(record))
+            {
+                throw new ArgumentException("Incorrect prarameters");
             }
 
             this.fileStream.Position = 0;
@@ -293,6 +302,57 @@ namespace FileCabinetApp
             }
 
             return new FilesystemEnumerable(this, new List<long>());
+        }
+
+        /// <summary>
+        /// Insert record.
+        /// </summary>
+        /// <param name="record">Record.</param>
+        public void InsertRecord(FileCabinetRecord record)
+        {
+            if (record is null)
+            {
+                throw new ArgumentNullException($"{nameof(record)} is null");
+            }
+
+            if (record is null)
+            {
+                throw new ArgumentNullException($"{nameof(record)} is null");
+            }
+
+            if (this.IsRecordById(record.Id))
+            {
+                this.EditRecord(record);
+            }
+            else
+            {
+                this.CreateRecord(record);
+            }
+        }
+
+        /// <summary>
+        /// looking for an record with this ID exists.
+        /// </summary>
+        /// <param name="id">Records id.</param>
+        /// <returns>Is there a record with such an identifier.</returns>
+        public bool IsRecordById(int id)
+        {
+            this.fileStream.Position = 0;
+            byte[] bytes = new byte[4];
+            for (int i = 0; i < this.GetStat(); i++)
+            {
+                this.fileStream.Read(bytes, 0, bytes.Length);
+                if (!this.IsDeleted(i) && BitConverter.ToInt32(bytes, 0) == id)
+                {
+                    this.fileStream.Position = 0;
+                    return true;
+                }
+
+                this.fileStream.Position = (i + 1) * RecordSize;
+            }
+
+            this.fileStream.Position = 0;
+            return false;
         }
 
         /// <summary>
