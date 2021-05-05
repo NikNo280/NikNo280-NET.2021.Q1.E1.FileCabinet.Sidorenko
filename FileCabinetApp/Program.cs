@@ -79,6 +79,7 @@ namespace FileCabinetApp
             var helpCommandHandler = new HelpCommandHandler();
             var exitCommandHandler = new ExitCommandHandler(ExitProgram);
             var insertCommandHandler = new InsertCommandHandler(fileCabinetService);
+            var deleteCommandHandler = new DeleteCommandHandler(fileCabinetService);
             var statCommandHandler = new StatCommandHandler(fileCabinetService);
             var createCommandHandler = new CreateCommandHandler(fileCabinetService, inputValidation);
             var listCommandHandler = new ListCommandHandler(fileCabinetService, Print);
@@ -93,7 +94,8 @@ namespace FileCabinetApp
             helpCommandHandler.SetNext(exitCommandHandler);
             exitCommandHandler.SetNext(statCommandHandler);
             statCommandHandler.SetNext(insertCommandHandler);
-            insertCommandHandler.SetNext(createCommandHandler);
+            insertCommandHandler.SetNext(deleteCommandHandler);
+            deleteCommandHandler.SetNext(createCommandHandler);
             createCommandHandler.SetNext(listCommandHandler);
             listCommandHandler.SetNext(editCommandHandler);
             editCommandHandler.SetNext(findCommandHandler);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Reflection;
 using FileCabinetApp.Service.Iterator;
 
 namespace FileCabinetApp.Service.Decorator
@@ -203,6 +204,21 @@ namespace FileCabinetApp.Service.Decorator
             this.fileCabinetService.Restore(snapshot);
             this.stopwatch.Stop();
             this.printer.Print("Import", this.stopwatch.ElapsedTicks);
+        }
+
+        /// <summary>
+        /// Delete records.
+        /// </summary>
+        /// <param name="properties">Properties to search.</param>
+        /// <param name="record">Record.</param>
+        /// <returns>Function execution result.</returns>
+        public string DeleteRecords(PropertyInfo[] properties, FileCabinetRecord record)
+        {
+            this.stopwatch.Start();
+            string result = this.fileCabinetService.DeleteRecords(properties, record);
+            this.stopwatch.Stop();
+            this.printer.Print("Delete", this.stopwatch.ElapsedTicks);
+            return result;
         }
     }
 }

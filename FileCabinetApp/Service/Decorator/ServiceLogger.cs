@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Reflection;
 using FileCabinetApp.Service.Iterator;
 using NLog;
 
@@ -163,6 +164,27 @@ namespace FileCabinetApp.Service.Decorator
                 $"Age = '{record.Age}', Salary = '{record.Salary}', Gender = '{record.Gender}'");
             this.fileCabinetService.InsertRecord(record);
             this.logger.Info($"{DateTime.Now} - Create() ended");
+        }
+
+        /// <summary>
+        /// Delete records.
+        /// </summary>
+        /// <param name="properties">Properties to search.</param>
+        /// <param name="record">Record.</param>
+        /// <returns>Function execution result.</returns>
+        public string DeleteRecords(PropertyInfo[] properties, FileCabinetRecord record)
+        {
+            if (record is null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
+            this.logger.Info($"{DateTime.Now} - Calling Create() with FirstName = '{record.FirstName}', LastName = '{record.LastName}', " +
+                $"DateOfBirth = '{record.DateOfBirth.ToString($"dd/MM/yyyy", CultureInfo.InvariantCulture)}', " +
+                $"Age = '{record.Age}', Salary = '{record.Salary}', Gender = '{record.Gender}'");
+            string result = this.fileCabinetService.DeleteRecords(properties, record);
+            this.logger.Info($"{DateTime.Now} - Create() ended");
+            return result;
         }
 
         /// <summary>

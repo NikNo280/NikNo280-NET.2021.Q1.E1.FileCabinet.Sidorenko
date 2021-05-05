@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Reflection;
 using FileCabinetApp.Service.Iterator;
 
 namespace FileCabinetApp
@@ -96,5 +97,13 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="record">Record.</param>
         public void InsertRecord(FileCabinetRecord record);
+
+        /// <summary>
+        /// Delete records.
+        /// </summary>
+        /// <param name="properties">Properties to search.</param>
+        /// <param name="record">Record.</param>
+        /// <returns>Function execution result.</returns>
+        public string DeleteRecords(PropertyInfo[] properties, FileCabinetRecord record);
     }
 }

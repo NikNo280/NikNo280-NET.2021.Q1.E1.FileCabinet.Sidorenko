@@ -35,8 +35,9 @@ namespace FileCabinetApp.CommandHandlers
             {
                 string[] fieldsNames, fieldsValues;
                 bool result;
+                var properties = typeof(FileCabinetRecord).GetProperties();
                 (fieldsNames, fieldsValues, result) = InsertParcer(appCommandRequest.Parameters);
-                if (!result)
+                if (!result || fieldsNames.Length > properties.Length || fieldsNames.Length < properties.Length - 1)
                 {
                     Console.WriteLine("Invalid parameters");
                     return;

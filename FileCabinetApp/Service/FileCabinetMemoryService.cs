@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using FileCabinetApp.Service.Iterator;
 using FileCabinetApp.Service.Iterator.Enumerable;
 
@@ -41,7 +43,10 @@ namespace FileCabinetApp
                 throw new ArgumentNullException($"{nameof(record)} is null");
             }
 
-            this.recordValidator.ValidateParameters(record);
+            if (!this.recordValidator.ValidateParameters(record))
+            {
+                throw new ArgumentException("Incorrect prarameters");
+            }
 
             this.list.Add(record);
             AddToDict(record.FirstName.ToUpperInvariant(), this.firstNameDictionary, record);
@@ -80,7 +85,10 @@ namespace FileCabinetApp
                 throw new ArgumentNullException($"{nameof(record)} is null");
             }
 
-            this.recordValidator.ValidateParameters(record);
+            if (!this.recordValidator.ValidateParameters(record))
+            {
+                throw new ArgumentException("Incorrect prarameters");
+            }
 
             foreach (var item in this.list)
             {
@@ -182,6 +190,77 @@ namespace FileCabinetApp
             {
                 this.CreateRecord(record);
             }
+        }
+
+        /// <summary>
+        /// Delete records.
+        /// </summary>
+        /// <param name="properties">Properties to search.</param>
+        /// <param name="record">Record.</param>
+        /// <returns>Function execution result.</returns>
+        public string DeleteRecords(PropertyInfo[] properties, FileCabinetRecord record)
+        {
+            if (properties is null)
+            {
+                throw new ArgumentNullException(nameof(properties));
+            }
+
+            if (record is null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
+            bool result = true;
+            List<int> removeRecordId = new List<int>();
+            for (int i = 0; i < this.list.Count; i++)
+            {
+                result = true;
+                var deleteRecord = this.list[i];
+                foreach (var property in properties)
+                {
+                    if (!property.GetValue(record).Equals(property.GetValue(deleteRecord)))
+                    {
+                        result = false;
+                    }
+                }
+
+                if (result)
+                {
+                    removeRecordId.Add(deleteRecord.Id);
+                }
+            }
+
+            var stringBuilder = new StringBuilder();
+            if (removeRecordId.Count == 0)
+            {
+                return "No record has been deleted";
+            }
+            else if (removeRecordId.Count == 1)
+            {
+                stringBuilder.Append("Record ");
+            }
+            else
+            {
+                stringBuilder.Append("Records ");
+            }
+
+            foreach (var id in removeRecordId)
+            {
+                stringBuilder.Append($"#{id}, ");
+                this.Remove(id);
+            }
+
+            stringBuilder.Remove(stringBuilder.Length - 2, 1);
+            if (removeRecordId.Count == 1)
+            {
+                stringBuilder.Append("is deleted.");
+            }
+            else
+            {
+                stringBuilder.Append("are deleted.");
+            }
+
+            return stringBuilder.ToString();
         }
 
         /// <summary>
