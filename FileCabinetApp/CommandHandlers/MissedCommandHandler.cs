@@ -11,6 +11,11 @@ namespace FileCabinetApp.CommandHandlers
     /// </summary>
     public class MissedCommandHandler : CommandHandlerBase
     {
+        private static string[] commandsNames = new string[]
+        {
+            "help", "exit", "insert", "delete", "update", "stat", "create", "list", "find", "export", "import", "purge",
+        };
+
         /// <summary>
         /// Command handler.
         /// </summary>
@@ -22,7 +27,37 @@ namespace FileCabinetApp.CommandHandlers
                 throw new ArgumentNullException($"{nameof(appCommandRequest)} is null");
             }
 
-            Console.WriteLine($"There is no '{appCommandRequest.Command}' command.");
+            if (string.IsNullOrWhiteSpace(appCommandRequest.Command))
+            {
+                Console.WriteLine("See 'help'");
+                return;
+            }
+
+            var helpList = new List<string>();
+            foreach (var commandName in commandsNames)
+            {
+                if (commandName.Contains(appCommandRequest.Command, StringComparison.InvariantCultureIgnoreCase) ||
+                    (commandName.StartsWith(appCommandRequest.Command[0]) && commandName.EndsWith(appCommandRequest.Command[^1])))
+                {
+                    helpList.Add(commandName);
+                }
+            }
+
+            Console.WriteLine($"There is no '{appCommandRequest.Command}' command. See 'help'");
+            if (helpList.Count == 1)
+            {
+                Console.WriteLine("The most similar command is");
+            }
+            else if (helpList.Count > 1)
+            {
+                Console.WriteLine("The most similar commands are");
+            }
+
+            foreach (var commandName in helpList)
+            {
+                Console.WriteLine($"\t{commandName}");
+            }
+
             Console.WriteLine();
         }
     }
