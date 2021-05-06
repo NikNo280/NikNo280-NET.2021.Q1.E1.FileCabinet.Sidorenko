@@ -43,18 +43,6 @@ namespace FileCabinetApp.Service.Decorator
         }
 
         /// <summary>
-        /// Modify an existing record by id.
-        /// </summary>
-        /// <param name="record">New record.</param>
-        public void EditRecord(FileCabinetRecord record)
-        {
-            this.stopwatch.Start();
-            this.fileCabinetService.EditRecord(record);
-            this.stopwatch.Stop();
-            this.printer.Print("Edit", this.stopwatch.ElapsedTicks);
-        }
-
-        /// <summary>
         /// Insert record.
         /// </summary>
         /// <param name="record">Record.</param>
@@ -178,20 +166,6 @@ namespace FileCabinetApp.Service.Decorator
             this.fileCabinetService.Purge();
             this.stopwatch.Stop();
             this.printer.Print("Purge", this.stopwatch.ElapsedTicks);
-        }
-
-        /// <summary>
-        /// Removes records.
-        /// </summary>
-        /// <param name="id">Id record to delete.</param>
-        /// <returns>Whether the entry has been deleted.</returns>
-        public bool Remove(int id)
-        {
-            this.stopwatch.Start();
-            var value = this.fileCabinetService.Remove(id);
-            this.stopwatch.Stop();
-            this.printer.Print("Remove", this.stopwatch.ElapsedTicks);
-            return value;
         }
 
         /// <summary>

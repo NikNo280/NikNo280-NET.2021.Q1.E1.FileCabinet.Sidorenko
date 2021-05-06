@@ -18,12 +18,6 @@ namespace FileCabinetApp
         public int CreateRecord(FileCabinetRecord record);
 
         /// <summary>
-        /// Modify an existing record by id.
-        /// </summary>
-        /// <param name="record">New record.</param>
-        public void EditRecord(FileCabinetRecord record);
-
-        /// <summary>
         /// Gets all records.
         /// </summary>
         /// <returns>Array of records.</returns>
@@ -73,13 +67,6 @@ namespace FileCabinetApp
         /// </summary>
         /// <returns>Last index of records.</returns>
         public int GetLastIndex();
-
-        /// <summary>
-        /// Removes records.
-        /// </summary>
-        /// <param name="id">Id record to delete.</param>
-        /// <returns>Whether the entry has been deleted.</returns>
-        public bool Remove(int id);
 
         /// <summary>
         /// Defragments the data file.

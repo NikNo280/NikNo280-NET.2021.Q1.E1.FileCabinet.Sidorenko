@@ -48,24 +48,6 @@ namespace FileCabinetApp.Service.Decorator
         }
 
         /// <summary>
-        /// Modify an existing record by id.
-        /// </summary>
-        /// <param name="record">New record.</param>
-        public void EditRecord(FileCabinetRecord record)
-        {
-            if (record is null)
-            {
-                throw new ArgumentNullException(nameof(record));
-            }
-
-            this.logger.Info($"{DateTime.Now} - Calling Edit() with FirstName = '{record.FirstName}', LastName = '{record.LastName}', " +
-                $"DateOfBirth = '{record.DateOfBirth.ToString($"dd/MM/yyyy", CultureInfo.InvariantCulture)}', " +
-                $"Age = '{record.Age}', Salary = '{record.Salary}', Gender = '{record.Gender}'");
-            this.fileCabinetService.EditRecord(record);
-            this.logger.Info($"{DateTime.Now} - Edit() ended");
-        }
-
-        /// <summary>
         /// Find records by date of birth.
         /// </summary>
         /// <param name="dateofbirth">Users date of birth.</param>
@@ -205,19 +187,6 @@ namespace FileCabinetApp.Service.Decorator
             this.logger.Info($"{DateTime.Now} - Calling Purge()");
             this.fileCabinetService.Purge();
             this.logger.Info($"{DateTime.Now} - Purge() ended");
-        }
-
-        /// <summary>
-        /// Removes records.
-        /// </summary>
-        /// <param name="id">Id record to delete.</param>
-        /// <returns>Whether the entry has been deleted.</returns>
-        public bool Remove(int id)
-        {
-            this.logger.Info($"{DateTime.Now} - Calling Remove() with id = '{id}'");
-            var value = this.fileCabinetService.Remove(id);
-            this.logger.Info($"{DateTime.Now} - Remove() ended");
-            return value;
         }
 
         /// <summary>
