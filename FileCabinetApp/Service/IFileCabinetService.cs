@@ -105,5 +105,14 @@ namespace FileCabinetApp
         /// <param name="record">Record.</param>
         /// <returns>Function execution result.</returns>
         public string DeleteRecords(PropertyInfo[] properties, FileCabinetRecord record);
+
+        /// <summary>
+        /// Update records.
+        /// </summary>
+        /// <param name="updateProperties">Properties to update.</param>
+        /// <param name="updateRecord">Update record.</param>
+        /// <param name="searchProperties">Properties to search.</param>
+        /// <param name="searchRecord">Search record.</param>
+        public void UpdateRecords(PropertyInfo[] updateProperties, FileCabinetRecord updateRecord, PropertyInfo[] searchProperties, FileCabinetRecord searchRecord);
     }
 }

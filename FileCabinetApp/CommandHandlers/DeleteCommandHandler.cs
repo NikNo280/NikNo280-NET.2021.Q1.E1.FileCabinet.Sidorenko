@@ -61,7 +61,16 @@ namespace FileCabinetApp.CommandHandlers
                     return;
                 }
 
-                Console.WriteLine(this.FileCabinetService.DeleteRecords(properties, record));
+                try
+                {
+                    string value = this.FileCabinetService.DeleteRecords(properties, record);
+                    Console.WriteLine(value);
+                }
+                catch (ArgumentException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return;
+                }
             }
             else
             {

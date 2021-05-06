@@ -220,5 +220,20 @@ namespace FileCabinetApp.Service.Decorator
             this.printer.Print("Delete", this.stopwatch.ElapsedTicks);
             return result;
         }
+
+        /// <summary>
+        /// Update records.
+        /// </summary>
+        /// <param name="updateProperties">Properties to update.</param>
+        /// <param name="updateRecord">Update record.</param>
+        /// <param name="searchProperties">Properties to search.</param>
+        /// <param name="searchRecord">Search record.</param>
+        public void UpdateRecords(PropertyInfo[] updateProperties, FileCabinetRecord updateRecord, PropertyInfo[] searchProperties, FileCabinetRecord searchRecord)
+        {
+            this.stopwatch.Start();
+            this.fileCabinetService.UpdateRecords(updateProperties, updateRecord, searchProperties, searchRecord);
+            this.stopwatch.Stop();
+            this.printer.Print("Update", this.stopwatch.ElapsedTicks);
+        }
     }
 }

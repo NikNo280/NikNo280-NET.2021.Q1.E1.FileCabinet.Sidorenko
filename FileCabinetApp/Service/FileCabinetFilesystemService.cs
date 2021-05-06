@@ -360,6 +360,7 @@ namespace FileCabinetApp
                     if (!property.GetValue(record).Equals(property.GetValue(deleteRecord)))
                     {
                         result = false;
+                        break;
                     }
                 }
 
@@ -400,6 +401,61 @@ namespace FileCabinetApp
             }
 
             return stringBuilder.ToString();
+        }
+
+        /// <summary>
+        /// Update records.
+        /// </summary>
+        /// <param name="updateProperties">Properties to update.</param>
+        /// <param name="updateRecord">Update record.</param>
+        /// <param name="searchProperties">Properties to search.</param>
+        /// <param name="searchRecord">Search record.</param>
+        public void UpdateRecords(PropertyInfo[] updateProperties, FileCabinetRecord updateRecord, PropertyInfo[] searchProperties, FileCabinetRecord searchRecord)
+        {
+            if (updateProperties is null)
+            {
+                throw new ArgumentNullException(nameof(updateProperties));
+            }
+
+            if (updateRecord is null)
+            {
+                throw new ArgumentNullException(nameof(updateRecord));
+            }
+
+            if (searchProperties is null)
+            {
+                throw new ArgumentNullException(nameof(searchProperties));
+            }
+
+            if (searchRecord is null)
+            {
+                throw new ArgumentNullException(nameof(searchRecord));
+            }
+
+            bool result;
+            for (int i = 0; i < this.GetStat(); i++)
+            {
+                result = true;
+                var record = this.GetRecordByPosition(i * RecordSize);
+                foreach (var searchProperty in searchProperties)
+                {
+                    if (!searchProperty.GetValue(searchRecord).Equals(searchProperty.GetValue(record)))
+                    {
+                        result = false;
+                        break;
+                    }
+                }
+
+                if (result)
+                {
+                    foreach (var updateProperty in updateProperties)
+                    {
+                        updateProperty.SetValue(record, updateProperty.GetValue(updateRecord));
+                    }
+
+                    this.EditRecord(record);
+                }
+            }
         }
 
         /// <summary>

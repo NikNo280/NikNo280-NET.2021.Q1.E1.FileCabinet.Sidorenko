@@ -264,6 +264,67 @@ namespace FileCabinetApp
         }
 
         /// <summary>
+        /// Update records.
+        /// </summary>
+        /// <param name="updateProperties">Properties to update.</param>
+        /// <param name="updateRecord">Update record.</param>
+        /// <param name="searchProperties">Properties to search.</param>
+        /// <param name="searchRecord">Search record.</param>
+        public void UpdateRecords(PropertyInfo[] updateProperties, FileCabinetRecord updateRecord, PropertyInfo[] searchProperties, FileCabinetRecord searchRecord)
+        {
+            if (updateProperties is null)
+            {
+                throw new ArgumentNullException(nameof(updateProperties));
+            }
+
+            if (updateRecord is null)
+            {
+                throw new ArgumentNullException(nameof(updateRecord));
+            }
+
+            if (searchProperties is null)
+            {
+                throw new ArgumentNullException(nameof(searchProperties));
+            }
+
+            if (searchRecord is null)
+            {
+                throw new ArgumentNullException(nameof(searchRecord));
+            }
+
+            bool result;
+            for (int i = 0; i < this.list.Count; i++)
+            {
+                result = true;
+                var record = this.list[i];
+                foreach (var searchProperty in searchProperties)
+                {
+                    if (!searchProperty.GetValue(searchRecord).Equals(searchProperty.GetValue(record)))
+                    {
+                        result = false;
+                        break;
+                    }
+                }
+
+                if (result)
+                {
+                    var createNewRecord = new FileCabinetRecord();
+                    foreach (var property in typeof(FileCabinetRecord).GetProperties())
+                    {
+                        property.SetValue(createNewRecord, property.GetValue(record));
+                    }
+
+                    foreach (var updateProperty in updateProperties)
+                    {
+                        updateProperty.SetValue(createNewRecord, updateProperty.GetValue(updateRecord));
+                    }
+
+                    this.EditRecord(createNewRecord);
+                }
+            }
+        }
+
+        /// <summary>
         /// looking for an record with this ID exists.
         /// </summary>
         /// <param name="id">Records id.</param>

@@ -159,11 +159,11 @@ namespace FileCabinetApp.Service.Decorator
                 throw new ArgumentNullException(nameof(record));
             }
 
-            this.logger.Info($"{DateTime.Now} - Calling Create() with FirstName = '{record.FirstName}', LastName = '{record.LastName}', " +
+            this.logger.Info($"{DateTime.Now} - Calling Insert() with FirstName = '{record.FirstName}', LastName = '{record.LastName}', " +
                 $"DateOfBirth = '{record.DateOfBirth.ToString($"dd/MM/yyyy", CultureInfo.InvariantCulture)}', " +
                 $"Age = '{record.Age}', Salary = '{record.Salary}', Gender = '{record.Gender}'");
             this.fileCabinetService.InsertRecord(record);
-            this.logger.Info($"{DateTime.Now} - Create() ended");
+            this.logger.Info($"{DateTime.Now} - Insert() ended");
         }
 
         /// <summary>
@@ -179,11 +179,11 @@ namespace FileCabinetApp.Service.Decorator
                 throw new ArgumentNullException(nameof(record));
             }
 
-            this.logger.Info($"{DateTime.Now} - Calling Create() with FirstName = '{record.FirstName}', LastName = '{record.LastName}', " +
+            this.logger.Info($"{DateTime.Now} - Calling Delete() with FirstName = '{record.FirstName}', LastName = '{record.LastName}', " +
                 $"DateOfBirth = '{record.DateOfBirth.ToString($"dd/MM/yyyy", CultureInfo.InvariantCulture)}', " +
                 $"Age = '{record.Age}', Salary = '{record.Salary}', Gender = '{record.Gender}'");
             string result = this.fileCabinetService.DeleteRecords(properties, record);
-            this.logger.Info($"{DateTime.Now} - Create() ended");
+            this.logger.Info($"{DateTime.Now} - Delete() ended");
             return result;
         }
 
@@ -214,7 +214,7 @@ namespace FileCabinetApp.Service.Decorator
         /// <returns>Whether the entry has been deleted.</returns>
         public bool Remove(int id)
         {
-            this.logger.Info($"{DateTime.Now} - Calling Find() with id = '{id}'");
+            this.logger.Info($"{DateTime.Now} - Calling Remove() with id = '{id}'");
             var value = this.fileCabinetService.Remove(id);
             this.logger.Info($"{DateTime.Now} - Remove() ended");
             return value;
@@ -226,9 +226,23 @@ namespace FileCabinetApp.Service.Decorator
         /// <param name="snapshot">FileCabinet snapshot.</param>
         public void Restore(FileCabinetServiceSnapshot snapshot)
         {
-            this.logger.Info($"{DateTime.Now} - Calling Find() with snapshot");
+            this.logger.Info($"{DateTime.Now} - Calling Import() with snapshot");
             this.fileCabinetService.Restore(snapshot);
-            this.logger.Info($"{DateTime.Now} - Restore() ended");
+            this.logger.Info($"{DateTime.Now} - Import() ended");
+        }
+
+        /// <summary>
+        /// Update records.
+        /// </summary>
+        /// <param name="updateProperties">Properties to update.</param>
+        /// <param name="updateRecord">Update record.</param>
+        /// <param name="searchProperties">Properties to search.</param>
+        /// <param name="searchRecord">Search record.</param>
+        public void UpdateRecords(PropertyInfo[] updateProperties, FileCabinetRecord updateRecord, PropertyInfo[] searchProperties, FileCabinetRecord searchRecord)
+        {
+            this.logger.Info($"{DateTime.Now} - Calling Update() with snapshot");
+            this.fileCabinetService.UpdateRecords(updateProperties, updateRecord, searchProperties, searchRecord);
+            this.logger.Info($"{DateTime.Now} - Update() ended");
         }
     }
 }
