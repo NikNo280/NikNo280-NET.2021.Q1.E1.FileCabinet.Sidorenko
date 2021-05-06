@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using FileCabinetApp.Service.Iterator;
 using FileCabinetApp.Service.Iterator.Enumerable;
@@ -47,7 +48,11 @@ namespace FileCabinetApp
                 throw new ArgumentNullException($"{record} is null or empty");
             }
 
-            this.recordValidator.ValidateParameters(record);
+            if (!this.recordValidator.ValidateParameters(record))
+            {
+                throw new ArgumentException("Incorrect prarameters");
+            }
+
             this.fileStream.Position = this.fileStream.Length;
 
             AddToDict(record.FirstName.ToUpperInvariant(), this.firstNameDictionary, this.fileStream.Position);
@@ -104,6 +109,11 @@ namespace FileCabinetApp
             if (record is null)
             {
                 throw new ArgumentNullException($"{nameof(record)} is null");
+            }
+
+            if (!this.recordValidator.ValidateParameters(record))
+            {
+                throw new ArgumentException("Incorrect prarameters");
             }
 
             this.fileStream.Position = 0;
@@ -293,6 +303,184 @@ namespace FileCabinetApp
             }
 
             return new FilesystemEnumerable(this, new List<long>());
+        }
+
+        /// <summary>
+        /// Insert record.
+        /// </summary>
+        /// <param name="record">Record.</param>
+        public void InsertRecord(FileCabinetRecord record)
+        {
+            if (record is null)
+            {
+                throw new ArgumentNullException($"{nameof(record)} is null");
+            }
+
+            if (record is null)
+            {
+                throw new ArgumentNullException($"{nameof(record)} is null");
+            }
+
+            if (this.IsRecordById(record.Id))
+            {
+                this.EditRecord(record);
+            }
+            else
+            {
+                this.CreateRecord(record);
+            }
+        }
+
+        /// <summary>
+        /// Delete records.
+        /// </summary>
+        /// <param name="properties">Properties to search.</param>
+        /// <param name="record">Record.</param>
+        /// <returns>Function execution result.</returns>
+        public string DeleteRecords(PropertyInfo[] properties, FileCabinetRecord record)
+        {
+            if (properties is null)
+            {
+                throw new ArgumentNullException(nameof(properties));
+            }
+
+            if (record is null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
+            bool result = true;
+            List<int> removeRecordId = new List<int>();
+            for (int i = 0; i < this.GetStat(); i++)
+            {
+                result = true;
+                var deleteRecord = this.GetRecordByPosition(i * RecordSize);
+                foreach (var property in properties)
+                {
+                    if (!property.GetValue(record).Equals(property.GetValue(deleteRecord)))
+                    {
+                        result = false;
+                        break;
+                    }
+                }
+
+                if (result)
+                {
+                    removeRecordId.Add(deleteRecord.Id);
+                }
+            }
+
+            var stringBuilder = new StringBuilder();
+            if (removeRecordId.Count == 0)
+            {
+                return "No record has been deleted";
+            }
+            else if (removeRecordId.Count == 1)
+            {
+                stringBuilder.Append("Record ");
+            }
+            else
+            {
+                stringBuilder.Append("Records ");
+            }
+
+            foreach (var id in removeRecordId)
+            {
+                stringBuilder.Append($"#{id}, ");
+                this.Remove(id);
+            }
+
+            stringBuilder.Remove(stringBuilder.Length - 2, 1);
+            if (removeRecordId.Count == 1)
+            {
+                stringBuilder.Append("is deleted.");
+            }
+            else
+            {
+                stringBuilder.Append("are deleted.");
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        /// <summary>
+        /// Update records.
+        /// </summary>
+        /// <param name="updateProperties">Properties to update.</param>
+        /// <param name="updateRecord">Update record.</param>
+        /// <param name="searchProperties">Properties to search.</param>
+        /// <param name="searchRecord">Search record.</param>
+        public void UpdateRecords(PropertyInfo[] updateProperties, FileCabinetRecord updateRecord, PropertyInfo[] searchProperties, FileCabinetRecord searchRecord)
+        {
+            if (updateProperties is null)
+            {
+                throw new ArgumentNullException(nameof(updateProperties));
+            }
+
+            if (updateRecord is null)
+            {
+                throw new ArgumentNullException(nameof(updateRecord));
+            }
+
+            if (searchProperties is null)
+            {
+                throw new ArgumentNullException(nameof(searchProperties));
+            }
+
+            if (searchRecord is null)
+            {
+                throw new ArgumentNullException(nameof(searchRecord));
+            }
+
+            bool result;
+            for (int i = 0; i < this.GetStat(); i++)
+            {
+                result = true;
+                var record = this.GetRecordByPosition(i * RecordSize);
+                foreach (var searchProperty in searchProperties)
+                {
+                    if (!searchProperty.GetValue(searchRecord).Equals(searchProperty.GetValue(record)))
+                    {
+                        result = false;
+                        break;
+                    }
+                }
+
+                if (result)
+                {
+                    foreach (var updateProperty in updateProperties)
+                    {
+                        updateProperty.SetValue(record, updateProperty.GetValue(updateRecord));
+                    }
+
+                    this.EditRecord(record);
+                }
+            }
+        }
+
+        /// <summary>
+        /// looking for an record with this ID exists.
+        /// </summary>
+        /// <param name="id">Records id.</param>
+        /// <returns>Is there a record with such an identifier.</returns>
+        public bool IsRecordById(int id)
+        {
+            this.fileStream.Position = 0;
+            byte[] bytes = new byte[4];
+            for (int i = 0; i < this.GetStat(); i++)
+            {
+                this.fileStream.Read(bytes, 0, bytes.Length);
+                if (!this.IsDeleted(i) && BitConverter.ToInt32(bytes, 0) == id)
+                {
+                    this.fileStream.Position = 0;
+                    return true;
+                }
+
+                this.fileStream.Position = (i + 1) * RecordSize;
+            }
+
+            this.fileStream.Position = 0;
+            return false;
         }
 
         /// <summary>

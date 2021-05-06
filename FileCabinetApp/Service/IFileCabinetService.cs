@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Reflection;
 using FileCabinetApp.Service.Iterator;
 
 namespace FileCabinetApp
@@ -15,12 +16,6 @@ namespace FileCabinetApp
         /// <param name="record">New record.</param>
         /// <returns>Returns new record id.</returns>
         public int CreateRecord(FileCabinetRecord record);
-
-        /// <summary>
-        /// Modify an existing record by id.
-        /// </summary>
-        /// <param name="record">New record.</param>
-        public void EditRecord(FileCabinetRecord record);
 
         /// <summary>
         /// Gets all records.
@@ -74,13 +69,6 @@ namespace FileCabinetApp
         public int GetLastIndex();
 
         /// <summary>
-        /// Removes records.
-        /// </summary>
-        /// <param name="id">Id record to delete.</param>
-        /// <returns>Whether the entry has been deleted.</returns>
-        public bool Remove(int id);
-
-        /// <summary>
         /// Defragments the data file.
         /// </summary>
         public void Purge();
@@ -90,5 +78,28 @@ namespace FileCabinetApp
         /// </summary>
         /// <returns>Number of records deleted.</returns>
         public int GetCountDeletedRecords();
+
+        /// <summary>
+        /// Insert record.
+        /// </summary>
+        /// <param name="record">Record.</param>
+        public void InsertRecord(FileCabinetRecord record);
+
+        /// <summary>
+        /// Delete records.
+        /// </summary>
+        /// <param name="properties">Properties to search.</param>
+        /// <param name="record">Record.</param>
+        /// <returns>Function execution result.</returns>
+        public string DeleteRecords(PropertyInfo[] properties, FileCabinetRecord record);
+
+        /// <summary>
+        /// Update records.
+        /// </summary>
+        /// <param name="updateProperties">Properties to update.</param>
+        /// <param name="updateRecord">Update record.</param>
+        /// <param name="searchProperties">Properties to search.</param>
+        /// <param name="searchRecord">Search record.</param>
+        public void UpdateRecords(PropertyInfo[] updateProperties, FileCabinetRecord updateRecord, PropertyInfo[] searchProperties, FileCabinetRecord searchRecord);
     }
 }

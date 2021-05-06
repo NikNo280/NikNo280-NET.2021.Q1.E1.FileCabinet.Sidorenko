@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Reflection;
 using FileCabinetApp.Service.Iterator;
 using NLog;
 
@@ -44,24 +45,6 @@ namespace FileCabinetApp.Service.Decorator
             int value = this.fileCabinetService.CreateRecord(record);
             this.logger.Info($"{DateTime.Now} - Create() returned '{value}'");
             return value;
-        }
-
-        /// <summary>
-        /// Modify an existing record by id.
-        /// </summary>
-        /// <param name="record">New record.</param>
-        public void EditRecord(FileCabinetRecord record)
-        {
-            if (record is null)
-            {
-                throw new ArgumentNullException(nameof(record));
-            }
-
-            this.logger.Info($"{DateTime.Now} - Calling Edit() with FirstName = '{record.FirstName}', LastName = '{record.LastName}', " +
-                $"DateOfBirth = '{record.DateOfBirth.ToString($"dd/MM/yyyy", CultureInfo.InvariantCulture)}', " +
-                $"Age = '{record.Age}', Salary = '{record.Salary}', Gender = '{record.Gender}'");
-            this.fileCabinetService.EditRecord(record);
-            this.logger.Info($"{DateTime.Now} - Edit() ended");
         }
 
         /// <summary>
@@ -148,6 +131,45 @@ namespace FileCabinetApp.Service.Decorator
         }
 
         /// <summary>
+        /// Insert record.
+        /// </summary>
+        /// <param name="record">Record.</param>
+        public void InsertRecord(FileCabinetRecord record)
+        {
+            if (record is null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
+            this.logger.Info($"{DateTime.Now} - Calling Insert() with FirstName = '{record.FirstName}', LastName = '{record.LastName}', " +
+                $"DateOfBirth = '{record.DateOfBirth.ToString($"dd/MM/yyyy", CultureInfo.InvariantCulture)}', " +
+                $"Age = '{record.Age}', Salary = '{record.Salary}', Gender = '{record.Gender}'");
+            this.fileCabinetService.InsertRecord(record);
+            this.logger.Info($"{DateTime.Now} - Insert() ended");
+        }
+
+        /// <summary>
+        /// Delete records.
+        /// </summary>
+        /// <param name="properties">Properties to search.</param>
+        /// <param name="record">Record.</param>
+        /// <returns>Function execution result.</returns>
+        public string DeleteRecords(PropertyInfo[] properties, FileCabinetRecord record)
+        {
+            if (record is null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
+            this.logger.Info($"{DateTime.Now} - Calling Delete() with FirstName = '{record.FirstName}', LastName = '{record.LastName}', " +
+                $"DateOfBirth = '{record.DateOfBirth.ToString($"dd/MM/yyyy", CultureInfo.InvariantCulture)}', " +
+                $"Age = '{record.Age}', Salary = '{record.Salary}', Gender = '{record.Gender}'");
+            string result = this.fileCabinetService.DeleteRecords(properties, record);
+            this.logger.Info($"{DateTime.Now} - Delete() ended");
+            return result;
+        }
+
+        /// <summary>
         /// Generate new FileCabinetRecord snapshot.
         /// </summary>
         /// <returns>new FileCabinetRecord snapshot.</returns>
@@ -168,27 +190,28 @@ namespace FileCabinetApp.Service.Decorator
         }
 
         /// <summary>
-        /// Removes records.
-        /// </summary>
-        /// <param name="id">Id record to delete.</param>
-        /// <returns>Whether the entry has been deleted.</returns>
-        public bool Remove(int id)
-        {
-            this.logger.Info($"{DateTime.Now} - Calling Find() with id = '{id}'");
-            var value = this.fileCabinetService.Remove(id);
-            this.logger.Info($"{DateTime.Now} - Remove() ended");
-            return value;
-        }
-
-        /// <summary>
         /// Restores data from snapshot.
         /// </summary>
         /// <param name="snapshot">FileCabinet snapshot.</param>
         public void Restore(FileCabinetServiceSnapshot snapshot)
         {
-            this.logger.Info($"{DateTime.Now} - Calling Find() with snapshot");
+            this.logger.Info($"{DateTime.Now} - Calling Import() with snapshot");
             this.fileCabinetService.Restore(snapshot);
-            this.logger.Info($"{DateTime.Now} - Restore() ended");
+            this.logger.Info($"{DateTime.Now} - Import() ended");
+        }
+
+        /// <summary>
+        /// Update records.
+        /// </summary>
+        /// <param name="updateProperties">Properties to update.</param>
+        /// <param name="updateRecord">Update record.</param>
+        /// <param name="searchProperties">Properties to search.</param>
+        /// <param name="searchRecord">Search record.</param>
+        public void UpdateRecords(PropertyInfo[] updateProperties, FileCabinetRecord updateRecord, PropertyInfo[] searchProperties, FileCabinetRecord searchRecord)
+        {
+            this.logger.Info($"{DateTime.Now} - Calling Update() with snapshot");
+            this.fileCabinetService.UpdateRecords(updateProperties, updateRecord, searchProperties, searchRecord);
+            this.logger.Info($"{DateTime.Now} - Update() ended");
         }
     }
 }

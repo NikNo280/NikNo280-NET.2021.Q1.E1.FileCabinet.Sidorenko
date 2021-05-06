@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Reflection;
 using FileCabinetApp.Service.Iterator;
 
 namespace FileCabinetApp.Service.Decorator
@@ -41,15 +43,20 @@ namespace FileCabinetApp.Service.Decorator
         }
 
         /// <summary>
-        /// Modify an existing record by id.
+        /// Insert record.
         /// </summary>
-        /// <param name="record">New record.</param>
-        public void EditRecord(FileCabinetRecord record)
+        /// <param name="record">Record.</param>
+        public void InsertRecord(FileCabinetRecord record)
         {
+            if (record is null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
             this.stopwatch.Start();
-            this.fileCabinetService.EditRecord(record);
+            this.fileCabinetService.InsertRecord(record);
             this.stopwatch.Stop();
-            this.printer.Print("Edit", this.stopwatch.ElapsedTicks);
+            this.printer.Print("Insert", this.stopwatch.ElapsedTicks);
         }
 
         /// <summary>
@@ -162,20 +169,6 @@ namespace FileCabinetApp.Service.Decorator
         }
 
         /// <summary>
-        /// Removes records.
-        /// </summary>
-        /// <param name="id">Id record to delete.</param>
-        /// <returns>Whether the entry has been deleted.</returns>
-        public bool Remove(int id)
-        {
-            this.stopwatch.Start();
-            var value = this.fileCabinetService.Remove(id);
-            this.stopwatch.Stop();
-            this.printer.Print("Remove", this.stopwatch.ElapsedTicks);
-            return value;
-        }
-
-        /// <summary>
         /// Restores data from snapshot.
         /// </summary>
         /// <param name="snapshot">FileCabinet snapshot.</param>
@@ -185,6 +178,36 @@ namespace FileCabinetApp.Service.Decorator
             this.fileCabinetService.Restore(snapshot);
             this.stopwatch.Stop();
             this.printer.Print("Import", this.stopwatch.ElapsedTicks);
+        }
+
+        /// <summary>
+        /// Delete records.
+        /// </summary>
+        /// <param name="properties">Properties to search.</param>
+        /// <param name="record">Record.</param>
+        /// <returns>Function execution result.</returns>
+        public string DeleteRecords(PropertyInfo[] properties, FileCabinetRecord record)
+        {
+            this.stopwatch.Start();
+            string result = this.fileCabinetService.DeleteRecords(properties, record);
+            this.stopwatch.Stop();
+            this.printer.Print("Delete", this.stopwatch.ElapsedTicks);
+            return result;
+        }
+
+        /// <summary>
+        /// Update records.
+        /// </summary>
+        /// <param name="updateProperties">Properties to update.</param>
+        /// <param name="updateRecord">Update record.</param>
+        /// <param name="searchProperties">Properties to search.</param>
+        /// <param name="searchRecord">Search record.</param>
+        public void UpdateRecords(PropertyInfo[] updateProperties, FileCabinetRecord updateRecord, PropertyInfo[] searchProperties, FileCabinetRecord searchRecord)
+        {
+            this.stopwatch.Start();
+            this.fileCabinetService.UpdateRecords(updateProperties, updateRecord, searchProperties, searchRecord);
+            this.stopwatch.Stop();
+            this.printer.Print("Update", this.stopwatch.ElapsedTicks);
         }
     }
 }
