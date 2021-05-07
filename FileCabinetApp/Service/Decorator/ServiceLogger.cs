@@ -48,45 +48,6 @@ namespace FileCabinetApp.Service.Decorator
         }
 
         /// <summary>
-        /// Find records by date of birth.
-        /// </summary>
-        /// <param name="dateofbirth">Users date of birth.</param>
-        /// <returns>Record Iterator.</returns>
-        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateofbirth)
-        {
-            this.logger.Info($"{DateTime.Now} - Calling Find() with dateofbirth = '{dateofbirth}'");
-            var value = this.fileCabinetService.FindByDateOfBirth(dateofbirth);
-            this.logger.Info($"{DateTime.Now} - Find() ended");
-            return value;
-        }
-
-        /// <summary>
-        /// Find records by first name.
-        /// </summary>
-        /// <param name="firstName">Users first name.</param>
-        /// <returns>Record Iterator.</returns>
-        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
-        {
-            this.logger.Info($"{DateTime.Now} - Calling Find() with firstName = '{firstName}'");
-            var value = this.fileCabinetService.FindByFirstName(firstName);
-            this.logger.Info($"{DateTime.Now} - Find() ended");
-            return value;
-        }
-
-        /// <summary>
-        /// Find records by last name.
-        /// </summary>
-        /// <param name="lastName">Users last name.</param>
-        /// <returns>Record Iterator.</returns>
-        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
-        {
-            this.logger.Info($"{DateTime.Now} - Calling Find() with lastName = '{lastName}'");
-            var value = this.fileCabinetService.FindByLastName(lastName);
-            this.logger.Info($"{DateTime.Now} - Find() ended");
-            return value;
-        }
-
-        /// <summary>
         /// Gets number of records deleted.
         /// </summary>
         /// <returns>Number of records deleted.</returns>

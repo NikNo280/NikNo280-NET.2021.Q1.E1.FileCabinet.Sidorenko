@@ -30,27 +30,6 @@ namespace FileCabinetApp
         public int GetStat();
 
         /// <summary>
-        /// Find records by first name.
-        /// </summary>
-        /// <param name="firstName">Users first name.</param>
-        /// <returns>Record Iterator.</returns>
-        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName);
-
-        /// <summary>
-        /// Find records by last name.
-        /// </summary>
-        /// <param name="lastName">Users last name.</param>
-        /// <returns>Record Iterator.</returns>
-        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName);
-
-        /// <summary>
-        /// Find records by date of birth.
-        /// </summary>
-        /// <param name="dateofbirth">Users date of birth.</param>
-        /// <returns>Record Iterator.</returns>
-        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateofbirth);
-
-        /// <summary>
         /// Generate new FileCabinetRecord snapshot.
         /// </summary>
         /// <returns>new FileCabinetRecord snapshot.</returns>

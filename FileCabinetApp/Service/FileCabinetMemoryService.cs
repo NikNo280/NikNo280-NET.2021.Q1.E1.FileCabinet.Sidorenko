@@ -118,60 +118,6 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Find records by first name.
-        /// </summary>
-        /// <param name="firstName">Users first name.</param>
-        /// <returns>Record Iterator.</returns>
-        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
-        {
-            if (string.IsNullOrWhiteSpace(firstName))
-            {
-                throw new ArgumentException($"{nameof(firstName)} is null or empty");
-            }
-
-            return GetIteratorFromDict(firstName.ToUpperInvariant(), this.firstNameDictionary);
-        }
-
-        /// <summary>
-        /// Find records by last name.
-        /// </summary>
-        /// <param name="lastName">Users last name.</param>
-        /// <returns>Record Iterator.</returns>
-        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
-        {
-            if (string.IsNullOrWhiteSpace(lastName))
-            {
-                throw new ArgumentException($"{nameof(lastName)} is null or empty");
-            }
-
-            return GetIteratorFromDict(lastName.ToUpperInvariant(), this.lastNameDictionary);
-        }
-
-        /// <summary>
-        /// Find records by date of birth.
-        /// </summary>
-        /// <param name="dateofbirth">Users date of birth.</param>
-        /// <returns>Record Iterator.</returns>
-        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateofbirth)
-        {
-            if (string.IsNullOrWhiteSpace(dateofbirth))
-            {
-                throw new ArgumentException($"{nameof(dateofbirth)} is null or empty");
-            }
-
-            DateTime dateTime;
-            bool result = DateTime.TryParseExact(dateofbirth, "yyyy-MMM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime);
-            if (result)
-            {
-                return GetIteratorFromDict(dateTime, this.dateOfBirthDictionary);
-            }
-            else
-            {
-                return new MemoryEnumerable(Array.Empty<FileCabinetRecord>());
-            }
-        }
-
-        /// <summary>
         /// Insert record.
         /// </summary>
         /// <param name="record">Record.</param>
