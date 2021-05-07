@@ -325,6 +325,64 @@ namespace FileCabinetApp
         }
 
         /// <summary>
+        /// Select records.
+        /// </summary>
+        /// <param name="properties">Properties to search.</param>
+        /// <param name="record">Record to search.</param>
+        /// <returns>Record Iterator.</returns>
+        public IEnumerable<FileCabinetRecord> SelectRecords(PropertyInfo[][] properties, FileCabinetRecord[] record)
+        {
+            if (properties is null)
+            {
+                throw new ArgumentNullException(nameof(properties));
+            }
+
+            if (record is null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
+            bool result;
+            var records = new List<FileCabinetRecord>();
+            for (int i = 0; i < this.list.Count; i++)
+            {
+                result = true;
+                var tempRecord = this.list[i];
+                if (tempRecord is null)
+                {
+                    continue;
+                }
+
+                if (properties.Length == 0)
+                {
+                    records.Add(tempRecord);
+                    continue;
+                }
+
+                for (int j = 0; j < properties.Length; j++)
+                {
+                    result = true;
+                    foreach (var property in properties[j])
+                    {
+                        if (!property.GetValue(record[j]).Equals(property.GetValue(tempRecord)))
+                        {
+                            result = false;
+                            break;
+                        }
+                    }
+
+                    if (result)
+                    {
+                        records.Add(tempRecord);
+                        break;
+                    }
+                }
+            }
+
+            return new MemoryEnumerable(records.ToArray());
+        }
+
+        /// <summary>
         /// looking for an record with this ID exists.
         /// </summary>
         /// <param name="id">Records id.</param>

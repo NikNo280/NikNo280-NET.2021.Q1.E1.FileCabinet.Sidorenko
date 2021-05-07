@@ -101,5 +101,13 @@ namespace FileCabinetApp
         /// <param name="searchProperties">Properties to search.</param>
         /// <param name="searchRecord">Search record.</param>
         public void UpdateRecords(PropertyInfo[] updateProperties, FileCabinetRecord updateRecord, PropertyInfo[] searchProperties, FileCabinetRecord searchRecord);
+
+        /// <summary>
+        /// Select records.
+        /// </summary>
+        /// <param name="properties">Properties to search.</param>
+        /// <param name="record">Record to search.</param>
+        /// <returns>Record Iterator.</returns>
+        public IEnumerable<FileCabinetRecord> SelectRecords(PropertyInfo[][] properties, FileCabinetRecord[] record);
     }
 }

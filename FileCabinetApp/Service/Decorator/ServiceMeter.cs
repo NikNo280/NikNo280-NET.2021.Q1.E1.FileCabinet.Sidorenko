@@ -209,5 +209,20 @@ namespace FileCabinetApp.Service.Decorator
             this.stopwatch.Stop();
             this.printer.Print("Update", this.stopwatch.ElapsedTicks);
         }
+
+        /// <summary>
+        /// Select records.
+        /// </summary>
+        /// <param name="properties">Properties to search.</param>
+        /// <param name="record">Record to search.</param>
+        /// <returns>Record Iterator.</returns>
+        public IEnumerable<FileCabinetRecord> SelectRecords(PropertyInfo[][] properties, FileCabinetRecord[] record)
+        {
+            this.stopwatch.Start();
+            var iterator = this.fileCabinetService.SelectRecords(properties, record);
+            this.stopwatch.Stop();
+            this.printer.Print("Select", this.stopwatch.ElapsedTicks);
+            return iterator;
+        }
     }
 }

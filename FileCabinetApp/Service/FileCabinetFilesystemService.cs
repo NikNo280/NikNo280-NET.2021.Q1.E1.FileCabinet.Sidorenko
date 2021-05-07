@@ -351,10 +351,17 @@ namespace FileCabinetApp
 
             bool result = true;
             List<int> removeRecordId = new List<int>();
-            for (int i = 0; i < this.GetStat(); i++)
+            int numBytesToRead = 0;
+            while (numBytesToRead < this.fileStream.Length)
             {
                 result = true;
-                var deleteRecord = this.GetRecordByPosition(i * RecordSize);
+                var deleteRecord = this.GetRecordByPosition(numBytesToRead);
+                if (deleteRecord is null)
+                {
+                    numBytesToRead += RecordSize;
+                    continue;
+                }
+
                 foreach (var property in properties)
                 {
                     if (!property.GetValue(record).Equals(property.GetValue(deleteRecord)))
@@ -368,6 +375,8 @@ namespace FileCabinetApp
                 {
                     removeRecordId.Add(deleteRecord.Id);
                 }
+
+                numBytesToRead += RecordSize;
             }
 
             var stringBuilder = new StringBuilder();
@@ -433,10 +442,17 @@ namespace FileCabinetApp
             }
 
             bool result;
-            for (int i = 0; i < this.GetStat(); i++)
+            int numBytesToRead = 0;
+            while (numBytesToRead < this.fileStream.Length)
             {
                 result = true;
-                var record = this.GetRecordByPosition(i * RecordSize);
+                var record = this.GetRecordByPosition(numBytesToRead);
+                if (record is null)
+                {
+                    numBytesToRead += RecordSize;
+                    continue;
+                }
+
                 foreach (var searchProperty in searchProperties)
                 {
                     if (!searchProperty.GetValue(searchRecord).Equals(searchProperty.GetValue(record)))
@@ -455,7 +471,72 @@ namespace FileCabinetApp
 
                     this.EditRecord(record);
                 }
+
+                numBytesToRead += RecordSize;
             }
+        }
+
+        /// <summary>
+        /// Select records.
+        /// </summary>
+        /// <param name="properties">Properties to search.</param>
+        /// <param name="record">Record to search.</param>
+        /// <returns>Record Iterator.</returns>
+        public IEnumerable<FileCabinetRecord> SelectRecords(PropertyInfo[][] properties, FileCabinetRecord[] record)
+        {
+            if (properties is null)
+            {
+                throw new ArgumentNullException(nameof(properties));
+            }
+
+            if (record is null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
+            int numBytesToRead = 0;
+            bool result;
+            var records = new List<long>();
+            while (numBytesToRead < this.fileStream.Length)
+            {
+                result = true;
+                var tempRecord = this.GetRecordByPosition(numBytesToRead);
+                if (tempRecord is null)
+                {
+                    numBytesToRead += RecordSize;
+                    continue;
+                }
+
+                if (properties.Length == 0)
+                {
+                    records.Add(numBytesToRead);
+                    numBytesToRead += RecordSize;
+                    continue;
+                }
+
+                for (int i = 0; i < properties.Length; i++)
+                {
+                    result = true;
+                    foreach (var property in properties[i])
+                    {
+                        if (!property.GetValue(record[i]).Equals(property.GetValue(tempRecord)))
+                        {
+                            result = false;
+                            break;
+                        }
+                    }
+
+                    if (result)
+                    {
+                        records.Add(numBytesToRead);
+                        break;
+                    }
+                }
+
+                numBytesToRead += RecordSize;
+            }
+
+            return new FilesystemEnumerable(this, records);
         }
 
         /// <summary>
@@ -682,8 +763,16 @@ namespace FileCabinetApp
             }
 
             record.Salary = new decimal(bits);
+            bool isDeleted = BitConverter.ToBoolean(data, RecordSize - sizeof(bool));
             this.fileStream.Position = fileStreamPosition;
-            return record;
+            if (isDeleted)
+            {
+                return null;
+            }
+            else
+            {
+                return record;
+            }
         }
 
         /// <summary>
