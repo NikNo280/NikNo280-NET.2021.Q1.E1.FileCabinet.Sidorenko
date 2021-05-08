@@ -21,6 +21,7 @@ namespace FileCabinetApp.CommandHandlers
             new string[] { "insert", "inserts record", "The 'insert' command inserts record." },
             new string[] { "delete", "deletes record", "The 'delete' command deletes record." },
             new string[] { "update", "updates record", "The 'update' command updates record." },
+            new string[] { "select", "selects record", "The 'selects' command selects records with suitable parameters." },
             new string[] { "stat", "displays quality statistics", "The 'stat' command displays quality statistics." },
             new string[] { "create", "create new record", "The 'create' command create new record." },
             new string[] { "list", "gets a list of records", "The 'list' command gets a list of records." },

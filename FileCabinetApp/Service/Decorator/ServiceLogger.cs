@@ -48,45 +48,6 @@ namespace FileCabinetApp.Service.Decorator
         }
 
         /// <summary>
-        /// Find records by date of birth.
-        /// </summary>
-        /// <param name="dateofbirth">Users date of birth.</param>
-        /// <returns>Record Iterator.</returns>
-        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateofbirth)
-        {
-            this.logger.Info($"{DateTime.Now} - Calling Find() with dateofbirth = '{dateofbirth}'");
-            var value = this.fileCabinetService.FindByDateOfBirth(dateofbirth);
-            this.logger.Info($"{DateTime.Now} - Find() ended");
-            return value;
-        }
-
-        /// <summary>
-        /// Find records by first name.
-        /// </summary>
-        /// <param name="firstName">Users first name.</param>
-        /// <returns>Record Iterator.</returns>
-        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
-        {
-            this.logger.Info($"{DateTime.Now} - Calling Find() with firstName = '{firstName}'");
-            var value = this.fileCabinetService.FindByFirstName(firstName);
-            this.logger.Info($"{DateTime.Now} - Find() ended");
-            return value;
-        }
-
-        /// <summary>
-        /// Find records by last name.
-        /// </summary>
-        /// <param name="lastName">Users last name.</param>
-        /// <returns>Record Iterator.</returns>
-        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
-        {
-            this.logger.Info($"{DateTime.Now} - Calling Find() with lastName = '{lastName}'");
-            var value = this.fileCabinetService.FindByLastName(lastName);
-            this.logger.Info($"{DateTime.Now} - Find() ended");
-            return value;
-        }
-
-        /// <summary>
         /// Gets number of records deleted.
         /// </summary>
         /// <returns>Number of records deleted.</returns>
@@ -212,6 +173,20 @@ namespace FileCabinetApp.Service.Decorator
             this.logger.Info($"{DateTime.Now} - Calling Update() with snapshot");
             this.fileCabinetService.UpdateRecords(updateProperties, updateRecord, searchProperties, searchRecord);
             this.logger.Info($"{DateTime.Now} - Update() ended");
+        }
+
+        /// <summary>
+        /// Select records.
+        /// </summary>
+        /// <param name="properties">Properties to search.</param>
+        /// <param name="record">Record to search.</param>
+        /// <returns>Record Iterator.</returns>
+        public IEnumerable<FileCabinetRecord> SelectRecords(PropertyInfo[][] properties, FileCabinetRecord[] record)
+        {
+            this.logger.Info($"{DateTime.Now} - Calling Select() with snapshot");
+            var iterator = this.fileCabinetService.SelectRecords(properties, record);
+            this.logger.Info($"{DateTime.Now} - Select() ended");
+            return iterator;
         }
     }
 }

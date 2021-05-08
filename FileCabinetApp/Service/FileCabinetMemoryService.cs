@@ -20,6 +20,8 @@ namespace FileCabinetApp
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<DateTime, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
+        private readonly List<FileCabinetRecord[]> selectParams = new List<FileCabinetRecord[]>();
+        private readonly List<IEnumerable<FileCabinetRecord>> selectResult = new List<IEnumerable<FileCabinetRecord>>();
         private readonly IRecordValidator recordValidator;
 
         /// <summary>
@@ -43,16 +45,18 @@ namespace FileCabinetApp
                 throw new ArgumentNullException($"{nameof(record)} is null");
             }
 
+            /*
             if (!this.recordValidator.ValidateParameters(record))
             {
                 throw new ArgumentException("Incorrect prarameters");
             }
-
+            */
             this.list.Add(record);
             AddToDict(record.FirstName.ToUpperInvariant(), this.firstNameDictionary, record);
             AddToDict(record.LastName.ToUpperInvariant(), this.lastNameDictionary, record);
             AddToDict(record.DateOfBirth, this.dateOfBirthDictionary, record);
-
+            this.selectResult.Clear();
+            this.selectParams.Clear();
             return record.Id;
         }
 
@@ -110,65 +114,13 @@ namespace FileCabinetApp
                     UpdateDict(this.dateOfBirthDictionary, item.DateOfBirth, record.DateOfBirth, editRecord);
                     this.list.Remove(item);
                     this.list.Add(editRecord);
+                    this.selectResult.Clear();
+                    this.selectParams.Clear();
                     return;
                 }
             }
 
             throw new ArgumentException($"#{record.Id} record is not found.");
-        }
-
-        /// <summary>
-        /// Find records by first name.
-        /// </summary>
-        /// <param name="firstName">Users first name.</param>
-        /// <returns>Record Iterator.</returns>
-        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
-        {
-            if (string.IsNullOrWhiteSpace(firstName))
-            {
-                throw new ArgumentException($"{nameof(firstName)} is null or empty");
-            }
-
-            return GetIteratorFromDict(firstName.ToUpperInvariant(), this.firstNameDictionary);
-        }
-
-        /// <summary>
-        /// Find records by last name.
-        /// </summary>
-        /// <param name="lastName">Users last name.</param>
-        /// <returns>Record Iterator.</returns>
-        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
-        {
-            if (string.IsNullOrWhiteSpace(lastName))
-            {
-                throw new ArgumentException($"{nameof(lastName)} is null or empty");
-            }
-
-            return GetIteratorFromDict(lastName.ToUpperInvariant(), this.lastNameDictionary);
-        }
-
-        /// <summary>
-        /// Find records by date of birth.
-        /// </summary>
-        /// <param name="dateofbirth">Users date of birth.</param>
-        /// <returns>Record Iterator.</returns>
-        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateofbirth)
-        {
-            if (string.IsNullOrWhiteSpace(dateofbirth))
-            {
-                throw new ArgumentException($"{nameof(dateofbirth)} is null or empty");
-            }
-
-            DateTime dateTime;
-            bool result = DateTime.TryParseExact(dateofbirth, "yyyy-MMM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime);
-            if (result)
-            {
-                return GetIteratorFromDict(dateTime, this.dateOfBirthDictionary);
-            }
-            else
-            {
-                return new MemoryEnumerable(Array.Empty<FileCabinetRecord>());
-            }
         }
 
         /// <summary>
@@ -325,6 +277,73 @@ namespace FileCabinetApp
         }
 
         /// <summary>
+        /// Select records.
+        /// </summary>
+        /// <param name="properties">Properties to search.</param>
+        /// <param name="record">Record to search.</param>
+        /// <returns>Record Iterator.</returns>
+        public IEnumerable<FileCabinetRecord> SelectRecords(PropertyInfo[][] properties, FileCabinetRecord[] record)
+        {
+            if (properties is null)
+            {
+                throw new ArgumentNullException(nameof(properties));
+            }
+
+            if (record is null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
+            if (properties.Length == 0)
+            {
+                return new MemoryEnumerable(this.list.ToArray());
+            }
+
+            bool result;
+            var records = new List<FileCabinetRecord>();
+            var memoisation = this.GetMemoization(properties, record);
+
+            if (memoisation != -1)
+            {
+                return this.selectResult[memoisation];
+            }
+
+            for (int i = 0; i < this.list.Count; i++)
+            {
+                result = true;
+                var tempRecord = this.list[i];
+                if (tempRecord is null)
+                {
+                    continue;
+                }
+
+                for (int j = 0; j < properties.Length; j++)
+                {
+                    result = true;
+                    foreach (var property in properties[j])
+                    {
+                        if (!property.GetValue(record[j]).Equals(property.GetValue(tempRecord)))
+                        {
+                            result = false;
+                            break;
+                        }
+                    }
+
+                    if (result)
+                    {
+                        records.Add(tempRecord);
+                        break;
+                    }
+                }
+            }
+
+            var memoryEnumerable = new MemoryEnumerable(records.ToArray());
+            this.selectParams.Add(record);
+            this.selectResult.Add(memoryEnumerable);
+            return memoryEnumerable;
+        }
+
+        /// <summary>
         /// looking for an record with this ID exists.
         /// </summary>
         /// <param name="id">Records id.</param>
@@ -398,6 +417,8 @@ namespace FileCabinetApp
                     RemoveRecordInDict(this.firstNameDictionary, record, record.FirstName);
                     RemoveRecordInDict(this.lastNameDictionary, record, record.LastName);
                     RemoveRecordInDict(this.dateOfBirthDictionary, record, record.DateOfBirth);
+                    this.selectResult.Clear();
+                    this.selectParams.Clear();
                     return true;
                 }
             }
@@ -478,6 +499,90 @@ namespace FileCabinetApp
         {
             dictionary[oldKey].Remove(dictionary[oldKey].Where(item => item.Id == record.Id).First());
             AddToDict(newKey, dictionary, record);
+        }
+
+        private static bool RecordEqualsByProperties(FileCabinetRecord record1, FileCabinetRecord record2, PropertyInfo[] properties)
+        {
+            if (record1 is null)
+            {
+                throw new ArgumentNullException(nameof(record1));
+            }
+
+            if (record2 is null)
+            {
+                throw new ArgumentNullException(nameof(record2));
+            }
+
+            if (properties is null)
+            {
+                throw new ArgumentNullException(nameof(properties));
+            }
+
+            bool result = true;
+            foreach (var property in properties)
+            {
+                var value1 = property.GetValue(record1);
+                var value2 = property.GetValue(record2);
+                if (value1 is null && value2 is null)
+                {
+                    continue;
+                }
+                else if (value1 is null && !(value2 is null))
+                {
+                    result = false;
+                    break;
+                }
+                else if (!(value1 is null) && value2 is null)
+                {
+                    result = false;
+                    break;
+                }
+                else if (!property.GetValue(record1).Equals(property.GetValue(record2)))
+                {
+                    result = false;
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+        private int GetMemoization(PropertyInfo[][] properties, FileCabinetRecord[] records)
+        {
+            bool finalResult = false;
+            for (int k = 0; k < this.selectParams.Count; k++)
+            {
+                finalResult = false;
+                if (this.selectParams[k].Length == records.Length)
+                {
+                    for (int i = 0; i < this.selectParams[k].Length; i++)
+                    {
+                        bool result = false;
+                        for (int j = 0; j < records.Length; j++)
+                        {
+                            if (RecordEqualsByProperties(this.selectParams[k][i], records[j], properties[j]))
+                            {
+                                result = true;
+                            }
+                        }
+
+                        if (!result)
+                        {
+                            finalResult = false;
+                            break;
+                        }
+
+                        finalResult = true;
+                    }
+                }
+
+                if (finalResult)
+                {
+                    return k;
+                }
+            }
+
+            return -1;
         }
     }
 }

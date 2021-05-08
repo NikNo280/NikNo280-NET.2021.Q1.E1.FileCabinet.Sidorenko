@@ -148,6 +148,11 @@ namespace FileCabinetApp.CommandHandlers
                     if (string.Equals(name, property.Name, StringComparison.InvariantCultureIgnoreCase))
                     {
                         isVerified = true;
+                        if (searchProperties.Contains(property))
+                        {
+                            return null;
+                        }
+
                         searchProperties.Add(property);
                         break;
                     }
@@ -167,7 +172,7 @@ namespace FileCabinetApp.CommandHandlers
             int indexOfValue = parameters.IndexOf(" where ", 0, StringComparison.InvariantCultureIgnoreCase);
             if (indexOfValue == -1)
             {
-                Console.WriteLine("Missing keyword 'values'");
+                Console.WriteLine("Missing keyword 'where'");
                 return (null, null, null, null, false);
             }
 
