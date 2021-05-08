@@ -108,7 +108,14 @@ namespace Table
                         stringItem = this.properties[i].GetValue(item).ToString();
                     }
 
-                    line.Append(' ' + new string(' ', this.lenghtRow[i] - stringItem.Length) + stringItem + " |");
+                    if (this.properties[i].PropertyType == typeof(string) || this.properties[i].PropertyType == typeof(char))
+                    {
+                        line.Append(' ' + stringItem + new string(' ', this.lenghtRow[i] - stringItem.Length) + " |");
+                    }
+                    else
+                    {
+                        line.Append(' ' + new string(' ', this.lenghtRow[i] - stringItem.Length) + stringItem + " |");
+                    }
                 }
 
                 action?.Invoke(line.ToString());

@@ -20,6 +20,8 @@ namespace FileCabinetApp
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<DateTime, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
+        private readonly List<FileCabinetRecord[]> selectParams = new List<FileCabinetRecord[]>();
+        private readonly List<IEnumerable<FileCabinetRecord>> selectResult = new List<IEnumerable<FileCabinetRecord>>();
         private readonly IRecordValidator recordValidator;
 
         /// <summary>
@@ -43,16 +45,18 @@ namespace FileCabinetApp
                 throw new ArgumentNullException($"{nameof(record)} is null");
             }
 
+            /*
             if (!this.recordValidator.ValidateParameters(record))
             {
                 throw new ArgumentException("Incorrect prarameters");
             }
-
+            */
             this.list.Add(record);
             AddToDict(record.FirstName.ToUpperInvariant(), this.firstNameDictionary, record);
             AddToDict(record.LastName.ToUpperInvariant(), this.lastNameDictionary, record);
             AddToDict(record.DateOfBirth, this.dateOfBirthDictionary, record);
-
+            this.selectResult.Clear();
+            this.selectParams.Clear();
             return record.Id;
         }
 
@@ -110,6 +114,8 @@ namespace FileCabinetApp
                     UpdateDict(this.dateOfBirthDictionary, item.DateOfBirth, record.DateOfBirth, editRecord);
                     this.list.Remove(item);
                     this.list.Add(editRecord);
+                    this.selectResult.Clear();
+                    this.selectParams.Clear();
                     return;
                 }
             }
@@ -288,20 +294,26 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(record));
             }
 
+            if (properties.Length == 0)
+            {
+                return new MemoryEnumerable(this.list.ToArray());
+            }
+
             bool result;
             var records = new List<FileCabinetRecord>();
+            var memoisation = this.GetMemoization(properties, record);
+
+            if (memoisation != -1)
+            {
+                return this.selectResult[memoisation];
+            }
+
             for (int i = 0; i < this.list.Count; i++)
             {
                 result = true;
                 var tempRecord = this.list[i];
                 if (tempRecord is null)
                 {
-                    continue;
-                }
-
-                if (properties.Length == 0)
-                {
-                    records.Add(tempRecord);
                     continue;
                 }
 
@@ -325,7 +337,10 @@ namespace FileCabinetApp
                 }
             }
 
-            return new MemoryEnumerable(records.ToArray());
+            var memoryEnumerable = new MemoryEnumerable(records.ToArray());
+            this.selectParams.Add(record);
+            this.selectResult.Add(memoryEnumerable);
+            return memoryEnumerable;
         }
 
         /// <summary>
@@ -402,6 +417,8 @@ namespace FileCabinetApp
                     RemoveRecordInDict(this.firstNameDictionary, record, record.FirstName);
                     RemoveRecordInDict(this.lastNameDictionary, record, record.LastName);
                     RemoveRecordInDict(this.dateOfBirthDictionary, record, record.DateOfBirth);
+                    this.selectResult.Clear();
+                    this.selectParams.Clear();
                     return true;
                 }
             }
@@ -482,6 +499,90 @@ namespace FileCabinetApp
         {
             dictionary[oldKey].Remove(dictionary[oldKey].Where(item => item.Id == record.Id).First());
             AddToDict(newKey, dictionary, record);
+        }
+
+        private static bool RecordEqualsByProperties(FileCabinetRecord record1, FileCabinetRecord record2, PropertyInfo[] properties)
+        {
+            if (record1 is null)
+            {
+                throw new ArgumentNullException(nameof(record1));
+            }
+
+            if (record2 is null)
+            {
+                throw new ArgumentNullException(nameof(record2));
+            }
+
+            if (properties is null)
+            {
+                throw new ArgumentNullException(nameof(properties));
+            }
+
+            bool result = true;
+            foreach (var property in properties)
+            {
+                var value1 = property.GetValue(record1);
+                var value2 = property.GetValue(record2);
+                if (value1 is null && value2 is null)
+                {
+                    continue;
+                }
+                else if (value1 is null && !(value2 is null))
+                {
+                    result = false;
+                    break;
+                }
+                else if (!(value1 is null) && value2 is null)
+                {
+                    result = false;
+                    break;
+                }
+                else if (!property.GetValue(record1).Equals(property.GetValue(record2)))
+                {
+                    result = false;
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+        private int GetMemoization(PropertyInfo[][] properties, FileCabinetRecord[] records)
+        {
+            bool finalResult = false;
+            for (int k = 0; k < this.selectParams.Count; k++)
+            {
+                finalResult = false;
+                if (this.selectParams[k].Length == records.Length)
+                {
+                    for (int i = 0; i < this.selectParams[k].Length; i++)
+                    {
+                        bool result = false;
+                        for (int j = 0; j < records.Length; j++)
+                        {
+                            if (RecordEqualsByProperties(this.selectParams[k][i], records[j], properties[j]))
+                            {
+                                result = true;
+                            }
+                        }
+
+                        if (!result)
+                        {
+                            finalResult = false;
+                            break;
+                        }
+
+                        finalResult = true;
+                    }
+                }
+
+                if (finalResult)
+                {
+                    return k;
+                }
+            }
+
+            return -1;
         }
     }
 }

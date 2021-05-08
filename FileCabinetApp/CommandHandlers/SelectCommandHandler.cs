@@ -119,6 +119,11 @@ namespace FileCabinetApp.CommandHandlers
                     if (string.Equals(name, property.Name, StringComparison.InvariantCultureIgnoreCase))
                     {
                         isVerified = true;
+                        if (searchProperties.Contains(property))
+                        {
+                            return null;
+                        }
+
                         searchProperties.Add(property);
                         break;
                     }
