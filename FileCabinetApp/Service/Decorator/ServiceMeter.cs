@@ -80,19 +80,6 @@ namespace FileCabinetApp.Service.Decorator
         }
 
         /// <summary>
-        /// Gets all records.
-        /// </summary>
-        /// <returns>Array of records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> GetRecords()
-        {
-            this.stopwatch.Start();
-            var value = this.fileCabinetService.GetRecords();
-            this.stopwatch.Stop();
-            this.printer.Print("List", this.stopwatch.ElapsedTicks);
-            return value;
-        }
-
-        /// <summary>
         /// Gets count of records.
         /// </summary>
         /// <returns>Return count of records.</returns>

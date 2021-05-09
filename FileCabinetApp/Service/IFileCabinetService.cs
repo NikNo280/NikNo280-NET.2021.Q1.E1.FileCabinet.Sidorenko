@@ -18,12 +18,6 @@ namespace FileCabinetApp
         public int CreateRecord(FileCabinetRecord record);
 
         /// <summary>
-        /// Gets all records.
-        /// </summary>
-        /// <returns>Array of records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> GetRecords();
-
-        /// <summary>
         /// Gets count of records.
         /// </summary>
         /// <returns>Return count of records.</returns>

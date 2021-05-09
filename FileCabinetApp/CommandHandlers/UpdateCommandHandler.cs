@@ -169,6 +169,12 @@ namespace FileCabinetApp.CommandHandlers
 
         private static (string[] updateFieldsNames, string[] updateFieldsValues, string[] searchFieldsNames, string[] searchFieldsValues, bool result) UpdateParcer(string parameters)
         {
+            if (!parameters.Contains("set", StringComparison.InvariantCultureIgnoreCase))
+            {
+                Console.WriteLine("Missing keyword 'set'");
+                return (null, null, null, null, false);
+            }
+
             int indexOfValue = parameters.IndexOf(" where ", 0, StringComparison.InvariantCultureIgnoreCase);
             if (indexOfValue == -1)
             {

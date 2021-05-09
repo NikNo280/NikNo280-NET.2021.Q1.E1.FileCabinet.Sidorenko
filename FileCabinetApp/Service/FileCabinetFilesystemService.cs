@@ -285,40 +285,87 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(record));
             }
 
-            bool result = true;
-            List<int> removeRecordId = new List<int>();
-            int numBytesToRead = 0;
-            while (numBytesToRead < this.fileStream.Length)
+            const string ZeroRecordsToDelete = "No record has been deleted";
+            var firstNameProperty = typeof(FileCabinetRecord).GetProperty("FirstName");
+            var lastNameProperty = typeof(FileCabinetRecord).GetProperty("LastName");
+            var dateOfBirthProperty = typeof(FileCabinetRecord).GetProperty("DateOfBirth");
+            var removeRecordId = new List<int>();
+            if (properties.Contains(firstNameProperty))
             {
-                result = true;
-                var deleteRecord = this.GetRecordByPosition(numBytesToRead);
-                if (deleteRecord is null)
+                string recordFirstNameValue = (string)firstNameProperty.GetValue(record);
+                if (this.firstNameDictionary.ContainsKey(recordFirstNameValue.ToUpperInvariant()))
                 {
-                    numBytesToRead += RecordSize;
-                    continue;
-                }
-
-                foreach (var property in properties)
-                {
-                    if (!property.GetValue(record).Equals(property.GetValue(deleteRecord)))
+                    foreach (var porsitionRecord in this.firstNameDictionary[recordFirstNameValue.ToUpperInvariant()])
                     {
-                        result = false;
-                        break;
+                        var deleteRecord = this.GetRecordByPosition(porsitionRecord);
+                        if (RecordEqualsByProperties(record, deleteRecord, properties))
+                        {
+                            removeRecordId.Add(deleteRecord.Id);
+                        }
                     }
                 }
-
-                if (result)
+                else
                 {
-                    removeRecordId.Add(deleteRecord.Id);
+                    return ZeroRecordsToDelete;
                 }
+            }
+            else if (properties.Contains(lastNameProperty))
+            {
+                string recordLastNameValue = (string)lastNameProperty.GetValue(record);
+                if (this.lastNameDictionary.ContainsKey(recordLastNameValue.ToUpperInvariant()))
+                {
+                    foreach (var porsitionRecord in this.lastNameDictionary[recordLastNameValue.ToUpperInvariant()])
+                    {
+                        var deleteRecord = this.GetRecordByPosition(porsitionRecord);
+                        if (RecordEqualsByProperties(record, deleteRecord, properties))
+                        {
+                            removeRecordId.Add(deleteRecord.Id);
+                        }
+                    }
+                }
+                else
+                {
+                    return ZeroRecordsToDelete;
+                }
+            }
+            else if (properties.Contains(dateOfBirthProperty))
+            {
+                DateTime recordDateOfBirthValue = (DateTime)dateOfBirthProperty.GetValue(record);
+                if (this.dateOfBirthDictionary.ContainsKey(recordDateOfBirthValue))
+                {
+                    foreach (var porsitionRecord in this.dateOfBirthDictionary[recordDateOfBirthValue])
+                    {
+                        var deleteRecord = this.GetRecordByPosition(porsitionRecord);
+                        if (RecordEqualsByProperties(record, deleteRecord, properties))
+                        {
+                            removeRecordId.Add(deleteRecord.Id);
+                        }
+                    }
+                }
+                else
+                {
+                    return ZeroRecordsToDelete;
+                }
+            }
+            else
+            {
+                int numBytesToRead = 0;
+                while (numBytesToRead < this.fileStream.Length)
+                {
+                    var deleteRecord = this.GetRecordByPosition(numBytesToRead);
+                    if (RecordEqualsByProperties(record, deleteRecord, properties))
+                    {
+                        removeRecordId.Add(deleteRecord.Id);
+                    }
 
-                numBytesToRead += RecordSize;
+                    numBytesToRead += RecordSize;
+                }
             }
 
             var stringBuilder = new StringBuilder();
             if (removeRecordId.Count == 0)
             {
-                return "No record has been deleted";
+                return ZeroRecordsToDelete;
             }
             else if (removeRecordId.Count == 1)
             {
@@ -377,38 +424,90 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(searchRecord));
             }
 
-            bool result;
-            int numBytesToRead = 0;
-            while (numBytesToRead < this.fileStream.Length)
+            var firstNameProperty = typeof(FileCabinetRecord).GetProperty("FirstName");
+            var lastNameProperty = typeof(FileCabinetRecord).GetProperty("LastName");
+            var dateOfBirthProperty = typeof(FileCabinetRecord).GetProperty("DateOfBirth");
+            if (searchProperties.Contains(firstNameProperty))
             {
-                result = true;
-                var record = this.GetRecordByPosition(numBytesToRead);
-                if (record is null)
+                string recordFirstNameValue = (string)firstNameProperty.GetValue(searchRecord);
+                if (this.firstNameDictionary.ContainsKey(recordFirstNameValue.ToUpperInvariant()))
                 {
+                    var collection = this.firstNameDictionary[recordFirstNameValue.ToUpperInvariant()].ToArray();
+                    foreach (var porsitionRecord in collection)
+                    {
+                        var record = this.GetRecordByPosition(porsitionRecord);
+                        if (RecordEqualsByProperties(record, searchRecord, searchProperties))
+                        {
+                            foreach (var updateProperty in updateProperties)
+                            {
+                                updateProperty.SetValue(record, updateProperty.GetValue(updateRecord));
+                            }
+
+                            this.EditRecord(record);
+                        }
+                    }
+                }
+            }
+            else if (searchProperties.Contains(lastNameProperty))
+            {
+                string recordLastNameValue = (string)lastNameProperty.GetValue(searchRecord);
+                if (this.lastNameDictionary.ContainsKey(recordLastNameValue.ToUpperInvariant()))
+                {
+                    var collection = this.lastNameDictionary[recordLastNameValue.ToUpperInvariant()].ToArray();
+                    foreach (var porsitionRecord in collection)
+                    {
+                        var record = this.GetRecordByPosition(porsitionRecord);
+                        if (RecordEqualsByProperties(record, searchRecord, searchProperties))
+                        {
+                            foreach (var updateProperty in updateProperties)
+                            {
+                                updateProperty.SetValue(record, updateProperty.GetValue(updateRecord));
+                            }
+
+                            this.EditRecord(record);
+                        }
+                    }
+                }
+            }
+            else if (searchProperties.Contains(dateOfBirthProperty))
+            {
+                DateTime recordDateOfBirthValue = (DateTime)dateOfBirthProperty.GetValue(searchRecord);
+                if (this.dateOfBirthDictionary.ContainsKey(recordDateOfBirthValue))
+                {
+                    var collection = this.dateOfBirthDictionary[recordDateOfBirthValue].ToArray();
+                    foreach (var porsitionRecord in collection)
+                    {
+                        var record = this.GetRecordByPosition(porsitionRecord);
+                        if (RecordEqualsByProperties(record, searchRecord, searchProperties))
+                        {
+                            foreach (var updateProperty in updateProperties)
+                            {
+                                updateProperty.SetValue(record, updateProperty.GetValue(updateRecord));
+                            }
+
+                            this.EditRecord(record);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                int numBytesToRead = 0;
+                while (numBytesToRead < this.fileStream.Length)
+                {
+                    var record = this.GetRecordByPosition(numBytesToRead);
+                    if (RecordEqualsByProperties(record, searchRecord, searchProperties))
+                    {
+                        foreach (var updateProperty in updateProperties)
+                        {
+                            updateProperty.SetValue(record, updateProperty.GetValue(updateRecord));
+                        }
+
+                        this.EditRecord(record);
+                    }
+
                     numBytesToRead += RecordSize;
-                    continue;
                 }
-
-                foreach (var searchProperty in searchProperties)
-                {
-                    if (!searchProperty.GetValue(searchRecord).Equals(searchProperty.GetValue(record)))
-                    {
-                        result = false;
-                        break;
-                    }
-                }
-
-                if (result)
-                {
-                    foreach (var updateProperty in updateProperties)
-                    {
-                        updateProperty.SetValue(record, updateProperty.GetValue(updateRecord));
-                    }
-
-                    this.EditRecord(record);
-                }
-
-                numBytesToRead += RecordSize;
             }
         }
 
@@ -790,6 +889,47 @@ namespace FileCabinetApp
         {
             dictionary[oldKey].Remove(dictionary[oldKey].Where(item => item == position).First());
             AddToDict(newKey, dictionary, position);
+        }
+
+        private static bool RecordEqualsByProperties(FileCabinetRecord record1, FileCabinetRecord record2, PropertyInfo[] properties)
+        {
+            if (properties is null)
+            {
+                throw new ArgumentNullException(nameof(properties));
+            }
+
+            if (record1 is null || record2 is null)
+            {
+                return false;
+            }
+
+            bool result = true;
+            foreach (var property in properties)
+            {
+                var value1 = property.GetValue(record1);
+                var value2 = property.GetValue(record2);
+                if (value1 is null && value2 is null)
+                {
+                    continue;
+                }
+                else if (value1 is null && !(value2 is null))
+                {
+                    result = false;
+                    break;
+                }
+                else if (!(value1 is null) && value2 is null)
+                {
+                    result = false;
+                    break;
+                }
+                else if (!property.GetValue(record1).Equals(property.GetValue(record2)))
+                {
+                    result = false;
+                    break;
+                }
+            }
+
+            return result;
         }
 
         private bool IsDeleted(int index)
