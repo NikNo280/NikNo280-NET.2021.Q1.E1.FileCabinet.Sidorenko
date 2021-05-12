@@ -24,8 +24,6 @@ namespace FileCabinetApp.CommandHandlers
             new string[] { "select", "selects record", "The 'selects' command selects records with suitable parameters." },
             new string[] { "stat", "displays quality statistics", "The 'stat' command displays quality statistics." },
             new string[] { "create", "create new record", "The 'create' command create new record." },
-            new string[] { "list", "gets a list of records", "The 'list' command gets a list of records." },
-            new string[] { "find", "finds records.", "The 'find' command finds records." },
             new string[] { "export", "exports service data to file", "The 'export' command exports service data to file" },
             new string[] { "import", "imports data from a file into a service", "The 'import' command imports data from a file into a service" },
             new string[] { "purge", "defragments the data file", "The 'purge' defragments the data file" },

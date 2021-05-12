@@ -13,7 +13,7 @@ namespace FileCabinetApp.CommandHandlers
     {
         private static string[] commandsNames = new string[]
         {
-            "help", "exit", "insert", "delete", "update", "stat", "create", "list", "find", "export", "import", "purge", "select",
+            "help", "exit", "insert", "delete", "update", "stat", "create", "export", "import", "purge", "select",
         };
 
         /// <summary>
